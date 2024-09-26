@@ -29,6 +29,21 @@ uint64_t Chunk::get_block_id_at(Vector3 position) {
     return blocks[index];
 }
 
+uint64_t Chunk::position_to_index(Vector3 position) {
+    return int(position.x) + int(position.z) * CHUNK_SIZE_X + int(position.y) * CHUNK_SIZE_Z * CHUNK_SIZE_X;
+}
+
+Vector3 Chunk::index_to_position(uint64_t index) {
+    return Vector3(index % CHUNK_SIZE_X, index / (CHUNK_SIZE_X * CHUNK_SIZE_Z), (index / CHUNK_SIZE_X) % CHUNK_SIZE_Z);
+}
+
+bool Chunk::in_bounds(Vector3 position) {
+    return
+    0 <= position.x && position.x < CHUNK_SIZE_X &&
+    0 <= position.y && position.y < CHUNK_SIZE_Y &&
+    0 <= position.z && position.z < CHUNK_SIZE_Z;
+}
+
 void Chunk::add_face_uvs(uint64_t x, uint64_t y) {
     uvs.append(Vector2(texture_scale * x, texture_scale * y));
 	uvs.append(Vector2(texture_scale * x + texture_scale, texture_scale * y));
@@ -49,65 +64,76 @@ void Chunk::add_face_triangles() {
 
 void Chunk::generate_block(uint64_t id, Vector3i position) {
     // Top
-    vertices.append(position + Vector3(0.0, 1.0, 0.0));
-    vertices.append(position + Vector3(1.0, 1.0, 0.0));
-    vertices.append(position + Vector3(1.0, 1.0, 1.0));
-    vertices.append(position + Vector3(0.0, 1.0, 1.0));
-    add_face_triangles();
-    add_face_uvs(0, id);
+    if (!in_bounds(position + Vector3(0, 1, 0)) || get_block_id_at(position + Vector3(0, 1, 0)) == 0) {
+        vertices.append(position + Vector3(0, 1, 0));
+        vertices.append(position + Vector3(1, 1, 0));
+        vertices.append(position + Vector3(1, 1, 1));
+        vertices.append(position + Vector3(0, 1, 1));
+        add_face_triangles();
+        add_face_uvs(0, id);
+    }
 
     // East
-    vertices.append(position + Vector3(1.0, 1.0, 1.0));
-    vertices.append(position + Vector3(1.0, 1.0, 0.0));
-    vertices.append(position + Vector3(1.0, 0.0, 0.0));
-    vertices.append(position + Vector3(1.0, 0.0, 1.0));
-    add_face_triangles();
-    add_face_uvs(3, id);
+    if (!in_bounds(position + Vector3(1, 0, 0)) || get_block_id_at(position + Vector3(1, 0, 0)) == 0) {
+        vertices.append(position + Vector3(1, 1, 1));
+        vertices.append(position + Vector3(1, 1, 0));
+        vertices.append(position + Vector3(1, 0, 0));
+        vertices.append(position + Vector3(1, 0, 1));
+        add_face_triangles();
+        add_face_uvs(3, id);
+    }
 
     // South
-    vertices.append(position + Vector3(0.0, 1.0, 1.0));
-    vertices.append(position + Vector3(1.0, 1.0, 1.0));
-    vertices.append(position + Vector3(1.0, 0.0, 1.0));
-    vertices.append(position + Vector3(0.0, 0.0, 1.0));
-    add_face_triangles();
-    add_face_uvs(4, id);
+    if (!in_bounds(position + Vector3(0, 0, 1)) || get_block_id_at(position + Vector3(0, 0, 1)) == 0) {
+        vertices.append(position + Vector3(0, 1, 1));
+        vertices.append(position + Vector3(1, 1, 1));
+        vertices.append(position + Vector3(1, 0, 1));
+        vertices.append(position + Vector3(0, 0, 1));
+        add_face_triangles();
+        add_face_uvs(4, id);
+    }
 
     // West
-    vertices.append(position + Vector3(0.0, 1.0, 0.0));
-    vertices.append(position + Vector3(0.0, 1.0, 1.0));
-    vertices.append(position + Vector3(0.0, 0.0, 1.0));
-    vertices.append(position + Vector3(0.0, 0.0, 0.0));
-    add_face_triangles();
-    add_face_uvs(5, id);
+    if (!in_bounds(position + Vector3(-1, 0, 0)) || get_block_id_at(position + Vector3(-1, 0, 0)) == 0) {
+        vertices.append(position + Vector3(0, 1, 0));
+        vertices.append(position + Vector3(0, 1, 1));
+        vertices.append(position + Vector3(0, 0, 1));
+        vertices.append(position + Vector3(0, 0, 0));
+        add_face_triangles();
+        add_face_uvs(5, id);
+    }
 
     // North
-    vertices.append(position + Vector3(1.0, 1.0, 0.0));
-    vertices.append(position + Vector3(0.0, 1.0, 0.0));
-    vertices.append(position + Vector3(0.0, 0.0, 0.0));
-    vertices.append(position + Vector3(1.0, 0.0, 0.0));
-    add_face_triangles();
-    add_face_uvs(2, id);
+    if (!in_bounds(position + Vector3(0, 0, -1)) || get_block_id_at(position + Vector3(0, 0, -1)) == 0) {
+        vertices.append(position + Vector3(1, 1, 0));
+        vertices.append(position + Vector3(0, 1, 0));
+        vertices.append(position + Vector3(0, 0, 0));
+        vertices.append(position + Vector3(1, 0, 0));
+        add_face_triangles();
+        add_face_uvs(2, id);
+    }
 
     // Bottom
-    vertices.append(position + Vector3(0.0, 0.0, 1.0));
-    vertices.append(position + Vector3(1.0, 0.0, 1.0));
-    vertices.append(position + Vector3(1.0, 0.0, 0.0));
-    vertices.append(position + Vector3(0.0, 0.0, 0.0));
-    add_face_triangles();
-    add_face_uvs(1, id);
+    if (!in_bounds(position + Vector3(0, -1, 0)) || get_block_id_at(position + Vector3(0, -1, 0)) == 0) {
+        vertices.append(position + Vector3(0, 0, 1));
+        vertices.append(position + Vector3(1, 0, 1));
+        vertices.append(position + Vector3(1, 0, 0));
+        vertices.append(position + Vector3(0, 0, 0));
+        add_face_triangles();
+        add_face_uvs(1, id);
+    }
 }
 
 void Chunk::generate_chunk() {
     // Generate a pattern for debugging
-    for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
+    for (uint64_t y = 0; y < 32; y++) {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
             for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
+                /*if (x % 2 == 0 || z % 2 == 0 || y % 2 == 0) {
+                    continue;
+                }*/
                 uint64_t idx = x + z * CHUNK_SIZE_X + y * CHUNK_SIZE_Z * CHUNK_SIZE_X;
-                if (x % 2 == 0 && y % 2 == 0) {
-                    blocks[idx] = 1;
-                } else {
-                    blocks[idx] = 0;
-                }
+                blocks[idx] = 1;
             }
         }
     }

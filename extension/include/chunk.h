@@ -13,7 +13,7 @@ private:
     PackedVector2Array uvs;
 
     int64_t face_count = 0;
-    double texture_scale = 1/16.0;
+    double texture_scale = 1/8.0;
 
 protected:
 	static void _bind_methods();
@@ -33,7 +33,11 @@ public:
 	Chunk();
 	~Chunk();
 
+    // Helper methods
     uint64_t get_block_id_at(Vector3 position);
+    uint64_t position_to_index(Vector3 position);
+    Vector3 index_to_position(uint64_t index);
+    bool in_bounds(Vector3 position);
 };
 
 }
