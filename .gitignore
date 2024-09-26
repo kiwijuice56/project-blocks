@@ -7,3 +7,6 @@
 *.exp
 *.obj
 *.lib
+
+# Other junk
+*.tmp

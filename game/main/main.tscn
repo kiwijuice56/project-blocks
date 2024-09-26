@@ -1,0 +1,28 @@
+[gd_scene load_steps=6 format=3 uid="uid://dtav4pssg0xe2"]
+
+[ext_resource type="Script" path="res://main/test_camera.gd" id="1_a3t5p"]
+[ext_resource type="Script" path="res://main/test_chunk.gd" id="1_jito1"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5nuc0"]
+
+[sub_resource type="Sky" id="Sky_kpkms"]
+sky_material = SubResource("ProceduralSkyMaterial_5nuc0")
+
+[sub_resource type="Environment" id="Environment_xd4t2"]
+background_mode = 2
+sky = SubResource("Sky_kpkms")
+
+[node name="Main" type="Node"]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 2, 2)
+script = ExtResource("1_a3t5p")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.123324, 0.693791, 0.709539, -0.255321, -0.71311, 0.652905, 0.958959, -0.100642, 0.265082, 0, 0, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_xd4t2")
+
+[node name="TextChunk" type="Chunk" parent="."]
+script = ExtResource("1_jito1")
