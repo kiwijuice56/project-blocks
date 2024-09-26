@@ -6,7 +6,7 @@
 using namespace godot;
 
 void Chunk::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("generate_cube"), &Chunk::generate_cube);
+    ClassDB::bind_method(D_METHOD("generate_cube", "position"), &Chunk::generate_cube);
     ClassDB::bind_method(D_METHOD("generate_mesh"), &Chunk::generate_mesh);
 }
 
@@ -20,8 +20,7 @@ Chunk::~Chunk() {
 
 }
 
-
-void Chunk::add_face_uvs(int x, int y) {
+void Chunk::add_face_uvs(int64_t x, int64_t y) {
     uvs.append(Vector2(texture_scale * x, texture_scale * y));
 	uvs.append(Vector2(texture_scale * x + texture_scale, texture_scale * y));
 	uvs.append(Vector2(texture_scale * x + texture_scale, texture_scale * y + texture_scale));

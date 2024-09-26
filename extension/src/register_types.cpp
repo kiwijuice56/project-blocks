@@ -1,6 +1,9 @@
 #include "../include/register_types.h"
 
 #include "../include/chunk.h"
+#include "../include/world.h"
+#include "../include/block.h"
+
 
 #include <gdextension_interface.h>
 #include <godot_cpp/core/defs.hpp>
@@ -13,7 +16,9 @@ void initialize_gdblocks_module(ModuleInitializationLevel p_level) {
 		return;
 	}
 
+	GDREGISTER_CLASS(Block);
 	GDREGISTER_CLASS(Chunk);
+	GDREGISTER_CLASS(World);
 }
 
 void uninitialize_gdblocks_module(ModuleInitializationLevel p_level) {

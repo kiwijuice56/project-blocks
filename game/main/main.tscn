@@ -26,3 +26,5 @@ environment = SubResource("Environment_xd4t2")
 
 [node name="TextChunk" type="Chunk" parent="."]
 script = ExtResource("1_jito1")
+
+[node name="World" type="World" parent="."]

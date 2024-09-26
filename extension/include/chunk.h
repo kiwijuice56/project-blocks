@@ -19,7 +19,7 @@ protected:
 	static void _bind_methods();
 
     void generate_cube(Vector3 position);
-    void add_face_uvs(int x, int y);
+    void add_face_uvs(int64_t x, int64_t y);
     void add_face_triangles();
     void generate_mesh();
 
