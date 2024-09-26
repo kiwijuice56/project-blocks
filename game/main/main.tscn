@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=9 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/test_camera.gd" id="1_a3t5p"]
 [ext_resource type="Script" path="res://main/test_chunk.gd" id="1_jito1"]
@@ -11,6 +11,13 @@ sky_material = SubResource("ProceduralSkyMaterial_5nuc0")
 [sub_resource type="Environment" id="Environment_xd4t2"]
 background_mode = 2
 sky = SubResource("Sky_kpkms")
+
+[sub_resource type="Block" id="Block_vp50h"]
+
+[sub_resource type="Block" id="Block_fv4tx"]
+id = 2104533975042
+
+[sub_resource type="Block" id="Block_h7jek"]
 
 [node name="Main" type="Node"]
 
@@ -28,3 +35,4 @@ environment = SubResource("Environment_xd4t2")
 script = ExtResource("1_jito1")
 
 [node name="World" type="World" parent="."]
+block_types = Array[Block]([SubResource("Block_vp50h"), SubResource("Block_fv4tx"), SubResource("Block_h7jek")])
