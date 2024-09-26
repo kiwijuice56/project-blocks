@@ -12,30 +12,28 @@ private:
     PackedInt32Array indices;
     PackedVector2Array uvs;
 
-    int face_count = 0;
-    float texture_scale = 0.125;
+    int64_t face_count = 0;
+    double texture_scale = 1/16.0;
 
 protected:
 	static void _bind_methods();
 
-
-
-    void add_face_uvs(int64_t x, int64_t y);
+    void add_face_uvs(uint64_t x, uint64_t y);
     void add_face_triangles();
 
-    void generate_cube(Vector3 position);
+    void generate_block(uint64_t id, Vector3i position);
     void generate_chunk();
     void generate_mesh();
 
 public:
-    const int CHUNK_SIZE_X = 16;
-    const int CHUNK_SIZE_Y = 128;
-    const int CHUNK_SIZE_Z = 16;
+    const uint64_t CHUNK_SIZE_X = 16;
+    const uint64_t CHUNK_SIZE_Y = 128;
+    const uint64_t CHUNK_SIZE_Z = 16;
 
 	Chunk();
 	~Chunk();
 
-    int64_t get_block_id_at(Vector3 position);
+    uint64_t get_block_id_at(Vector3 position);
 };
 
 }

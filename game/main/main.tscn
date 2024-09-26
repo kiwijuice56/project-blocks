@@ -21,18 +21,18 @@ id = 2104533975042
 
 [node name="Main" type="Node"]
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="TestCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 2, 2)
 script = ExtResource("1_a3t5p")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.123324, 0.693791, 0.709539, -0.255321, -0.71311, 0.652905, 0.958959, -0.100642, 0.265082, 0, 0, 0)
+transform = Transform3D(-0.0837151, 0.11017, 0.990381, -0.254979, -0.963151, 0.0855875, 0.963316, -0.245362, 0.108721, 0, 0, 0)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_xd4t2")
 
-[node name="TextChunk" type="Chunk" parent="."]
-script = ExtResource("1_jito1")
-
 [node name="World" type="World" parent="."]
 block_types = Array[Block]([SubResource("Block_vp50h"), SubResource("Block_fv4tx"), SubResource("Block_h7jek")])
+
+[node name="TestChunk" type="Chunk" parent="."]
+script = ExtResource("1_jito1")

@@ -25,14 +25,14 @@ Block::~Block() {
 
 }
 
-int64_t Block::get_id() const {
+uint64_t Block::get_id() const {
     return id;
 }
 
-void Block::set_id(int64_t new_id) {
+void Block::set_id(uint64_t new_id) {
     id = new_id;
 }
 
-void Block::simulate(int64_t state) {
+void Block::simulate(uint64_t state) {
 
 }
