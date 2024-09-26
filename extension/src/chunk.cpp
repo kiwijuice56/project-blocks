@@ -15,6 +15,7 @@ Chunk::Chunk() {
     vertices = PackedVector3Array();
     indices = PackedInt32Array();
     uvs = PackedVector2Array();
+    normals = PackedVector3Array();
 
     blocks = PackedInt64Array();
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
@@ -69,8 +70,13 @@ void Chunk::generate_block(uint64_t id, Vector3i position) {
         vertices.append(position + Vector3(1, 1, 0));
         vertices.append(position + Vector3(1, 1, 1));
         vertices.append(position + Vector3(0, 1, 1));
+
         add_face_triangles();
         add_face_uvs(0, id);
+
+        for (int i = 0; i < 4; i++) {
+            normals.append(Vector3(0, 1, 0));
+        }
     }
 
     // East
@@ -81,6 +87,10 @@ void Chunk::generate_block(uint64_t id, Vector3i position) {
         vertices.append(position + Vector3(1, 0, 1));
         add_face_triangles();
         add_face_uvs(3, id);
+
+        for (int i = 0; i < 4; i++) {
+            normals.append(Vector3(1, 0, 0));
+        }
     }
 
     // South
@@ -91,6 +101,10 @@ void Chunk::generate_block(uint64_t id, Vector3i position) {
         vertices.append(position + Vector3(0, 0, 1));
         add_face_triangles();
         add_face_uvs(4, id);
+
+        for (int i = 0; i < 4; i++) {
+            normals.append(Vector3(0, 0, 1));
+        }
     }
 
     // West
@@ -101,6 +115,10 @@ void Chunk::generate_block(uint64_t id, Vector3i position) {
         vertices.append(position + Vector3(0, 0, 0));
         add_face_triangles();
         add_face_uvs(5, id);
+
+        for (int i = 0; i < 4; i++) {
+            normals.append(Vector3(-1, 0, 0));
+        }
     }
 
     // North
@@ -111,6 +129,10 @@ void Chunk::generate_block(uint64_t id, Vector3i position) {
         vertices.append(position + Vector3(1, 0, 0));
         add_face_triangles();
         add_face_uvs(2, id);
+
+        for (int i = 0; i < 4; i++) {
+            normals.append(Vector3(0, 0, -1));
+        }
     }
 
     // Bottom
@@ -121,17 +143,21 @@ void Chunk::generate_block(uint64_t id, Vector3i position) {
         vertices.append(position + Vector3(0, 0, 0));
         add_face_triangles();
         add_face_uvs(1, id);
+
+        for (int i = 0; i < 4; i++) {
+            normals.append(Vector3(0, -1, 0));
+        }
     }
 }
 
 void Chunk::generate_chunk() {
     // Generate a pattern for debugging
-    for (uint64_t y = 0; y < 32; y++) {
+    for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
             for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
-                /*if (x % 2 == 0 || z % 2 == 0 || y % 2 == 0) {
+                if (x % 2 == 0 || z % 2 == 0 || y % 2 == 0) {
                     continue;
-                }*/
+                }
                 uint64_t idx = x + z * CHUNK_SIZE_X + y * CHUNK_SIZE_Z * CHUNK_SIZE_X;
                 blocks[idx] = 1;
             }
@@ -157,6 +183,7 @@ void Chunk::generate_mesh() {
     arrays[ArrayMesh::ARRAY_VERTEX] = vertices;
     arrays[ArrayMesh::ARRAY_INDEX] = indices;
     arrays[ArrayMesh::ARRAY_TEX_UV] = uvs;
+    arrays[ArrayMesh::ARRAY_NORMAL] = normals;
 
     Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
 

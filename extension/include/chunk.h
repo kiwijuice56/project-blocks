@@ -11,6 +11,8 @@ private:
     PackedVector3Array vertices;
     PackedInt32Array indices;
     PackedVector2Array uvs;
+    PackedVector3Array normals;
+
 
     int64_t face_count = 0;
     double texture_scale = 1/8.0;
