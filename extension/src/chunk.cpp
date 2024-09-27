@@ -62,107 +62,98 @@ bool Chunk::in_bounds(Vector3 position) {
 }
 
 void Chunk::add_face_uvs(uint64_t x, uint64_t y) {
-    uvs.append(Vector2(texture_scale * x, texture_scale * y));
-	uvs.append(Vector2(texture_scale * x + texture_scale, texture_scale * y));
-	uvs.append(Vector2(texture_scale * x + texture_scale, texture_scale * y + texture_scale));
-	uvs.append(Vector2(texture_scale * x, texture_scale * y + texture_scale));
+    uvs[face_count * 4 + 0] = Vector2(texture_scale * x, texture_scale * y);
+	uvs[face_count * 4 + 1] = Vector2(texture_scale * x + texture_scale, texture_scale * y);
+	uvs[face_count * 4 + 2] = Vector2(texture_scale * x + texture_scale, texture_scale * y + texture_scale);
+	uvs[face_count * 4 + 3] = Vector2(texture_scale * x, texture_scale * y + texture_scale);
+}
+
+void Chunk::add_face_normals(Vector3 normal) {
+    for (int i = 0; i < 4; i++) {
+        normals[face_count * 4 + i] = normal;
+    }
 }
 
 void Chunk::add_face_triangles() {
-    indices.append(face_count * 4 + 0);
-    indices.append(face_count * 4 + 1);
-    indices.append(face_count * 4 + 2);
-    indices.append(face_count * 4 + 0);
-    indices.append(face_count * 4 + 2);
-    indices.append(face_count * 4 + 3);
-
-    face_count++;
+    indices[face_count * 6 + 0] = face_count * 4 + 0;
+    indices[face_count * 6 + 1] = face_count * 4 + 1;
+    indices[face_count * 6 + 2] = face_count * 4 + 2;
+    indices[face_count * 6 + 3] = face_count * 4 + 0;
+    indices[face_count * 6 + 4] = face_count * 4 + 2;
+    indices[face_count * 6 + 5] = face_count * 4 + 3;
 }
 
 void Chunk::generate_block_faces(uint64_t id, Vector3i position) {
     // Top
     if (!in_bounds(position + Vector3(0, 1, 0)) || get_block_id_at(position + Vector3(0, 1, 0)) == 0) {
-        vertices.append(position + Vector3(0, 1, 0));
-        vertices.append(position + Vector3(1, 1, 0));
-        vertices.append(position + Vector3(1, 1, 1));
-        vertices.append(position + Vector3(0, 1, 1));
-
-        add_face_triangles();
+        vertices[face_count * 4 + 0] = position + Vector3(0, 1, 0);
+        vertices[face_count * 4 + 1] = position + Vector3(1, 1, 0);
+        vertices[face_count * 4 + 2] = position + Vector3(1, 1, 1);
+        vertices[face_count * 4 + 3] = position + Vector3(0, 1, 1);
         add_face_uvs(0, id);
-
-        for (int i = 0; i < 4; i++) {
-            normals.append(Vector3(0, 1, 0));
-        }
+        add_face_triangles();
+        add_face_normals(Vector3(0, 1, 0));
+        face_count++;
     }
 
     // East
     if (!in_bounds(position + Vector3(1, 0, 0)) || get_block_id_at(position + Vector3(1, 0, 0)) == 0) {
-        vertices.append(position + Vector3(1, 1, 1));
-        vertices.append(position + Vector3(1, 1, 0));
-        vertices.append(position + Vector3(1, 0, 0));
-        vertices.append(position + Vector3(1, 0, 1));
+        vertices[face_count * 4 + 0] = position + Vector3(1, 1, 1);
+        vertices[face_count * 4 + 1] = position + Vector3(1, 1, 0);
+        vertices[face_count * 4 + 2] = position + Vector3(1, 0, 0);
+        vertices[face_count * 4 + 3] = position + Vector3(1, 0, 1);
         add_face_triangles();
         add_face_uvs(3, id);
-
-        for (int i = 0; i < 4; i++) {
-            normals.append(Vector3(1, 0, 0));
-        }
+        add_face_normals(Vector3(1, 0, 0));
+        face_count++;
     }
 
     // South
     if (!in_bounds(position + Vector3(0, 0, 1)) || get_block_id_at(position + Vector3(0, 0, 1)) == 0) {
-        vertices.append(position + Vector3(0, 1, 1));
-        vertices.append(position + Vector3(1, 1, 1));
-        vertices.append(position + Vector3(1, 0, 1));
-        vertices.append(position + Vector3(0, 0, 1));
+        vertices[face_count * 4 + 0] = position + Vector3(0, 1, 1);
+        vertices[face_count * 4 + 1] = position + Vector3(1, 1, 1);
+        vertices[face_count * 4 + 2] = position + Vector3(1, 0, 1);
+        vertices[face_count * 4 + 3] = position + Vector3(0, 0, 1);
         add_face_triangles();
         add_face_uvs(4, id);
-
-        for (int i = 0; i < 4; i++) {
-            normals.append(Vector3(0, 0, 1));
-        }
+        add_face_normals(Vector3(0, 0, 1));
+        face_count++;
     }
 
     // West
     if (!in_bounds(position + Vector3(-1, 0, 0)) || get_block_id_at(position + Vector3(-1, 0, 0)) == 0) {
-        vertices.append(position + Vector3(0, 1, 0));
-        vertices.append(position + Vector3(0, 1, 1));
-        vertices.append(position + Vector3(0, 0, 1));
-        vertices.append(position + Vector3(0, 0, 0));
+        vertices[face_count * 4 + 0] = position + Vector3(0, 1, 0);
+        vertices[face_count * 4 + 1] = position + Vector3(0, 1, 1);
+        vertices[face_count * 4 + 2] = position + Vector3(0, 0, 1);
+        vertices[face_count * 4 + 3] = position + Vector3(0, 0, 0);
         add_face_triangles();
         add_face_uvs(5, id);
-
-        for (int i = 0; i < 4; i++) {
-            normals.append(Vector3(-1, 0, 0));
-        }
+        add_face_normals(Vector3(-1, 0, 0));
+        face_count++;
     }
 
     // North
     if (!in_bounds(position + Vector3(0, 0, -1)) || get_block_id_at(position + Vector3(0, 0, -1)) == 0) {
-        vertices.append(position + Vector3(1, 1, 0));
-        vertices.append(position + Vector3(0, 1, 0));
-        vertices.append(position + Vector3(0, 0, 0));
-        vertices.append(position + Vector3(1, 0, 0));
+        vertices[face_count * 4 + 0] = position + Vector3(1, 1, 0);
+        vertices[face_count * 4 + 1] = position + Vector3(0, 1, 0);
+        vertices[face_count * 4 + 2] = position + Vector3(0, 0, 0);
+        vertices[face_count * 4 + 3] = position + Vector3(1, 0, 0);
         add_face_triangles();
         add_face_uvs(2, id);
-
-        for (int i = 0; i < 4; i++) {
-            normals.append(Vector3(0, 0, -1));
-        }
+        add_face_normals(Vector3(0, 0, -1));
+        face_count++;
     }
 
     // Bottom
     if (!in_bounds(position + Vector3(0, -1, 0)) || get_block_id_at(position + Vector3(0, -1, 0)) == 0) {
-        vertices.append(position + Vector3(0, 0, 1));
-        vertices.append(position + Vector3(1, 0, 1));
-        vertices.append(position + Vector3(1, 0, 0));
-        vertices.append(position + Vector3(0, 0, 0));
+        vertices[face_count * 4 + 0] = position + Vector3(0, 0, 1);
+        vertices[face_count * 4 + 1] = position + Vector3(1, 0, 1);
+        vertices[face_count * 4 + 2] = position + Vector3(1, 0, 0);
+        vertices[face_count * 4 + 3] = position + Vector3(0, 0, 0);
         add_face_triangles();
         add_face_uvs(1, id);
-
-        for (int i = 0; i < 4; i++) {
-            normals.append(Vector3(0, -1, 0));
-        }
+        add_face_normals(Vector3(0, -1, 0));
+        face_count++;
     }
 }
 
@@ -174,8 +165,8 @@ void Chunk::generate_chunk() {
                 if (y > 10 && (x % 2 == 0 || z % 2 == 0)) {
                     continue;
                 }
-                int64_t idx = x + z * CHUNK_SIZE_X + y * CHUNK_SIZE_Z * CHUNK_SIZE_X;
-                blocks[idx] = 1;
+                blocks[position_to_index(Vector3(x, y, z))] = 1;
+                block_count++;
                 max_y = std::max(max_y, y);
             }
         }
@@ -183,10 +174,19 @@ void Chunk::generate_chunk() {
 }
 
 void Chunk::generate_mesh() {
+    // Resize mesh data arrays to upper bounds of their sizes before culling
+    // Drastically improves performance due to not needing to resize arrays constantly
     vertices = PackedVector3Array();
+    vertices.resize(4 * 6 * block_count);
+
     indices = PackedInt32Array();
+    indices.resize(6 * 6 * block_count);
+
     uvs = PackedVector2Array();
+    uvs.resize(4 * 6 * block_count);
+
     normals = PackedVector3Array();
+    normals.resize(4 * 6 * block_count);
 
     face_count = 0;
 
@@ -202,17 +202,21 @@ void Chunk::generate_mesh() {
         }
     }
 
+    // Trim off excess data
+    vertices.resize(4 * face_count);
+    indices.resize(6 * face_count);
+    uvs.resize(4 * face_count);
+    normals.resize(4 * face_count);
+
+    // Package data into an ArrayMesh
     Array arrays;
     arrays.resize(ArrayMesh::ARRAY_MAX);
-
     arrays[ArrayMesh::ARRAY_VERTEX] = vertices;
     arrays[ArrayMesh::ARRAY_INDEX] = indices;
     arrays[ArrayMesh::ARRAY_TEX_UV] = uvs;
     arrays[ArrayMesh::ARRAY_NORMAL] = normals;
 
     Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
-
     array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
-
     set_mesh(array_mesh);
 }

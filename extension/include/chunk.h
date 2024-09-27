@@ -18,6 +18,7 @@ private:
 
     uint64_t id = 0;
     uint64_t face_count = 0;
+    uint64_t block_count = 0;
     // Easy optimization: skip checking blocks above the maximum non-empty Y,
     // as most chunks have huge spaces of empty air over them
     uint64_t max_y = 0;
@@ -28,6 +29,7 @@ protected:
 	static void _bind_methods();
 
     void add_face_uvs(uint64_t x, uint64_t y);
+    void add_face_normals(Vector3 normal);
     void add_face_triangles();
     void generate_block_faces(uint64_t id, Vector3i position);
 
