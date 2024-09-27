@@ -6,7 +6,6 @@
 using namespace godot;
 
 void Chunk::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("generate_block", "id", "position"), &Chunk::generate_block);
     ClassDB::bind_method(D_METHOD("generate_chunk"), &Chunk::generate_chunk);
     ClassDB::bind_method(D_METHOD("generate_mesh"), &Chunk::generate_mesh);
 }
@@ -63,7 +62,7 @@ void Chunk::add_face_triangles() {
     face_count++;
 }
 
-void Chunk::generate_block(uint64_t id, Vector3i position) {
+void Chunk::generate_block_faces(uint64_t id, Vector3i position) {
     // Top
     if (!in_bounds(position + Vector3(0, 1, 0)) || get_block_id_at(position + Vector3(0, 1, 0)) == 0) {
         vertices.append(position + Vector3(0, 1, 0));
@@ -163,20 +162,28 @@ void Chunk::generate_chunk() {
             }
         }
     }
+}
+
+void Chunk::generate_mesh() {
+    vertices = PackedVector3Array();
+    indices = PackedInt32Array();
+    uvs = PackedVector2Array();
+    normals = PackedVector3Array();
+
+    face_count = 0;
+
     // Generate a block mesh for all blocks
     for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
             for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
                 uint64_t id = get_block_id_at(Vector3(x, y, z));
                 if (id != 0) {
-                    generate_block(id, Vector3i(x, y, z));
+                    generate_block_faces(id, Vector3i(x, y, z));
                 }
             }
         }
     }
-}
 
-void Chunk::generate_mesh() {
     Array arrays;
     arrays.resize(ArrayMesh::ARRAY_MAX);
 

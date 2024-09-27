@@ -22,10 +22,11 @@ protected:
 
     void add_face_uvs(uint64_t x, uint64_t y);
     void add_face_triangles();
-
-    void generate_block(uint64_t id, Vector3i position);
-    void generate_chunk();
+    void generate_block_faces(uint64_t id, Vector3i position);
     void generate_mesh();
+
+    void generate_chunk();
+
 
 public:
     const uint64_t CHUNK_SIZE_X = 16;
