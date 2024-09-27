@@ -6,7 +6,7 @@
 using namespace godot;
 
 void Chunk::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("generate_chunk"), &Chunk::generate_chunk);
+    ClassDB::bind_method(D_METHOD("generate_data"), &Chunk::generate_data);
     ClassDB::bind_method(D_METHOD("generate_mesh"), &Chunk::generate_mesh);
 }
 
@@ -157,12 +157,13 @@ void Chunk::generate_block_faces(uint64_t id, Vector3i position) {
     }
 }
 
-void Chunk::generate_chunk() {
+void Chunk::generate_data() {
     // Generate a pattern for debugging
     for (uint64_t y = 0; y < 16; y++) {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
             for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
-                if (y > 10 && (x % 2 == 0 || z % 2 == 0)) {
+                uint64_t tree_limit = std::rand() % 16;
+                if (y > 3 && (y > tree_limit || x % 2 == 0 || z % 2 == 0)) {
                     continue;
                 }
                 blocks[position_to_index(Vector3(x, y, z))] = 1;

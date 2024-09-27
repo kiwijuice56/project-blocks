@@ -28,12 +28,14 @@ private:
 protected:
 	static void _bind_methods();
 
+    // Helper methods to generate chunk mesh
     void add_face_uvs(uint64_t x, uint64_t y);
     void add_face_normals(Vector3 normal);
     void add_face_triangles();
     void generate_block_faces(uint64_t id, Vector3i position);
 
 public:
+    // The dimensions of individual chunks
     static const int64_t CHUNK_SIZE_X = 16;
     static const int64_t CHUNK_SIZE_Y = 128;
     static const int64_t CHUNK_SIZE_Z = 16;
@@ -48,9 +50,9 @@ public:
     void set_block_material(Ref<Material> new_material);
 
     void generate_mesh();
-    void generate_chunk();
+    void generate_data();
 
-    // Helper methods
+    // Helper methods to access data
     uint64_t get_block_id_at(Vector3 position);
     uint64_t position_to_index(Vector3 position);
     Vector3 index_to_position(uint64_t index);

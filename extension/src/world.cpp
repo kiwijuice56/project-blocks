@@ -96,7 +96,7 @@ void World::generate_chunk(Vector3i coordinate) {
         add_child(Object::cast_to<Node>(stored_chunks[coordinate]));
     } else {
         Chunk* new_chunk = memnew(Chunk);
-        new_chunk->generate_chunk();
+        new_chunk->generate_data();
         new_chunk->generate_mesh();
         new_chunk->set_block_material(block_material);
 
@@ -114,12 +114,13 @@ void World::update_loaded_region() {
     for (uint64_t i = 0; i < get_child_count(); i++) {
         Chunk* chunk = Object::cast_to<Chunk>(get_child(i));
         if (!is_chunk_in_loaded_region(Vector3i(chunk->get_position()))) {
-            i -= 1;
+            i--; // We do not want to skip over children when we remove one
             remove_child(chunk);
         } else {
             loaded[Vector3i(chunk->get_position())] = true;
         }
     }
+    // Loop through the circular region around the center and generate chunks
     for (int64_t chunk_x = -(load_radius / Chunk::CHUNK_SIZE_X); chunk_x <= load_radius / Chunk::CHUNK_SIZE_X; chunk_x++) {
         for (int64_t chunk_z = -(load_radius / Chunk::CHUNK_SIZE_Z); chunk_z <= load_radius / Chunk::CHUNK_SIZE_Z; chunk_z++) {
             Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * chunk_x, 0, Chunk::CHUNK_SIZE_Z * chunk_z) + center_chunk;
