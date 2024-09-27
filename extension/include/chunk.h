@@ -25,9 +25,9 @@ protected:
     void generate_block_faces(uint64_t id, Vector3i position);
 
 public:
-    static const uint64_t CHUNK_SIZE_X = 16;
-    static const uint64_t CHUNK_SIZE_Y = 128;
-    static const uint64_t CHUNK_SIZE_Z = 16;
+    static const int64_t CHUNK_SIZE_X = 16;
+    static const int64_t CHUNK_SIZE_Y = 128;
+    static const int64_t CHUNK_SIZE_Z = 16;
 
 	Chunk();
 	~Chunk();

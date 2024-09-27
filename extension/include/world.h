@@ -12,13 +12,12 @@ class World : public Node3D {
 	GDCLASS(World, Node3D)
 
 private:
-	int64_t load_radius = 4;
+	int64_t load_radius = 80;
 	TypedArray<Block> block_types;
 
 	Vector3 center;
 	Vector3i center_chunk;
 
-	// std::unordered_map<uint64_t, Chunk*> stored_chunks;
 	Dictionary stored_chunks;
 
 protected:
@@ -26,6 +25,8 @@ protected:
 
 	void generate_chunk(Vector3i coordinate);
 	void update_loaded_region();
+
+	bool is_chunk_in_loaded_region(Vector3i coordinate);
 
 public:
 	World();

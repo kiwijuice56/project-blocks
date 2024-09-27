@@ -159,9 +159,12 @@ void Chunk::generate_block_faces(uint64_t id, Vector3i position) {
 
 void Chunk::generate_chunk() {
     // Generate a pattern for debugging
-    for (uint64_t y = 0; y < 16; y++) {
+    for (uint64_t y = 0; y < 22; y++) {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
             for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
+                if (y > 16 && (x % 2 == 0 || z % 2 == 0)) {
+                    continue;
+                }
                 uint64_t idx = x + z * CHUNK_SIZE_X + y * CHUNK_SIZE_Z * CHUNK_SIZE_X;
                 blocks[idx] = 1;
             }
