@@ -13,8 +13,8 @@ private:
     PackedVector2Array uvs;
     PackedVector3Array normals;
 
-
-    int64_t face_count = 0;
+    uint64_t id = 0;
+    uint64_t face_count = 0;
     double texture_scale = 1/8.0;
 
 protected:
@@ -23,18 +23,20 @@ protected:
     void add_face_uvs(uint64_t x, uint64_t y);
     void add_face_triangles();
     void generate_block_faces(uint64_t id, Vector3i position);
-    void generate_mesh();
-
-    void generate_chunk();
-
 
 public:
-    const uint64_t CHUNK_SIZE_X = 16;
-    const uint64_t CHUNK_SIZE_Y = 128;
-    const uint64_t CHUNK_SIZE_Z = 16;
+    static const uint64_t CHUNK_SIZE_X = 16;
+    static const uint64_t CHUNK_SIZE_Y = 128;
+    static const uint64_t CHUNK_SIZE_Z = 16;
 
 	Chunk();
 	~Chunk();
+
+    uint64_t get_id() const;
+	void set_id(uint64_t new_id);
+
+    void generate_mesh();
+    void generate_chunk();
 
     // Helper methods
     uint64_t get_block_id_at(Vector3 position);
