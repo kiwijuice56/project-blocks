@@ -1,12 +1,15 @@
 #pragma once
 
 #include <godot_cpp/classes/mesh_instance3d.hpp>
+#include <godot_cpp/classes/material.hpp>
 
 namespace godot {
 class Chunk : public MeshInstance3D {
 	GDCLASS(Chunk, MeshInstance3D)
 
 private:
+    Ref<Material> block_material;
+
     PackedInt64Array blocks;
     PackedVector3Array vertices;
     PackedInt32Array indices;
@@ -15,7 +18,11 @@ private:
 
     uint64_t id = 0;
     uint64_t face_count = 0;
+    // Easy optimization: skip checking blocks above the maximum non-empty Y,
+    // as most chunks have huge spaces of empty air over them
+    uint64_t max_y = 0;
     double texture_scale = 1/8.0;
+
 
 protected:
 	static void _bind_methods();
@@ -34,6 +41,9 @@ public:
 
     uint64_t get_id() const;
 	void set_id(uint64_t new_id);
+
+    Ref<Material> get_block_material() const;
+    void set_block_material(Ref<Material> new_material);
 
     void generate_mesh();
     void generate_chunk();

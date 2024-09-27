@@ -12,6 +12,10 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_center"), &World::get_center);
 	ClassDB::bind_method(D_METHOD("set_center", "new_center"), &World::set_center);
 
+    ClassDB::bind_method(D_METHOD("get_block_material"), &World::get_block_material);
+	ClassDB::bind_method(D_METHOD("set_block_material", "new_material"), &World::set_block_material);
+
+
     ClassDB::add_property(
         "World",
         PropertyInfo(
@@ -30,6 +34,18 @@ void World::_bind_methods() {
         "set_center",
         "get_center"
     );
+
+    ClassDB::add_property(
+        "World",
+        PropertyInfo(
+            Variant::OBJECT,
+            "block_material",
+            PROPERTY_HINT_RESOURCE_TYPE,
+            "Material"
+        ),
+        "set_block_material",
+        "get_block_material"
+    );
 }
 
 World::World() {
@@ -47,6 +63,15 @@ void World::set_block_types(TypedArray<Block> new_block_types) {
 TypedArray<Block> World::get_block_types() const {
     return block_types;
 }
+
+Ref<Material> World::get_block_material() const {
+    return block_material;
+}
+
+void World::set_block_material(Ref<Material> new_material) {
+    block_material = new_material;
+}
+
 
 Vector3 World::get_center() const {
     return center;
@@ -73,6 +98,7 @@ void World::generate_chunk(Vector3i coordinate) {
         Chunk* new_chunk = memnew(Chunk);
         new_chunk->generate_chunk();
         new_chunk->generate_mesh();
+        new_chunk->set_block_material(block_material);
 
         add_child(new_chunk);
 

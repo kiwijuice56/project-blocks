@@ -5,6 +5,7 @@
 #include "../include/chunk.h"
 
 #include <godot_cpp/classes/node3d.hpp>
+#include <godot_cpp/classes/material.hpp>
 
 namespace godot {
 
@@ -14,6 +15,7 @@ class World : public Node3D {
 private:
 	int64_t load_radius = 80;
 	TypedArray<Block> block_types;
+	Ref<Material> block_material;
 
 	Vector3 center;
 	Vector3i center_chunk;
@@ -34,6 +36,9 @@ public:
 
 	TypedArray<Block> get_block_types() const;
     void set_block_types(const TypedArray<Block> new_block_types);
+
+	Ref<Material> get_block_material() const;
+    void set_block_material(Ref<Material> new_material);
 
 	Vector3 get_center() const;
 	void set_center(Vector3 new_center);

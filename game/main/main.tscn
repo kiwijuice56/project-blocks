@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=10 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/test_camera.gd" id="1_a3t5p"]
 [ext_resource type="Script" path="res://main/test_world.gd" id="2_a1wpy"]
+[ext_resource type="Material" uid="uid://c7r8keroog61x" path="res://main/block_material.tres" id="2_dpxoa"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5nuc0"]
 sky_top_color = Color(0.380392, 0.52549, 0.733333, 1)
@@ -18,8 +19,9 @@ sky_material = SubResource("ProceduralSkyMaterial_5nuc0")
 background_mode = 1
 background_color = Color(0.380392, 0.52549, 0.733333, 1)
 sky = SubResource("Sky_kpkms")
+fog_enabled = true
 fog_light_color = Color(0.380392, 0.52549, 0.733333, 1)
-fog_density = 0.05
+fog_density = 0.07
 
 [sub_resource type="Block" id="Block_vp50h"]
 
@@ -43,4 +45,5 @@ environment = SubResource("Environment_xd4t2")
 
 [node name="TestWorld" type="World" parent="."]
 block_types = Array[Block]([SubResource("Block_vp50h"), SubResource("Block_fv4tx"), SubResource("Block_h7jek")])
+block_material = ExtResource("2_dpxoa")
 script = ExtResource("2_a1wpy")

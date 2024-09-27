@@ -32,6 +32,15 @@ void Chunk::set_id(uint64_t new_id) {
     id = new_id;
 }
 
+Ref<Material> Chunk::get_block_material() const {
+    return block_material;
+}
+
+void Chunk::set_block_material(Ref<Material> new_material) {
+    block_material = new_material;
+    set_material_override(block_material);
+}
+
 uint64_t Chunk::get_block_id_at(Vector3 position) {
     uint64_t index = int(position.x) + int(position.z) * CHUNK_SIZE_X + int(position.y) * CHUNK_SIZE_Z * CHUNK_SIZE_X;
     return blocks[index];
@@ -159,14 +168,15 @@ void Chunk::generate_block_faces(uint64_t id, Vector3i position) {
 
 void Chunk::generate_chunk() {
     // Generate a pattern for debugging
-    for (uint64_t y = 0; y < 22; y++) {
+    for (uint64_t y = 0; y < 16; y++) {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
             for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
-                if (y > 16 && (x % 2 == 0 || z % 2 == 0)) {
+                if (y > 10 && (x % 2 == 0 || z % 2 == 0)) {
                     continue;
                 }
-                uint64_t idx = x + z * CHUNK_SIZE_X + y * CHUNK_SIZE_Z * CHUNK_SIZE_X;
+                int64_t idx = x + z * CHUNK_SIZE_X + y * CHUNK_SIZE_Z * CHUNK_SIZE_X;
                 blocks[idx] = 1;
+                max_y = std::max(max_y, y);
             }
         }
     }
@@ -181,7 +191,7 @@ void Chunk::generate_mesh() {
     face_count = 0;
 
     // Generate a block mesh for all blocks
-    for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
+    for (uint64_t y = 0; y <= max_y; y++) {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
             for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
                 uint64_t id = get_block_id_at(Vector3(x, y, z));
