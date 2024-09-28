@@ -15,6 +15,7 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_block_material"), &World::get_block_material);
 	ClassDB::bind_method(D_METHOD("set_block_material", "new_material"), &World::set_block_material);
 
+    ClassDB::bind_method(D_METHOD("generate_from_queue", "n"), &World::generate_from_queue);
 
     ClassDB::add_property(
         "World",
@@ -50,6 +51,7 @@ void World::_bind_methods() {
 
 World::World() {
     stored_chunks = Dictionary();
+    is_chunk_in_queue = Dictionary();
 }
 
 World::~World() {
@@ -110,7 +112,7 @@ void World::generate_chunk(Vector3i coordinate) {
 }
 
 void World::update_loaded_region() {
-    Dictionary loaded = Dictionary();
+    is_chunk_loaded = Dictionary();
 
     for (uint64_t i = 0; i < get_child_count(); i++) {
         Chunk* chunk = Object::cast_to<Chunk>(get_child(i));
@@ -118,18 +120,35 @@ void World::update_loaded_region() {
             i--; // We do not want to skip over children when we remove one
             remove_child(chunk);
         } else {
-            loaded[Vector3i(chunk->get_position())] = true;
+            is_chunk_loaded[Vector3i(chunk->get_position())] = true;
         }
     }
     // Loop through the circular region around the center and generate chunks
     for (int64_t chunk_x = -(load_radius / Chunk::CHUNK_SIZE_X); chunk_x <= load_radius / Chunk::CHUNK_SIZE_X; chunk_x++) {
         for (int64_t chunk_z = -(load_radius / Chunk::CHUNK_SIZE_Z); chunk_z <= load_radius / Chunk::CHUNK_SIZE_Z; chunk_z++) {
             Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * chunk_x, 0, Chunk::CHUNK_SIZE_Z * chunk_z) + center_chunk;
-            if (loaded.has(coordinate) || !is_chunk_in_loaded_region(coordinate)) {
+            if (is_chunk_loaded.has(coordinate) || !is_chunk_in_loaded_region(coordinate)) {
                 continue;
             }
-            generate_chunk(coordinate);
+            if (!is_chunk_in_queue.has(coordinate)) {
+                generation_queue.append(coordinate);
+                is_chunk_in_queue[coordinate] = true;
+            }
         }
+    }
+}
+
+void World::generate_from_queue(uint64_t n) {
+    int generated = 0;
+    while (generated < n && generation_queue.size() > 0) {
+        generated++;
+
+        Vector3i coordinate = generation_queue[generation_queue.size() - 1];
+        generate_chunk(coordinate);
+
+        is_chunk_loaded[coordinate] = true;
+        is_chunk_in_queue.erase(coordinate);
+        generation_queue.remove_at(generation_queue.size() - 1); // It's actually a stack :P
     }
 }
 

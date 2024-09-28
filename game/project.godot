@@ -26,7 +26,6 @@ window/size/viewport_width=512
 window/size/viewport_height=384
 window/stretch/mode="viewport"
 window/stretch/aspect="keep_height"
-window/vsync/vsync_mode=0
 
 [rendering]
 

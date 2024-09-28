@@ -1,9 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=13 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/test_camera.gd" id="1_a3t5p"]
 [ext_resource type="Script" path="res://main/test_world.gd" id="2_a1wpy"]
 [ext_resource type="Material" uid="uid://c7r8keroog61x" path="res://main/block_material.tres" id="2_dpxoa"]
 [ext_resource type="Script" path="res://main/test_chunk.gd" id="4_lnsye"]
+[ext_resource type="Shader" path="res://main/vhs.gdshader" id="5_quynp"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5nuc0"]
 sky_top_color = Color(0.380392, 0.52549, 0.733333, 1)
@@ -31,6 +32,13 @@ id = 2104533975042
 
 [sub_resource type="Block" id="Block_h7jek"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ferjh"]
+shader = ExtResource("5_quynp")
+shader_parameter/wiggle = 0.03
+shader_parameter/wiggle_speed = 25.0
+shader_parameter/smear = 1.0
+shader_parameter/blur_samples = 15
+
 [node name="Main" type="Node"]
 
 [node name="TestCamera" type="Camera3D" parent="."]
@@ -53,3 +61,11 @@ script = ExtResource("2_a1wpy")
 
 [node name="TestChunk" type="Chunk" parent="."]
 script = ExtResource("4_lnsye")
+
+[node name="VHSCover" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_ferjh")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

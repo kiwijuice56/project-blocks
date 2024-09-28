@@ -21,11 +21,16 @@ private:
 	Vector3i center_chunk;
 
 	Dictionary stored_chunks;
+	Dictionary is_chunk_loaded;
+	Dictionary is_chunk_in_queue;
+
+	PackedVector3Array generation_queue;
 
 protected:
 	static void _bind_methods();
 
 	void generate_chunk(Vector3i coordinate);
+	void generate_from_queue(uint64_t n);
 	void update_loaded_region();
 
 	bool is_chunk_in_loaded_region(Vector3i coordinate);

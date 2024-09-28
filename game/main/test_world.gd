@@ -1,9 +1,11 @@
 class_name TestWorld extends World
 
 func _ready() -> void:
-	for i in range(-2, 3):
-		for j in range(-2, 3):
-			center = Vector3(i, 0, j) * 16
+	pass
+
+var x: int = 0
 
 func _physics_process(_delta: float) -> void:
 	center = %TestCamera.position
+	generate_from_queue(x % 2)
+	x += 1
