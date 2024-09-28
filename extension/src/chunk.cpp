@@ -217,7 +217,7 @@ void Chunk::generate_mesh() {
     arrays[ArrayMesh::ARRAY_TEX_UV] = uvs;
     arrays[ArrayMesh::ARRAY_NORMAL] = normals;
 
-    Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
+    ArrayMesh* array_mesh(memnew(ArrayMesh));
     array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
     set_mesh(array_mesh);
 
@@ -227,7 +227,9 @@ void Chunk::generate_mesh() {
 void Chunk::generate_static_body(bool force_update) {
     if (force_update || !has_static_body) {
         if (has_static_body) {
-            remove_child(get_child(0)); // Should hopefully be the existing StaticBody3D
+            Node* old_body = get_child(0);
+            remove_child(old_body);
+            old_body->queue_free();
         }
         create_trimesh_collision();
         has_static_body = true;

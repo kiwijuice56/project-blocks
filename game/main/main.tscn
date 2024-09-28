@@ -1,8 +1,9 @@
 [gd_scene load_steps=13 format=3 uid="uid://dtav4pssg0xe2"]
 
+[ext_resource type="Material" uid="uid://c7r8keroog61x" path="res://main/block_material.tres" id="1_ni76h"]
 [ext_resource type="Script" path="res://main/test_world.gd" id="2_a1wpy"]
-[ext_resource type="Material" uid="uid://c7r8keroog61x" path="res://main/block_material.tres" id="2_dpxoa"]
 [ext_resource type="Script" path="res://main/player.gd" id="5_7fwml"]
+[ext_resource type="Script" path="res://main/test_camera.gd" id="5_q2w7g"]
 [ext_resource type="Shader" path="res://main/vhs.gdshader" id="5_quynp"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5nuc0"]
@@ -24,13 +25,6 @@ fog_enabled = true
 fog_light_color = Color(0.380392, 0.52549, 0.733333, 1)
 fog_density = 0.07
 
-[sub_resource type="Block" id="Block_vp50h"]
-
-[sub_resource type="Block" id="Block_fv4tx"]
-id = 2104533975042
-
-[sub_resource type="Block" id="Block_h7jek"]
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ferjh"]
 shader = ExtResource("5_quynp")
 shader_parameter/wiggle = 0.03
@@ -42,6 +36,11 @@ shader_parameter/blur_samples = 15
 radius = 0.25
 height = 1.0
 
+[sub_resource type="Block" id="Block_fpwem"]
+
+[sub_resource type="Block" id="Block_1yl3u"]
+id = 1
+
 [node name="Main" type="Node"]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -52,11 +51,6 @@ shadow_blur = 1.794
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_xd4t2")
 
-[node name="TestWorld" type="World" parent="."]
-block_types = Array[Block]([SubResource("Block_vp50h"), SubResource("Block_fv4tx"), SubResource("Block_h7jek")])
-block_material = ExtResource("2_dpxoa")
-script = ExtResource("2_a1wpy")
-
 [node name="VHSCover" type="ColorRect" parent="."]
 material = SubResource("ShaderMaterial_ferjh")
 anchors_preset = 15
@@ -65,13 +59,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="Camera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 13.6686, 0)
+script = ExtResource("5_q2w7g")
+
 [node name="Player" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.6686, 0)
+visible = false
 script = ExtResource("5_7fwml")
-
-[node name="Camera3D" type="Camera3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
 shape = SubResource("CapsuleShape3D_ipdc6")
+
+[node name="World" type="World" parent="."]
+block_types = Array[Block]([SubResource("Block_fpwem"), SubResource("Block_1yl3u")])
+block_material = ExtResource("1_ni76h")
+script = ExtResource("2_a1wpy")
