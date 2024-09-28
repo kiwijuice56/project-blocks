@@ -41,6 +41,14 @@ void Chunk::set_block_material(Ref<Material> new_material) {
     set_material_override(block_material);
 }
 
+Ref<NoiseTexture2D> Chunk::get_main_noise_texture() const {
+    return main_noise_texture;
+}
+
+void Chunk::set_main_noise_texture(Ref<NoiseTexture2D> new_texture) {
+    main_noise_texture = new_texture;
+}
+
 uint64_t Chunk::get_block_id_at(Vector3 position) {
     uint64_t index = int(position.x) + int(position.z) * CHUNK_SIZE_X + int(position.y) * CHUNK_SIZE_Z * CHUNK_SIZE_X;
     return blocks[index];
@@ -52,6 +60,11 @@ uint64_t Chunk::position_to_index(Vector3 position) {
 
 Vector3 Chunk::index_to_position(uint64_t index) {
     return Vector3(index % CHUNK_SIZE_X, index / (CHUNK_SIZE_X * CHUNK_SIZE_Z), (index / CHUNK_SIZE_X) % CHUNK_SIZE_Z);
+}
+
+double Chunk::sample_from_noise(Ref<NoiseTexture2D> texture, Vector2 uv) {
+    Ref<Image> img = texture->get_image();
+    return img->get_pixel(int(uv.x * (img->get_width() - 1)), int(uv.y * (img->get_height() - 1))).r;
 }
 
 bool Chunk::in_bounds(Vector3 position) {
@@ -158,20 +171,36 @@ void Chunk::generate_block_faces(uint64_t id, Vector3i position) {
 }
 
 void Chunk::generate_data() {
-    // Generate a pattern for debugging
     block_count = 0;
-    for (uint64_t y = 0; y < 8; y++) {
-        for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
-            for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
-                if (y > 2 && (x % 2 == 0 || z % 2 == 0)) {
-                    continue;
-                }
+
+    Vector2 chunk_uv = Vector2(
+        Vector2i(get_position().x, get_position().z)
+        / Vector2i(CHUNK_SIZE_X, CHUNK_SIZE_Z)
+        % Vector2i(32, 32)
+    ) / 32.0;
+
+    if (chunk_uv.x < 0.0) {
+        chunk_uv.x = 1.0 + chunk_uv.x;
+    }
+
+    if (chunk_uv.y < 0.0) {
+        chunk_uv.y = 1.0 + chunk_uv.y;
+    }
+
+    for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
+        for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
+            Vector2 uv = chunk_uv + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 32.0;
+            double height = sample_from_noise(main_noise_texture, uv);
+            uint64_t block_height = 1 + int(height * 24);
+            max_y = std::max(max_y, block_height);
+
+            for (uint64_t y = 0; y < block_height; y++) {
                 blocks[position_to_index(Vector3(x, y, z))] = 1;
                 block_count++;
-                max_y = std::max(max_y, y);
             }
         }
     }
+
 }
 
 void Chunk::generate_mesh() {

@@ -2,6 +2,8 @@
 
 #include <godot_cpp/classes/mesh_instance3d.hpp>
 #include <godot_cpp/classes/material.hpp>
+#include <godot_cpp/classes/noise_texture2d.hpp>
+#include <godot_cpp/classes/image.hpp>
 
 namespace godot {
 class Chunk : public MeshInstance3D {
@@ -9,6 +11,7 @@ class Chunk : public MeshInstance3D {
 
 private:
     Ref<Material> block_material;
+    Ref<NoiseTexture2D> main_noise_texture;
 
     PackedByteArray blocks;
     PackedVector3Array vertices;
@@ -49,6 +52,9 @@ public:
     Ref<Material> get_block_material() const;
     void set_block_material(Ref<Material> new_material);
 
+    Ref<NoiseTexture2D> get_main_noise_texture() const;
+    void set_main_noise_texture(Ref<NoiseTexture2D> new_texture);
+
     void generate_mesh();
     void generate_data();
     void generate_static_body(bool force_update);
@@ -57,6 +63,7 @@ public:
     uint64_t get_block_id_at(Vector3 position);
     uint64_t position_to_index(Vector3 position);
     Vector3 index_to_position(uint64_t index);
+    double sample_from_noise(Ref<NoiseTexture2D> texture, Vector2 uv);
     bool in_bounds(Vector3 position);
 };
 

@@ -1,7 +1,10 @@
 class_name TestWorld extends World
 
+@export var noise: NoiseTexture2D
+
 func _ready() -> void:
 	pass
+	print(Vector2i(-4, -2) % Vector2i(8, 8))
 	#for i in range(-3, 4):
 	#	for j in range(3, 4):
 	#		center = Vector3(i, 0, j) * 16

@@ -15,6 +15,9 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_block_material"), &World::get_block_material);
 	ClassDB::bind_method(D_METHOD("set_block_material", "new_material"), &World::set_block_material);
 
+    ClassDB::bind_method(D_METHOD("get_main_noise_texture"), &World::get_main_noise_texture);
+	ClassDB::bind_method(D_METHOD("set_main_noise_texture", "new_texture"), &World::set_main_noise_texture);
+
     ClassDB::bind_method(D_METHOD("generate_from_queue", "n"), &World::generate_from_queue);
 
     ClassDB::add_property(
@@ -47,6 +50,18 @@ void World::_bind_methods() {
         "set_block_material",
         "get_block_material"
     );
+
+    ClassDB::add_property(
+        "World",
+        PropertyInfo(
+            Variant::OBJECT,
+            "main_noise_texture",
+            PROPERTY_HINT_RESOURCE_TYPE,
+            "NoiseTexture2D"
+        ),
+        "set_main_noise_texture",
+        "get_main_noise_texture"
+    );
 }
 
 World::World() {
@@ -74,6 +89,13 @@ void World::set_block_material(Ref<Material> new_material) {
     block_material = new_material;
 }
 
+Ref<NoiseTexture2D> World::get_main_noise_texture() const {
+    return main_noise_texture;
+}
+
+void World::set_main_noise_texture(Ref<NoiseTexture2D> new_texture) {
+    main_noise_texture = new_texture;
+}
 
 Vector3 World::get_center() const {
     return center;
@@ -98,6 +120,9 @@ void World::generate_chunk(Vector3i coordinate) {
         add_child(Object::cast_to<Node>(loaded_chunks[coordinate]));
     } else {
         Chunk* new_chunk = memnew(Chunk);
+
+        new_chunk->set_position(coordinate);
+        new_chunk->set_main_noise_texture(main_noise_texture);
         new_chunk->generate_data();
 
         add_child(new_chunk);
@@ -105,16 +130,22 @@ void World::generate_chunk(Vector3i coordinate) {
         new_chunk->generate_mesh();
         new_chunk->set_block_material(block_material);
 
-        new_chunk->set_position(coordinate);
-
         loaded_chunks[coordinate] = new_chunk;
     }
 }
 
 void World::update_loaded_region() {
-    is_chunk_instanced = Dictionary();
+    /*
+    There are two radii relevant to chunk loading:
+    - instance_radius (blocks):
+    - - If a chunk's distance from the center is < instance_radius, instantiate it and add it to the scene tree;
+    - - If the chunk is not in memory, generate it from scratch / storage;
+    - - If a chunk is > instance_radius, remove it from the screne tree and place it in memory;
+    - unload_radius (blocks):
+    - - If a chunk's distance from the center is is > unload_radius, delete it from the scene tree AND memory
+    */
 
-
+    // Unload chunks outside of unload radius
     Array keys = loaded_chunks.keys();
     TypedArray<Vector3i> chunks_to_unload = TypedArray<Vector3i>();
     for (int64_t i = 0; i < keys.size(); i++) {
@@ -132,6 +163,7 @@ void World::update_loaded_region() {
     }
 
     // Loop through instanced chunks to remove any that are outside of instance radius
+    is_chunk_instanced = Dictionary();
     for (uint64_t i = 0; i < get_child_count(); i++) {
         Chunk* chunk = Object::cast_to<Chunk>(get_child(i));
         if (!is_chunk_in_radius(Vector3i(chunk->get_position()), instance_radius)) {

@@ -6,6 +6,7 @@
 
 #include <godot_cpp/classes/node3d.hpp>
 #include <godot_cpp/classes/material.hpp>
+#include <godot_cpp/classes/noise_texture2d.hpp>
 
 namespace godot {
 
@@ -18,6 +19,7 @@ private:
 
 	TypedArray<Block> block_types;
 	Ref<Material> block_material;
+	Ref<NoiseTexture2D> main_noise_texture;
 
 	Vector3 center;
 	Vector3i center_chunk;
@@ -51,6 +53,9 @@ public:
 
 	Ref<Material> get_block_material() const;
     void set_block_material(Ref<Material> new_material);
+
+	Ref<NoiseTexture2D> get_main_noise_texture() const;
+    void set_main_noise_texture(Ref<NoiseTexture2D> new_texture);
 
 	Vector3 get_center() const;
 	void set_center(Vector3 new_center);
