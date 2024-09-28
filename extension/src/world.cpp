@@ -50,7 +50,7 @@ void World::_bind_methods() {
 }
 
 World::World() {
-    stored_chunks = Dictionary();
+    loaded_chunks = Dictionary();
     is_chunk_in_queue = Dictionary();
 }
 
@@ -94,8 +94,8 @@ void World::set_center(Vector3 new_center) {
 }
 
 void World::generate_chunk(Vector3i coordinate) {
-    if (stored_chunks.has(coordinate)) {
-        add_child(Object::cast_to<Node>(stored_chunks[coordinate]));
+    if (loaded_chunks.has(coordinate)) {
+        add_child(Object::cast_to<Node>(loaded_chunks[coordinate]));
     } else {
         Chunk* new_chunk = memnew(Chunk);
         new_chunk->generate_data();
@@ -107,27 +107,45 @@ void World::generate_chunk(Vector3i coordinate) {
 
         new_chunk->set_position(coordinate);
 
-        stored_chunks[coordinate] = new_chunk;
+        loaded_chunks[coordinate] = new_chunk;
     }
 }
 
 void World::update_loaded_region() {
-    is_chunk_loaded = Dictionary();
+    is_chunk_instanced = Dictionary();
 
+
+    Array keys = loaded_chunks.keys();
+    TypedArray<Vector3i> chunks_to_unload = TypedArray<Vector3i>();
+    for (int64_t i = 0; i < keys.size(); i++) {
+        if (!is_chunk_in_radius(Object::cast_to<Chunk>(loaded_chunks[keys[i]])->get_position(), unload_radius)) {
+            chunks_to_unload.append(keys[i]);
+        }
+    }
+    for (int64_t i = 0; i < chunks_to_unload.size(); i++) {
+        Chunk* to_unload = Object::cast_to<Chunk>(loaded_chunks[chunks_to_unload[i]]);
+        if (to_unload->is_inside_tree()) {
+            to_unload->get_parent()->remove_child(to_unload);
+        }
+        to_unload->queue_free();
+        loaded_chunks.erase(chunks_to_unload[i]);
+    }
+
+    // Loop through instanced chunks to remove any that are outside of instance radius
     for (uint64_t i = 0; i < get_child_count(); i++) {
         Chunk* chunk = Object::cast_to<Chunk>(get_child(i));
-        if (!is_chunk_in_loaded_region(Vector3i(chunk->get_position()))) {
+        if (!is_chunk_in_radius(Vector3i(chunk->get_position()), instance_radius)) {
             i--; // We do not want to skip over children when we remove one
             remove_child(chunk);
         } else {
-            is_chunk_loaded[Vector3i(chunk->get_position())] = true;
+            is_chunk_instanced[Vector3i(chunk->get_position())] = true;
         }
     }
     // Loop through the circular region around the center and generate chunks
-    for (int64_t chunk_x = -(load_radius / Chunk::CHUNK_SIZE_X); chunk_x <= load_radius / Chunk::CHUNK_SIZE_X; chunk_x++) {
-        for (int64_t chunk_z = -(load_radius / Chunk::CHUNK_SIZE_Z); chunk_z <= load_radius / Chunk::CHUNK_SIZE_Z; chunk_z++) {
+    for (int64_t chunk_x = -(instance_radius / Chunk::CHUNK_SIZE_X); chunk_x <= instance_radius / Chunk::CHUNK_SIZE_X; chunk_x++) {
+        for (int64_t chunk_z = -(instance_radius / Chunk::CHUNK_SIZE_Z); chunk_z <= instance_radius / Chunk::CHUNK_SIZE_Z; chunk_z++) {
             Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * chunk_x, 0, Chunk::CHUNK_SIZE_Z * chunk_z) + center_chunk;
-            if (is_chunk_loaded.has(coordinate) || !is_chunk_in_loaded_region(coordinate)) {
+            if (is_chunk_instanced.has(coordinate) || !is_chunk_in_radius(coordinate, instance_radius)) {
                 continue;
             }
             if (!is_chunk_in_queue.has(coordinate)) {
@@ -146,13 +164,13 @@ void World::generate_from_queue(uint64_t n) {
         Vector3i coordinate = generation_queue[generation_queue.size() - 1];
         generate_chunk(coordinate);
 
-        is_chunk_loaded[coordinate] = true;
+        is_chunk_instanced[coordinate] = true;
         is_chunk_in_queue.erase(coordinate);
         generation_queue.remove_at(generation_queue.size() - 1); // It's actually a stack :P
     }
 }
 
-bool World::is_chunk_in_loaded_region(Vector3i coordinate) {
+bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {
     Vector3i displacement = center_chunk - coordinate;
-    return displacement.x * displacement.x + displacement.z * displacement.z < load_radius * load_radius;
+    return displacement.x * displacement.x + displacement.z * displacement.z < radius * radius;
 }

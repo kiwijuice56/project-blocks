@@ -13,15 +13,22 @@ class World : public Node3D {
 	GDCLASS(World, Node3D)
 
 private:
-	int64_t load_radius = 80;
+	int64_t instance_radius = 80;
+	int64_t unload_radius = 160;
+
 	TypedArray<Block> block_types;
 	Ref<Material> block_material;
 
 	Vector3 center;
 	Vector3i center_chunk;
 
-	Dictionary stored_chunks;
-	Dictionary is_chunk_loaded;
+	// Vector3 coordinate : Chunk instance mapping
+	Dictionary loaded_chunks;
+
+	// Vector3 coordinate : bool mapping
+	Dictionary is_chunk_instanced;
+
+	// Vector3 coordinate : bool mapping
 	Dictionary is_chunk_in_queue;
 
 	PackedVector3Array generation_queue;
@@ -33,7 +40,7 @@ protected:
 	void generate_from_queue(uint64_t n);
 	void update_loaded_region();
 
-	bool is_chunk_in_loaded_region(Vector3i coordinate);
+	bool is_chunk_in_radius(Vector3i coordinate, int64_t radius);
 
 public:
 	World();

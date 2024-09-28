@@ -1,7 +1,7 @@
-[gd_scene load_steps=13 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=11 format=3 uid="uid://dtav4pssg0xe2"]
 
-[ext_resource type="Material" uid="uid://c7r8keroog61x" path="res://main/block_material.tres" id="1_ni76h"]
 [ext_resource type="Script" path="res://main/test_world.gd" id="2_a1wpy"]
+[ext_resource type="Material" uid="uid://c7r8keroog61x" path="res://main/block_material.tres" id="4_wat7j"]
 [ext_resource type="Script" path="res://main/player.gd" id="5_7fwml"]
 [ext_resource type="Script" path="res://main/test_camera.gd" id="5_q2w7g"]
 [ext_resource type="Shader" path="res://main/vhs.gdshader" id="5_quynp"]
@@ -36,11 +36,6 @@ shader_parameter/blur_samples = 15
 radius = 0.25
 height = 1.0
 
-[sub_resource type="Block" id="Block_fpwem"]
-
-[sub_resource type="Block" id="Block_1yl3u"]
-id = 1
-
 [node name="Main" type="Node"]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -74,6 +69,5 @@ script = ExtResource("5_7fwml")
 shape = SubResource("CapsuleShape3D_ipdc6")
 
 [node name="World" type="World" parent="."]
-block_types = Array[Block]([SubResource("Block_fpwem"), SubResource("Block_1yl3u")])
-block_material = ExtResource("1_ni76h")
+block_material = ExtResource("4_wat7j")
 script = ExtResource("2_a1wpy")

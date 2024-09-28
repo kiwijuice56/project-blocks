@@ -25,11 +25,11 @@ Block::~Block() {
 
 }
 
-uint64_t Block::get_id() const {
+uint8_t Block::get_id() const {
     return id;
 }
 
-void Block::set_id(uint64_t new_id) {
+void Block::set_id(uint8_t new_id) {
     id = new_id;
 }
 

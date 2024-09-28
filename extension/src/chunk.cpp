@@ -16,7 +16,7 @@ Chunk::Chunk() {
     uvs = PackedVector2Array();
     normals = PackedVector3Array();
 
-    blocks = PackedInt64Array();
+    blocks = PackedByteArray();
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 }
 
