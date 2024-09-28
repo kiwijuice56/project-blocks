@@ -81,10 +81,6 @@ void Chunk::add_face_triangles() {
     indices[face_count * 6 + 3] = face_count * 4 + 0;
     indices[face_count * 6 + 4] = face_count * 4 + 2;
     indices[face_count * 6 + 5] = face_count * 4 + 3;
-
-    for (uint64_t i = 0; i < 6; i++) {
-        collision_vertices[face_count * 6 + i] = vertices[indices[face_count * 6 + i]];
-    }
 }
 
 void Chunk::generate_block_faces(uint64_t id, Vector3i position) {
@@ -163,6 +159,7 @@ void Chunk::generate_block_faces(uint64_t id, Vector3i position) {
 
 void Chunk::generate_data() {
     // Generate a pattern for debugging
+    block_count = 0;
     for (uint64_t y = 0; y < 8; y++) {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
             for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
@@ -192,9 +189,6 @@ void Chunk::generate_mesh() {
     normals = PackedVector3Array();
     normals.resize(4 * 6 * block_count);
 
-    collision_vertices = PackedVector3Array();
-    collision_vertices.resize(6 * 6 * block_count);
-
     face_count = 0;
 
     // Generate a block mesh for all blocks
@@ -214,7 +208,6 @@ void Chunk::generate_mesh() {
     indices.resize(6 * face_count);
     uvs.resize(4 * face_count);
     normals.resize(4 * face_count);
-    collision_vertices.resize(6 * face_count);
 
     // Package data into an ArrayMesh
     Array arrays;
@@ -228,14 +221,15 @@ void Chunk::generate_mesh() {
     array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
     set_mesh(array_mesh);
 
-    Ref<ConcavePolygonShape3D> shape_data(memnew(ConcavePolygonShape3D));
-    shape_data->set_faces(collision_vertices);
+    generate_static_body(true);
+}
 
-    CollisionShape3D* collision_shape = memnew(CollisionShape3D);
-    collision_shape->set_shape(shape_data);
-
-    StaticBody3D* static_body = memnew(StaticBody3D);
-
-    add_child(static_body);
-    static_body->add_child(collision_shape);
+void Chunk::generate_static_body(bool force_update) {
+    if (force_update || !has_static_body) {
+        if (has_static_body) {
+            remove_child(get_child(0)); // Should hopefully be the existing StaticBody3D
+        }
+        create_trimesh_collision();
+        has_static_body = true;
+    }
 }

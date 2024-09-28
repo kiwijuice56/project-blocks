@@ -15,7 +15,6 @@ private:
 
     PackedInt64Array blocks;
     PackedVector3Array vertices;
-    PackedVector3Array collision_vertices;
     PackedInt32Array indices;
     PackedVector2Array uvs;
     PackedVector3Array normals;
@@ -27,7 +26,7 @@ private:
     // as most chunks have huge spaces of empty air over them
     uint64_t max_y = 0;
     double texture_scale = 1/8.0;
-
+    bool has_static_body = false;
 
 protected:
 	static void _bind_methods();
@@ -55,6 +54,7 @@ public:
 
     void generate_mesh();
     void generate_data();
+    void generate_static_body(bool force_update);
 
     // Helper methods to access data
     uint64_t get_block_id_at(Vector3 position);
