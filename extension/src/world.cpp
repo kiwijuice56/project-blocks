@@ -97,10 +97,11 @@ void World::generate_chunk(Vector3i coordinate) {
     } else {
         Chunk* new_chunk = memnew(Chunk);
         new_chunk->generate_data();
-        new_chunk->generate_mesh();
-        new_chunk->set_block_material(block_material);
 
         add_child(new_chunk);
+
+        new_chunk->generate_mesh();
+        new_chunk->set_block_material(block_material);
 
         new_chunk->set_position(coordinate);
 

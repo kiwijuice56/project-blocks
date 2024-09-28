@@ -2,6 +2,9 @@
 
 #include <godot_cpp/classes/mesh_instance3d.hpp>
 #include <godot_cpp/classes/material.hpp>
+#include <godot_cpp/classes/concave_polygon_shape3d.hpp>
+#include <godot_cpp/classes/static_body3d.hpp>
+#include <godot_cpp/classes/collision_shape3d.hpp>
 
 namespace godot {
 class Chunk : public MeshInstance3D {
@@ -12,6 +15,7 @@ private:
 
     PackedInt64Array blocks;
     PackedVector3Array vertices;
+    PackedVector3Array collision_vertices;
     PackedInt32Array indices;
     PackedVector2Array uvs;
     PackedVector3Array normals;
