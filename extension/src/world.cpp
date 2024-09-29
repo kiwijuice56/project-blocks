@@ -67,6 +67,7 @@ void World::_bind_methods() {
 World::World() {
     loaded_chunks = Dictionary();
     is_chunk_in_queue = Dictionary();
+    initiliazation_queue = TypedArray<Chunk>();
 }
 
 World::~World() {
@@ -115,23 +116,9 @@ void World::set_center(Vector3 new_center) {
     center = new_center;
 }
 
-void World::generate_chunk(Vector3i coordinate) {
-    if (loaded_chunks.has(coordinate)) {
-        add_child(Object::cast_to<Node>(loaded_chunks[coordinate]));
-    } else {
-        Chunk* new_chunk = memnew(Chunk);
-
-        new_chunk->set_position(coordinate);
-        new_chunk->set_main_noise_texture(main_noise_texture);
-        new_chunk->generate_data();
-
-        add_child(new_chunk);
-
-        new_chunk->generate_mesh();
-        new_chunk->set_block_material(block_material);
-
-        loaded_chunks[coordinate] = new_chunk;
-    }
+void World::initialize_chunk(uint64_t index) {
+    Object::cast_to<Chunk>(initiliazation_queue[index])->generate_data();
+    Object::cast_to<Chunk>(initiliazation_queue[index])->generate_mesh();
 }
 
 void World::update_loaded_region() {
@@ -180,26 +167,33 @@ void World::update_loaded_region() {
             if (is_chunk_instanced.has(coordinate) || !is_chunk_in_radius(coordinate, instance_radius)) {
                 continue;
             }
-            if (!is_chunk_in_queue.has(coordinate)) {
-                generation_queue.append(coordinate);
+
+            if (loaded_chunks.has(coordinate)) {
+                add_child(Object::cast_to<Node>(loaded_chunks[coordinate]));
+            } else if (!is_chunk_in_queue.has(coordinate)) {
+                Chunk* new_chunk = memnew(Chunk);
+                new_chunk->set_position(coordinate);
+                new_chunk->set_main_noise_texture(main_noise_texture);
+                new_chunk->set_block_material(block_material);
+                add_child(new_chunk);
+
                 is_chunk_in_queue[coordinate] = true;
+                initiliazation_queue.append(new_chunk);
             }
         }
     }
 }
 
 void World::generate_from_queue(uint64_t n) {
-    int generated = 0;
-    while (generated < n && generation_queue.size() > 0) {
-        generated++;
-
-        Vector3i coordinate = generation_queue[generation_queue.size() - 1];
-        generate_chunk(coordinate);
+    for (uint64_t i = 0; i < initiliazation_queue.size(); i++) {
+        Chunk* chunk = Object::cast_to<Chunk>(initiliazation_queue[i]);
+        Vector3i coordinate = chunk->get_position();
+        initialize_chunk(i);
 
         is_chunk_instanced[coordinate] = true;
         is_chunk_in_queue.erase(coordinate);
-        generation_queue.remove_at(generation_queue.size() - 1); // It's actually a stack :P
     }
+    initiliazation_queue = TypedArray<Chunk>();
 }
 
 bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {

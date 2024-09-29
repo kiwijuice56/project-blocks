@@ -1,7 +1,6 @@
 class_name TestWorld extends World
 
 func _ready() -> void:
-	pass
 	set_physics_process(false)
 	await main_noise_texture.changed
 	set_physics_process(true)

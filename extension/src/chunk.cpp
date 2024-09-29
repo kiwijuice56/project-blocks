@@ -272,7 +272,7 @@ void Chunk::generate_mesh() {
 
 void Chunk::generate_static_body(bool force_update) {
     if (force_update || !has_static_body) {
-        if (has_static_body) {
+        if (has_static_body && get_child_count() > 0) {
             Node* old_body = get_child(0);
             remove_child(old_body);
             old_body->queue_free();
@@ -284,9 +284,9 @@ void Chunk::generate_static_body(bool force_update) {
         collision_shape->set_shape(shape_data);
 
         StaticBody3D* static_body = memnew(StaticBody3D);
-
-        add_child(static_body);
         static_body->add_child(collision_shape);
+
+        call_deferred("add_child", static_body);
         has_static_body = true;
     }
 }
