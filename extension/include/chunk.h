@@ -70,6 +70,10 @@ public:
     Vector3 index_to_position(uint64_t index);
     double sample_from_noise(Ref<NoiseTexture2D> texture, Vector2 uv);
     bool in_bounds(Vector3 position);
+
+    // Modifying methods
+
+    void remove_block_at(Vector3 global_position);
 };
 
 }

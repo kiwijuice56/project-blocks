@@ -12,6 +12,8 @@ void Chunk::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_main_noise_texture"), &Chunk::get_main_noise_texture);
 	ClassDB::bind_method(D_METHOD("set_main_noise_texture", "new_texture"), &Chunk::set_main_noise_texture);
 
+    ClassDB::bind_method(D_METHOD("remove_block_at"), &Chunk::remove_block_at);
+
     ClassDB::add_property(
         "Chunk",
         PropertyInfo(
@@ -287,4 +289,14 @@ void Chunk::generate_static_body(bool force_update) {
         static_body->add_child(collision_shape);
         has_static_body = true;
     }
+}
+
+void Chunk::remove_block_at(Vector3 global_position) {
+    Vector3 block_position = Vector3i(global_position - get_global_position());
+    uint64_t index = position_to_index(block_position);
+    if (blocks[index] > 0) {
+        block_count--;
+    }
+    blocks[index] = 0;
+    generate_mesh();
 }

@@ -60,7 +60,13 @@ func _input(event):
 				_e = event.pressed
 
 # Updates mouselook and movement every frame
-func _process(delta):
+func _physics_process(delta):
+	if %RayCast3D.is_colliding():
+		var collider: Node = %RayCast3D.get_collider()
+		if is_instance_valid(collider):
+			var chunk: Chunk = collider.get_parent()
+			chunk.remove_block_at(%RayCast3D.get_collision_point() - %RayCast3D.get_collision_normal() * 0.25)
+	
 	_update_mouselook()
 	_update_movement(delta)
 
