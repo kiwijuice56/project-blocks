@@ -1,10 +1,17 @@
-[gd_scene load_steps=13 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=14 format=3 uid="uid://dtav4pssg0xe2"]
 
-[ext_resource type="Script" path="res://main/test_world.gd" id="2_a1wpy"]
-[ext_resource type="Material" uid="uid://c7r8keroog61x" path="res://main/block_material.tres" id="4_wat7j"]
 [ext_resource type="Script" path="res://main/player.gd" id="5_7fwml"]
+[ext_resource type="Script" path="res://main/test_world.gd" id="5_ds8vp"]
+[ext_resource type="Script" path="res://main/fps_label.gd" id="5_fc4bx"]
+[ext_resource type="Material" uid="uid://c7r8keroog61x" path="res://main/block_material.tres" id="5_md34j"]
 [ext_resource type="Script" path="res://main/test_camera.gd" id="5_q2w7g"]
 [ext_resource type="Shader" path="res://main/vhs.gdshader" id="5_quynp"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ldric"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_sm1bv"]
+seamless = true
+noise = SubResource("FastNoiseLite_ldric")
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5nuc0"]
 sky_top_color = Color(0.380392, 0.52549, 0.733333, 1)
@@ -25,6 +32,10 @@ fog_enabled = true
 fog_light_color = Color(0.411765, 0.556863, 0.764706, 1)
 fog_density = 0.07
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ipdc6"]
+radius = 0.25
+height = 1.0
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ferjh"]
 shader = ExtResource("5_quynp")
 shader_parameter/wiggle = 0.03
@@ -32,18 +43,12 @@ shader_parameter/wiggle_speed = 25.0
 shader_parameter/smear = 1.0
 shader_parameter/blur_samples = 15
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ipdc6"]
-radius = 0.25
-height = 1.0
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_1665j"]
-noise_type = 3
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_188vf"]
-seamless = true
-noise = SubResource("FastNoiseLite_1665j")
-
 [node name="Main" type="Node"]
+
+[node name="TestWorld" type="World" parent="."]
+block_material = ExtResource("5_md34j")
+main_noise_texture = SubResource("NoiseTexture2D_sm1bv")
+script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 36.0912, 0)
@@ -51,14 +56,6 @@ shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_xd4t2")
-
-[node name="VHSCover" type="ColorRect" parent="."]
-material = SubResource("ShaderMaterial_ferjh")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="Camera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
@@ -74,9 +71,19 @@ script = ExtResource("5_7fwml")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
 shape = SubResource("CapsuleShape3D_ipdc6")
 
-[node name="World" type="World" parent="."]
-block_material = ExtResource("4_wat7j")
-main_noise_texture = SubResource("NoiseTexture2D_188vf")
-script = ExtResource("2_a1wpy")
+[node name="VHSCover" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_ferjh")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+[node name="FPSLabel" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+script = ExtResource("5_fc4bx")
+
+[node name="Timer" type="Timer" parent="FPSLabel"]
+unique_name_in_owner = true
+autostart = true

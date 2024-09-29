@@ -7,7 +7,9 @@
 *.exp
 *.obj
 *.lib
+*.exe
 
 # Other junk
 *.tmp
 *.dblite
+*.pck

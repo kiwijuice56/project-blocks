@@ -8,6 +8,21 @@ using namespace godot;
 void Chunk::_bind_methods() {
     ClassDB::bind_method(D_METHOD("generate_data"), &Chunk::generate_data);
     ClassDB::bind_method(D_METHOD("generate_mesh"), &Chunk::generate_mesh);
+
+    ClassDB::bind_method(D_METHOD("get_main_noise_texture"), &Chunk::get_main_noise_texture);
+	ClassDB::bind_method(D_METHOD("set_main_noise_texture", "new_texture"), &Chunk::set_main_noise_texture);
+
+    ClassDB::add_property(
+        "Chunk",
+        PropertyInfo(
+            Variant::OBJECT,
+            "main_noise_texture",
+            PROPERTY_HINT_RESOURCE_TYPE,
+            "NoiseTexture2D"
+        ),
+        "set_main_noise_texture",
+        "get_main_noise_texture"
+    );
 }
 
 Chunk::Chunk() {
@@ -15,6 +30,7 @@ Chunk::Chunk() {
     indices = PackedInt32Array();
     uvs = PackedVector2Array();
     normals = PackedVector3Array();
+    collision_vertices = PackedVector3Array();
 
     blocks = PackedByteArray();
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
@@ -94,6 +110,10 @@ void Chunk::add_face_triangles() {
     indices[face_count * 6 + 3] = face_count * 4 + 0;
     indices[face_count * 6 + 4] = face_count * 4 + 2;
     indices[face_count * 6 + 5] = face_count * 4 + 3;
+
+    for (uint64_t i = 0; i < 6; i++) {
+        collision_vertices[face_count * 6 + i] = vertices[indices[face_count * 6 + i]];
+    }
 }
 
 void Chunk::generate_block_faces(uint64_t id, Vector3i position) {
@@ -187,6 +207,7 @@ void Chunk::generate_data() {
         chunk_uv.y = 1.0 + chunk_uv.y;
     }
 
+    max_y = 0;
     for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
         for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
             Vector2 uv = chunk_uv + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 32.0;
@@ -200,23 +221,17 @@ void Chunk::generate_data() {
             }
         }
     }
-
 }
 
 void Chunk::generate_mesh() {
     // Resize mesh data arrays to upper bounds of their sizes before culling
     // Drastically improves performance due to not needing to resize arrays constantly
-    vertices = PackedVector3Array();
+
     vertices.resize(4 * 6 * block_count);
-
-    indices = PackedInt32Array();
     indices.resize(6 * 6 * block_count);
-
-    uvs = PackedVector2Array();
     uvs.resize(4 * 6 * block_count);
-
-    normals = PackedVector3Array();
     normals.resize(4 * 6 * block_count);
+    collision_vertices.resize(6 * 6 * block_count);
 
     face_count = 0;
 
@@ -237,6 +252,7 @@ void Chunk::generate_mesh() {
     indices.resize(6 * face_count);
     uvs.resize(4 * face_count);
     normals.resize(4 * face_count);
+    collision_vertices.resize(6 * face_count);
 
     // Package data into an ArrayMesh
     Array arrays;
@@ -249,7 +265,6 @@ void Chunk::generate_mesh() {
     ArrayMesh* array_mesh(memnew(ArrayMesh));
     array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
     set_mesh(array_mesh);
-
     generate_static_body(true);
 }
 
@@ -260,7 +275,16 @@ void Chunk::generate_static_body(bool force_update) {
             remove_child(old_body);
             old_body->queue_free();
         }
-        create_trimesh_collision();
+        Ref<ConcavePolygonShape3D> shape_data(memnew(ConcavePolygonShape3D));
+        shape_data->set_faces(collision_vertices);
+
+        CollisionShape3D* collision_shape = memnew(CollisionShape3D);
+        collision_shape->set_shape(shape_data);
+
+        StaticBody3D* static_body = memnew(StaticBody3D);
+
+        add_child(static_body);
+        static_body->add_child(collision_shape);
         has_static_body = true;
     }
 }

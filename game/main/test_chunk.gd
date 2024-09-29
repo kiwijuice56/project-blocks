@@ -1,10 +1,10 @@
 class_name TestChunk extends Chunk
 
-var x: int = 0
-
 func _ready() -> void:
-	generate_data()
+	set_physics_process(false)
+	await main_noise_texture.changed
+	set_physics_process(true)
 
 func _physics_process(_delta: float) -> void:
-	# generate_data()
+	generate_data()
 	generate_mesh()
