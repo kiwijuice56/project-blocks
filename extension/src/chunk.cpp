@@ -196,7 +196,7 @@ void Chunk::generate_data() {
     block_count = 0;
 
     Vector2 chunk_uv = Vector2(
-        Vector2i(get_position().x, get_position().z)
+        Vector2i(0, 0)
         / Vector2i(CHUNK_SIZE_X, CHUNK_SIZE_Z)
         % Vector2i(32, 32)
     ) / 32.0;

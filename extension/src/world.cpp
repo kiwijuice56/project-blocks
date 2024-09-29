@@ -68,6 +68,7 @@ World::World() {
     loaded_chunks = Dictionary();
     is_chunk_in_queue = Dictionary();
     initiliazation_queue = TypedArray<Chunk>();
+    initiliazation_queue_positions = PackedVector3Array();
 }
 
 World::~World() {
@@ -178,22 +179,26 @@ void World::update_loaded_region() {
                 add_child(new_chunk);
 
                 is_chunk_in_queue[coordinate] = true;
+
                 initiliazation_queue.append(new_chunk);
+                initiliazation_queue_positions.append(coordinate);
             }
         }
     }
 }
 
 void World::generate_from_queue(uint64_t n) {
-    for (uint64_t i = 0; i < initiliazation_queue.size(); i++) {
-        Chunk* chunk = Object::cast_to<Chunk>(initiliazation_queue[i]);
-        Vector3i coordinate = chunk->get_position();
-        initialize_chunk(i);
+    task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk), initiliazation_queue.size());
+    WorkerThreadPool::get_singleton()->wait_for_group_task_completion(task_id);
 
-        is_chunk_instanced[coordinate] = true;
-        is_chunk_in_queue.erase(coordinate);
+    for (uint64_t i = 0; i < initiliazation_queue.size(); i++) {
+        is_chunk_instanced[(Vector3i) initiliazation_queue_positions[i]] = true;
+        is_chunk_in_queue.erase((Vector3i) initiliazation_queue_positions[i]);
+        loaded_chunks[(Vector3i) initiliazation_queue_positions[i]] = initiliazation_queue[i];
     }
     initiliazation_queue = TypedArray<Chunk>();
+    initiliazation_queue_positions = PackedVector3Array();
+
 }
 
 bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {

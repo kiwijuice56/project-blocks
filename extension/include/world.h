@@ -25,17 +25,21 @@ private:
 	Vector3 center;
 	Vector3i center_chunk;
 
-	// Vector3 coordinate : Chunk instance mapping
+	// Vector3i coordinate : Chunk instance mapping
 	Dictionary loaded_chunks;
 
-	// Vector3 coordinate : bool mapping
+	// Vector3i coordinate : bool mapping
 	Dictionary is_chunk_instanced;
 
-	// Vector3 coordinate : bool mapping
+	// Vector3i coordinate : bool mapping
 	Dictionary is_chunk_in_queue;
 
 	PackedVector3Array generation_queue;
+
 	TypedArray<Chunk> initiliazation_queue;
+	PackedVector3Array initiliazation_queue_positions;
+
+	int64_t task_id = 0;
 
 protected:
 	static void _bind_methods();
