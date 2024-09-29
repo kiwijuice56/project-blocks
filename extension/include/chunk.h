@@ -61,7 +61,7 @@ public:
     void set_main_noise_texture(Ref<NoiseTexture2D> new_texture);
 
     void generate_mesh();
-    void generate_data();
+    void generate_data(Vector3 chunk_position);
     void generate_static_body(bool force_update);
 
     // Helper methods to access data

@@ -8,6 +8,7 @@
 #include <godot_cpp/classes/material.hpp>
 #include <godot_cpp/classes/noise_texture2d.hpp>
 #include <godot_cpp/classes/worker_thread_pool.hpp>
+#include <godot_cpp/classes/thread.hpp>
 
 namespace godot {
 
@@ -15,8 +16,8 @@ class World : public Node3D {
 	GDCLASS(World, Node3D)
 
 private:
-	int64_t instance_radius = 128;
-	int64_t unload_radius = 256;
+	int64_t instance_radius = 80;
+	int64_t unload_radius = 128;
 
 	TypedArray<Block> block_types;
 	Ref<Material> block_material;
@@ -39,7 +40,8 @@ private:
 	TypedArray<Chunk> initiliazation_queue;
 	PackedVector3Array initiliazation_queue_positions;
 
-	int64_t task_id = 0;
+	uint64_t task_id = 0;
+	bool has_task = false;
 
 protected:
 	static void _bind_methods();

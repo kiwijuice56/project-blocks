@@ -118,7 +118,7 @@ void World::set_center(Vector3 new_center) {
 }
 
 void World::initialize_chunk(uint64_t index) {
-    Object::cast_to<Chunk>(initiliazation_queue[index])->generate_data();
+    Object::cast_to<Chunk>(initiliazation_queue[index])->generate_data(initiliazation_queue_positions[index]);
     Object::cast_to<Chunk>(initiliazation_queue[index])->generate_mesh();
 }
 
@@ -132,6 +132,21 @@ void World::update_loaded_region() {
     - unload_radius (blocks):
     - - If a chunk's distance from the center is is > unload_radius, delete it from the scene tree AND memory
     */
+
+    if (has_task) {
+        if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id)) {
+            return;
+        }
+        WorkerThreadPool::get_singleton()->wait_for_group_task_completion(task_id);
+    }
+
+    for (uint64_t i = 0; i < initiliazation_queue.size(); i++) {
+        is_chunk_instanced[(Vector3i) initiliazation_queue_positions[i]] = true;
+        is_chunk_in_queue.erase((Vector3i) initiliazation_queue_positions[i]);
+        loaded_chunks[(Vector3i) initiliazation_queue_positions[i]] = initiliazation_queue[i];
+    }
+    initiliazation_queue = TypedArray<Chunk>();
+    initiliazation_queue_positions = PackedVector3Array();
 
     // Unload chunks outside of unload radius
     Array keys = loaded_chunks.keys();
@@ -185,19 +200,12 @@ void World::update_loaded_region() {
             }
         }
     }
+
+    task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk), initiliazation_queue.size());
+    has_task = true;
 }
 
 void World::generate_from_queue(uint64_t n) {
-    task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk), initiliazation_queue.size());
-    WorkerThreadPool::get_singleton()->wait_for_group_task_completion(task_id);
-
-    for (uint64_t i = 0; i < initiliazation_queue.size(); i++) {
-        is_chunk_instanced[(Vector3i) initiliazation_queue_positions[i]] = true;
-        is_chunk_in_queue.erase((Vector3i) initiliazation_queue_positions[i]);
-        loaded_chunks[(Vector3i) initiliazation_queue_positions[i]] = initiliazation_queue[i];
-    }
-    initiliazation_queue = TypedArray<Chunk>();
-    initiliazation_queue_positions = PackedVector3Array();
 
 }
 

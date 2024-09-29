@@ -36,6 +36,8 @@ Chunk::Chunk() {
 
     blocks = PackedByteArray();
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
+
+    set_process_thread_group(PROCESS_THREAD_GROUP_SUB_THREAD);
 }
 
 Chunk::~Chunk() {
@@ -192,11 +194,11 @@ void Chunk::generate_block_faces(uint64_t id, Vector3i position) {
     }
 }
 
-void Chunk::generate_data() {
+void Chunk::generate_data(Vector3 chunk_position) {
     block_count = 0;
 
     Vector2 chunk_uv = Vector2(
-        Vector2i(0, 0)
+        Vector2i(chunk_position.x, chunk_position.z)
         / Vector2i(CHUNK_SIZE_X, CHUNK_SIZE_Z)
         % Vector2i(32, 32)
     ) / 32.0;
@@ -266,7 +268,7 @@ void Chunk::generate_mesh() {
 
     ArrayMesh* array_mesh(memnew(ArrayMesh));
     array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
-    set_mesh(array_mesh);
+    call_deferred("set_mesh", array_mesh);
     generate_static_body(true);
 }
 
@@ -274,8 +276,8 @@ void Chunk::generate_static_body(bool force_update) {
     if (force_update || !has_static_body) {
         if (has_static_body && get_child_count() > 0) {
             Node* old_body = get_child(0);
-            remove_child(old_body);
-            old_body->queue_free();
+            call_deferred("remove_child", old_body);
+            old_body->call_deferred("queue_free");
         }
         Ref<ConcavePolygonShape3D> shape_data(memnew(ConcavePolygonShape3D));
         shape_data->set_faces(collision_vertices);
@@ -284,7 +286,7 @@ void Chunk::generate_static_body(bool force_update) {
         collision_shape->set_shape(shape_data);
 
         StaticBody3D* static_body = memnew(StaticBody3D);
-        static_body->add_child(collision_shape);
+        static_body->call_deferred("add_child", collision_shape);
 
         call_deferred("add_child", static_body);
         has_static_body = true;

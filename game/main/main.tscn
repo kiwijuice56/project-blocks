@@ -7,6 +7,7 @@
 [ext_resource type="Shader" path="res://main/vhs.gdshader" id="5_quynp"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ldric"]
+noise_type = 3
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_sm1bv"]
 seamless = true
@@ -27,6 +28,7 @@ sky_material = SubResource("ProceduralSkyMaterial_5nuc0")
 background_mode = 1
 background_color = Color(0.410654, 0.554676, 0.761034, 1)
 sky = SubResource("Sky_kpkms")
+fog_enabled = true
 fog_light_color = Color(0.411765, 0.552941, 0.760784, 1)
 fog_density = 0.06
 
