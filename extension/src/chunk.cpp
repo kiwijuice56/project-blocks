@@ -203,20 +203,33 @@ void Chunk::generate_data(Vector3 chunk_position) {
         % Vector2i(32, 32)
     ) / 32.0;
 
-    if (chunk_uv.x < 0.0) {
-        chunk_uv.x = 1.0 + chunk_uv.x;
-    }
+    Vector2 chunk_uv2 = Vector2(
+        Vector2i(chunk_position.x, chunk_position.z)
+        / Vector2i(CHUNK_SIZE_X, CHUNK_SIZE_Z)
+        % Vector2i(16, 16)
+    ) / 16.0;
 
-    if (chunk_uv.y < 0.0) {
-        chunk_uv.y = 1.0 + chunk_uv.y;
-    }
+    if (chunk_uv.x < 0.0) chunk_uv.x = 1.0 + chunk_uv.x;
+    if (chunk_uv.y < 0.0) chunk_uv.y = 1.0 + chunk_uv.y;
+    if (chunk_uv2.x < 0.0) chunk_uv2.x = 1.0 + chunk_uv2.x;
+    if (chunk_uv2.y < 0.0) chunk_uv2.y = 1.0 + chunk_uv2.y;
 
     max_y = 0;
     for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
         for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
             Vector2 uv = chunk_uv + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 32.0;
             double height = sample_from_noise(main_noise_texture, uv);
-            uint64_t block_height = 1 + int(height * 24);
+            uint64_t block_height = int(height * 12);
+            block_height *= block_height;
+
+            uv = chunk_uv2 + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 16.0;
+            height = sample_from_noise(main_noise_texture, uv);
+            block_height += int(height * 15);
+
+            if (block_height >= CHUNK_SIZE_Y) {
+                block_height = CHUNK_SIZE_Y - 1;
+            }
+
             max_y = std::max(max_y, block_height);
 
             for (uint64_t y = 0; y < block_height; y++) {
@@ -230,6 +243,7 @@ void Chunk::generate_data(Vector3 chunk_position) {
 void Chunk::generate_mesh() {
     // Resize mesh data arrays to upper bounds of their sizes before culling
     // Drastically improves performance due to not needing to resize arrays constantly
+
 
     vertices.resize(4 * 6 * block_count);
     indices.resize(6 * 6 * block_count);

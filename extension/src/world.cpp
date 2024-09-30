@@ -111,8 +111,9 @@ void World::set_center(Vector3 new_center) {
 
     if (new_center_chunk != center_chunk) {
         center_chunk = new_center_chunk;
-        update_loaded_region();
+
     }
+     update_loaded_region();
 
     center = new_center;
 }

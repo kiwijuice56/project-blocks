@@ -45,7 +45,7 @@ protected:
 public:
     // The dimensions of individual chunks
     static const int64_t CHUNK_SIZE_X = 8;
-    static const int64_t CHUNK_SIZE_Y = 128;
+    static const int64_t CHUNK_SIZE_Y = 256;
     static const int64_t CHUNK_SIZE_Z = 8;
 
 	Chunk();
