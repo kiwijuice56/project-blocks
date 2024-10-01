@@ -18,7 +18,7 @@ private:
     Ref<NoiseTexture2D> main_noise_texture;
 
     PackedByteArray blocks;
-    bool* visited; // greedy meshing
+    bool* visited; // Greedy meshing
     PackedVector3Array vertices;
     PackedVector2Array uvs;
     PackedVector3Array normals;
@@ -36,7 +36,7 @@ protected:
 	static void _bind_methods();
 
     // Helper methods to generate chunk mesh
-    void add_face_uvs(uint64_t x, uint64_t y);
+    void add_face_uvs(uint64_t id, Vector2 scale);
     void add_face_normals(Vector3 normal);
 
 public:

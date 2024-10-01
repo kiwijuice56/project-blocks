@@ -2,16 +2,16 @@
 
 [ext_resource type="Script" path="res://main/test_world.gd" id="5_ds8vp"]
 [ext_resource type="Script" path="res://main/fps_label.gd" id="5_fc4bx"]
-[ext_resource type="Material" uid="uid://c7r8keroog61x" path="res://main/block_material.tres" id="5_md34j"]
+[ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/block_material.tres" id="5_md34j"]
 [ext_resource type="Shader" path="res://main/vhs.gdshader" id="5_quynp"]
 [ext_resource type="Script" path="res://main/player.gd" id="6_p3o21"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_l8s5v"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_uj6v8"]
 noise_type = 4
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_w2rym"]
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_5d2c4"]
 seamless = true
-noise = SubResource("FastNoiseLite_l8s5v")
+noise = SubResource("FastNoiseLite_uj6v8")
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5nuc0"]
 sky_top_color = Color(0.380392, 0.52549, 0.733333, 1)
@@ -58,7 +58,7 @@ size = Vector3(0.3, 1.5, 0.3)
 
 [node name="TestWorld" type="World" parent="."]
 block_material = ExtResource("5_md34j")
-main_noise_texture = SubResource("NoiseTexture2D_w2rym")
+main_noise_texture = SubResource("NoiseTexture2D_5d2c4")
 script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]

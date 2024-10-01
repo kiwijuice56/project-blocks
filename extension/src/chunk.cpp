@@ -90,11 +90,13 @@ bool Chunk::in_bounds(Vector3 position) {
     0 <= position.z && position.z < CHUNK_SIZE_Z;
 }
 
-void Chunk::add_face_uvs(uint64_t x, uint64_t y) {
-    uvs[face_count * 4 + 0] = Vector2(texture_scale * x, texture_scale * y);
-	uvs[face_count * 4 + 1] = Vector2(texture_scale * x + texture_scale, texture_scale * y);
-	uvs[face_count * 4 + 2] = Vector2(texture_scale * x + texture_scale, texture_scale * y + texture_scale);
-	uvs[face_count * 4 + 3] = Vector2(texture_scale * x, texture_scale * y + texture_scale);
+void Chunk::add_face_uvs(uint64_t id, Vector2 scale) {
+    uvs[face_count * 6 + 0] = scale * Vector2(0, 1);
+	uvs[face_count * 6 + 1] = scale * Vector2(0, 0);
+	uvs[face_count * 6 + 2] = scale * Vector2(1, 0);
+	uvs[face_count * 6 + 3] = scale * Vector2(0, 1);
+    uvs[face_count * 6 + 4] = scale * Vector2(1, 0);
+	uvs[face_count * 6 + 5] = scale * Vector2(1, 1);
 }
 
 void Chunk::add_face_normals(Vector3 normal) {
@@ -154,18 +156,21 @@ void Chunk::generate_mesh() {
     // Drastically improves performance due to not needing to resize arrays constantly
     vertices.resize(6 * 6 * block_count);
     normals.resize(6 * 6 * block_count);
+    uvs.resize(6 * 6 * block_count);
 
     greedy_mesh_generation();
 
     // Trim off excess data
     vertices.resize(6 * face_count);
     normals.resize(6 * face_count);
+    uvs.resize(6 * face_count);
 
     // Package data into an ArrayMesh
     Array arrays;
     arrays.resize(ArrayMesh::ARRAY_MAX);
     arrays[ArrayMesh::ARRAY_VERTEX] = vertices;
     arrays[ArrayMesh::ARRAY_NORMAL] = normals;
+    arrays[ArrayMesh::ARRAY_TEX_UV] = uvs;
 
     Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
     array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
@@ -275,25 +280,27 @@ bool Chunk::greedy_invalid(Vector3 position) {
 }
 
 void Chunk::add_rectangular_prism(Vector3 start, Vector3 size) {
-    // Y, facing down
-    vertices[face_count * 6 + 0] = start;
-    vertices[face_count * 6 + 1] = start + Vector3(0, 0, size.z);
-    vertices[face_count * 6 + 2] = start + Vector3(size.x, 0, 0);
-    vertices[face_count * 6 + 3] = start + Vector3(size.x, 0, 0);
-    vertices[face_count * 6 + 4] = start + Vector3(0, 0, size.z);
-    vertices[face_count * 6 + 5] = start + Vector3(size.x, 0, size.z);
-    add_face_normals(Vector3(0, -1, 0));
+    // Y, facing up
+    vertices[face_count * 6 + 0] = start + Vector3(0, size.y, 0);
+    vertices[face_count * 6 + 1] = start + Vector3(size.x, size.y, size.z);
+    vertices[face_count * 6 + 2] = start + Vector3(0, size.y, size.z);
+    vertices[face_count * 6 + 3] = start + Vector3(0, size.y, 0);
+    vertices[face_count * 6 + 4] = start + Vector3(size.x, size.y, 0);
+    vertices[face_count * 6 + 5] = start + Vector3(size.x, size.y, size.z);
+    add_face_normals(Vector3(0, 1, 0));
+    add_face_uvs(0, Vector2());
 
     face_count++;
 
-    // Y, facing up
-    vertices[face_count * 6 + 0] = start + Vector3(0, size.y, 0);
-    vertices[face_count * 6 + 1] = start + Vector3(size.x, size.y, 0);
-    vertices[face_count * 6 + 2] = start + Vector3(0, size.y, size.z);
-    vertices[face_count * 6 + 3] = start + Vector3(size.x, size.y, 0);
-    vertices[face_count * 6 + 4] = start + Vector3(size.x, size.y, size.z);
-    vertices[face_count * 6 + 5] = start + Vector3(0, size.y, size.z);
-    add_face_normals(Vector3(0, 1, 0));
+    // Y, facing down
+    vertices[face_count * 6 + 0] = start + Vector3(0, 0, 0);
+    vertices[face_count * 6 + 1] = start + Vector3(size.x, 0, size.z);
+    vertices[face_count * 6 + 2] = start + Vector3(0, 0, size.z);
+    vertices[face_count * 6 + 3] = start + Vector3(0, 0, 0);
+    vertices[face_count * 6 + 4] = start + Vector3(size.x, 0, 0);
+    vertices[face_count * 6 + 5] = start + Vector3(size.x, 0, size.z);
+    add_face_normals(Vector3(0, -1, 0));
+    add_face_uvs(1, Vector2());
 
     face_count++;
 
@@ -305,6 +312,7 @@ void Chunk::add_rectangular_prism(Vector3 start, Vector3 size) {
     vertices[face_count * 6 + 4] = start;
     vertices[face_count * 6 + 5] = start + Vector3(size.x, 0, 0);
     add_face_normals(Vector3(0, 0, -1));
+    add_face_uvs(2, Vector2());
 
     face_count++;
 
@@ -316,17 +324,19 @@ void Chunk::add_rectangular_prism(Vector3 start, Vector3 size) {
     vertices[face_count * 6 + 4] = start + Vector3(size.x, 0, size.z);
     vertices[face_count * 6 + 5] = start + Vector3(0, 0, size.z);
     add_face_normals(Vector3(0, 0, 1));
+    add_face_uvs(3, Vector2());
 
     face_count++;
 
     // X, facing left
-    vertices[face_count * 6 + 0] = start;
+    vertices[face_count * 6 + 0] = start + Vector3(0, 0, 0);
     vertices[face_count * 6 + 1] = start + Vector3(0, size.y, 0);
     vertices[face_count * 6 + 2] = start + Vector3(0, size.y, size.z);
-    vertices[face_count * 6 + 3] = start;
+    vertices[face_count * 6 + 3] = start + Vector3(0, 0, 0);
     vertices[face_count * 6 + 4] = start + Vector3(0, size.y, size.z);
     vertices[face_count * 6 + 5] = start + Vector3(0, 0, size.z);
     add_face_normals(Vector3(-1, 0, 0));
+    add_face_uvs(4, Vector2(size.z, size.y));
 
     face_count++;
 
@@ -338,6 +348,7 @@ void Chunk::add_rectangular_prism(Vector3 start, Vector3 size) {
     vertices[face_count * 6 + 4] = start + Vector3(size.x, 0, size.z);
     vertices[face_count * 6 + 5] = start + Vector3(size.x, size.y, size.z);
     add_face_normals(Vector3(1, 0, 0));
+    add_face_uvs(5, Vector2());
 
     face_count++;
 }

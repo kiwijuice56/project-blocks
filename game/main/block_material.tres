@@ -1,9 +1,9 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://c7r8keroog61x"]
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://mo5hyyhqxh67"]
 
-[ext_resource type="Texture2D" uid="uid://dqa00d2uwl2xe" path="res://main/texture_atlas.png" id="1_jbn0d"]
+[ext_resource type="Shader" path="res://main/block_render.gdshader" id="1_s1p5q"]
+[ext_resource type="CompressedTexture2DArray" uid="uid://c62exfruuow3g" path="res://main/textures.png" id="2_m118b"]
 
 [resource]
-diffuse_mode = 1
-specular_mode = 2
-albedo_texture = ExtResource("1_jbn0d")
-texture_filter = 0
+render_priority = 0
+shader = ExtResource("1_s1p5q")
+shader_parameter/textures = ExtResource("2_m118b")
