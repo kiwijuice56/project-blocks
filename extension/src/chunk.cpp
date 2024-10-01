@@ -29,10 +29,8 @@ void Chunk::_bind_methods() {
 
 Chunk::Chunk() {
     vertices = PackedVector3Array();
-    indices = PackedInt32Array();
     uvs = PackedVector2Array();
     normals = PackedVector3Array();
-    collision_vertices = PackedVector3Array();
 
     blocks = PackedByteArray();
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
@@ -41,7 +39,6 @@ Chunk::Chunk() {
 }
 
 Chunk::~Chunk() {
-
 }
 
 uint64_t Chunk::get_id() const {
@@ -174,12 +171,10 @@ void Chunk::generate_mesh() {
     //arrays[ArrayMesh::ARRAY_TEX_UV] = uvs;
     arrays[ArrayMesh::ARRAY_NORMAL] = normals;
 
-    ArrayMesh* array_mesh(memnew(ArrayMesh));
+    Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
     array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
     call_deferred("set_mesh", array_mesh);
     generate_static_body(true);
-
-
 }
 
 void Chunk::generate_static_body(bool force_update) {

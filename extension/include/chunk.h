@@ -20,10 +20,8 @@ private:
     PackedByteArray blocks;
     bool* visited; // greedy meshing
     PackedVector3Array vertices;
-    PackedInt32Array indices;
     PackedVector2Array uvs;
     PackedVector3Array normals;
-    PackedVector3Array collision_vertices;
 
     uint64_t id = 0;
     uint64_t face_count = 0;

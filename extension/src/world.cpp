@@ -146,12 +146,12 @@ void World::update_loaded_region() {
         is_chunk_in_queue.erase((Vector3i) initiliazation_queue_positions[i]);
         loaded_chunks[(Vector3i) initiliazation_queue_positions[i]] = initiliazation_queue[i];
     }
-    initiliazation_queue = TypedArray<Chunk>();
-    initiliazation_queue_positions = PackedVector3Array();
+    initiliazation_queue.clear();
+    initiliazation_queue_positions.clear();
 
     // Unload chunks outside of unload radius
     Array keys = loaded_chunks.keys();
-    TypedArray<Vector3i> chunks_to_unload = TypedArray<Vector3i>();
+    TypedArray<Vector3i> chunks_to_unload;
     for (int64_t i = 0; i < keys.size(); i++) {
         if (!is_chunk_in_radius(Object::cast_to<Chunk>(loaded_chunks[keys[i]])->get_position(), unload_radius)) {
             chunks_to_unload.append(keys[i]);
@@ -167,7 +167,7 @@ void World::update_loaded_region() {
     }
 
     // Loop through instanced chunks to remove any that are outside of instance radius
-    is_chunk_instanced = Dictionary();
+    is_chunk_instanced.clear();
     for (uint64_t i = 0; i < get_child_count(); i++) {
         Chunk* chunk = Object::cast_to<Chunk>(get_child(i));
         if (!is_chunk_in_radius(Vector3i(chunk->get_position()), instance_radius)) {
@@ -201,7 +201,6 @@ void World::update_loaded_region() {
             }
         }
     }
-
     task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk), initiliazation_queue.size());
     has_task = true;
 }
