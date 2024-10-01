@@ -16,8 +16,8 @@ class World : public Node3D {
 	GDCLASS(World, Node3D)
 
 private:
-	int64_t instance_radius = 80;
-	int64_t unload_radius = 128;
+	int64_t instance_radius = 512;
+	int64_t unload_radius = 512 + 64;
 
 	TypedArray<Block> block_types;
 	Ref<Material> block_material;

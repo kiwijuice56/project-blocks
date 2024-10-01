@@ -6,12 +6,11 @@
 [ext_resource type="Shader" path="res://main/vhs.gdshader" id="5_quynp"]
 [ext_resource type="Script" path="res://main/player.gd" id="6_p3o21"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_ldric"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_l8s5v"]
 noise_type = 3
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_sm1bv"]
-seamless = true
-noise = SubResource("FastNoiseLite_ldric")
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_w2rym"]
+noise = SubResource("FastNoiseLite_l8s5v")
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5nuc0"]
 sky_top_color = Color(0.380392, 0.52549, 0.733333, 1)
@@ -28,12 +27,9 @@ sky_material = SubResource("ProceduralSkyMaterial_5nuc0")
 background_mode = 1
 background_color = Color(0.309804, 0.431373, 0.529412, 1)
 sky = SubResource("Sky_kpkms")
-ssao_enabled = true
 ssao_light_affect = 0.5
-fog_enabled = true
 fog_light_color = Color(0.308745, 0.430974, 0.531312, 1)
 fog_density = 0.06
-volumetric_fog_enabled = true
 volumetric_fog_emission = Color(0.386405, 0.440268, 0.491682, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ferjh"]
@@ -59,12 +55,11 @@ height = 1.5
 
 [node name="TestWorld" type="World" parent="."]
 block_material = ExtResource("5_md34j")
-main_noise_texture = SubResource("NoiseTexture2D_sm1bv")
+main_noise_texture = SubResource("NoiseTexture2D_w2rym")
 script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 36.0912, 0)
-shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_xd4t2")
@@ -93,7 +88,7 @@ mesh = SubResource("BoxMesh_us15l")
 surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
 
 [node name="Player" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 250, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 128, 0)
 collision_layer = 2
 script = ExtResource("6_p3o21")
 

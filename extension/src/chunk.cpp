@@ -102,95 +102,8 @@ void Chunk::add_face_uvs(uint64_t x, uint64_t y) {
 }
 
 void Chunk::add_face_normals(Vector3 normal) {
-    for (int i = 0; i < 4; i++) {
-        normals[face_count * 4 + i] = normal;
-    }
-}
-
-void Chunk::add_face_triangles() {
-    indices[face_count * 6 + 0] = face_count * 4 + 0;
-    indices[face_count * 6 + 1] = face_count * 4 + 1;
-    indices[face_count * 6 + 2] = face_count * 4 + 2;
-    indices[face_count * 6 + 3] = face_count * 4 + 0;
-    indices[face_count * 6 + 4] = face_count * 4 + 2;
-    indices[face_count * 6 + 5] = face_count * 4 + 3;
-
-    /*for (uint64_t i = 0; i < 6; i++) {
-        collision_vertices[face_count * 6 + i] = vertices[indices[face_count * 6 + i]];
-    }*/
-}
-
-void Chunk::generate_block_faces(uint64_t id, Vector3i position) {
-    // Top
-    if (!in_bounds(position + Vector3(0, 1, 0)) || get_block_id_at(position + Vector3(0, 1, 0)) == 0) {
-        vertices[face_count * 4 + 0] = position + Vector3(0, 1, 0);
-        vertices[face_count * 4 + 1] = position + Vector3(1, 1, 0);
-        vertices[face_count * 4 + 2] = position + Vector3(1, 1, 1);
-        vertices[face_count * 4 + 3] = position + Vector3(0, 1, 1);
-        add_face_uvs(0, id);
-        add_face_triangles();
-        add_face_normals(Vector3(0, 1, 0));
-        face_count++;
-    }
-
-    // East
-    if (!in_bounds(position + Vector3(1, 0, 0)) || get_block_id_at(position + Vector3(1, 0, 0)) == 0) {
-        vertices[face_count * 4 + 0] = position + Vector3(1, 1, 1);
-        vertices[face_count * 4 + 1] = position + Vector3(1, 1, 0);
-        vertices[face_count * 4 + 2] = position + Vector3(1, 0, 0);
-        vertices[face_count * 4 + 3] = position + Vector3(1, 0, 1);
-        add_face_triangles();
-        add_face_uvs(3, id);
-        add_face_normals(Vector3(1, 0, 0));
-        face_count++;
-    }
-
-    // South
-    if (!in_bounds(position + Vector3(0, 0, 1)) || get_block_id_at(position + Vector3(0, 0, 1)) == 0) {
-        vertices[face_count * 4 + 0] = position + Vector3(0, 1, 1);
-        vertices[face_count * 4 + 1] = position + Vector3(1, 1, 1);
-        vertices[face_count * 4 + 2] = position + Vector3(1, 0, 1);
-        vertices[face_count * 4 + 3] = position + Vector3(0, 0, 1);
-        add_face_triangles();
-        add_face_uvs(4, id);
-        add_face_normals(Vector3(0, 0, 1));
-        face_count++;
-    }
-
-    // West
-    if (!in_bounds(position + Vector3(-1, 0, 0)) || get_block_id_at(position + Vector3(-1, 0, 0)) == 0) {
-        vertices[face_count * 4 + 0] = position + Vector3(0, 1, 0);
-        vertices[face_count * 4 + 1] = position + Vector3(0, 1, 1);
-        vertices[face_count * 4 + 2] = position + Vector3(0, 0, 1);
-        vertices[face_count * 4 + 3] = position + Vector3(0, 0, 0);
-        add_face_triangles();
-        add_face_uvs(5, id);
-        add_face_normals(Vector3(-1, 0, 0));
-        face_count++;
-    }
-
-    // North
-    if (!in_bounds(position + Vector3(0, 0, -1)) || get_block_id_at(position + Vector3(0, 0, -1)) == 0) {
-        vertices[face_count * 4 + 0] = position + Vector3(1, 1, 0);
-        vertices[face_count * 4 + 1] = position + Vector3(0, 1, 0);
-        vertices[face_count * 4 + 2] = position + Vector3(0, 0, 0);
-        vertices[face_count * 4 + 3] = position + Vector3(1, 0, 0);
-        add_face_triangles();
-        add_face_uvs(2, id);
-        add_face_normals(Vector3(0, 0, -1));
-        face_count++;
-    }
-
-    // Bottom
-    if (!in_bounds(position + Vector3(0, -1, 0)) || get_block_id_at(position + Vector3(0, -1, 0)) == 0) {
-        vertices[face_count * 4 + 0] = position + Vector3(0, 0, 1);
-        vertices[face_count * 4 + 1] = position + Vector3(1, 0, 1);
-        vertices[face_count * 4 + 2] = position + Vector3(1, 0, 0);
-        vertices[face_count * 4 + 3] = position + Vector3(0, 0, 0);
-        add_face_triangles();
-        add_face_uvs(1, id);
-        add_face_normals(Vector3(0, -1, 0));
-        face_count++;
+    for (int i = 0; i < 6; i++) {
+        normals[face_count * 6 + i] = normal;
     }
 }
 
@@ -243,47 +156,30 @@ void Chunk::generate_data(Vector3 chunk_position) {
 void Chunk::generate_mesh() {
     // Resize mesh data arrays to upper bounds of their sizes before culling
     // Drastically improves performance due to not needing to resize arrays constantly
-    vertices.resize(4 * 6 * block_count);
-    indices.resize(6 * 6 * block_count);
-    uvs.resize(4 * 6 * block_count);
-    normals.resize(4 * 6 * block_count);
+    vertices.resize(6 * 6 * block_count);
+    //uvs.resize(4 * 6 * block_count);
+    normals.resize(6 * 6 * block_count);
 
-    face_count = 0;
-
-    // Generate a block mesh for all blocks
-    for (uint64_t y = 0; y <= max_y; y++) {
-        for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
-            for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
-                uint64_t id = get_block_id_at(Vector3(x, y, z));
-                if (id != 0) {
-                    generate_block_faces(id, Vector3i(x, y, z));
-                }
-            }
-        }
-    }
+    greedy_mesh_generation();
 
     // Trim off excess data
-    vertices.resize(4 * face_count);
-    indices.resize(6 * face_count);
-    uvs.resize(4 * face_count);
-    normals.resize(4 * face_count);
-
-    collision_vertices.resize(6 * 6 * block_count);
-    greedy_collision_shape_generation(Vector3(0, 0, 0));
-    collision_vertices.resize(6 * greedy_face_count);
+    vertices.resize(6 * face_count);
+    //uvs.resize(4 * face_count);
+    normals.resize(6 * face_count);
 
     // Package data into an ArrayMesh
     Array arrays;
     arrays.resize(ArrayMesh::ARRAY_MAX);
     arrays[ArrayMesh::ARRAY_VERTEX] = vertices;
-    arrays[ArrayMesh::ARRAY_INDEX] = indices;
-    arrays[ArrayMesh::ARRAY_TEX_UV] = uvs;
+    //arrays[ArrayMesh::ARRAY_TEX_UV] = uvs;
     arrays[ArrayMesh::ARRAY_NORMAL] = normals;
 
     ArrayMesh* array_mesh(memnew(ArrayMesh));
     array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
     call_deferred("set_mesh", array_mesh);
     generate_static_body(true);
+
+
 }
 
 void Chunk::generate_static_body(bool force_update) {
@@ -294,7 +190,7 @@ void Chunk::generate_static_body(bool force_update) {
             old_body->call_deferred("queue_free");
         }
         Ref<ConcavePolygonShape3D> shape_data(memnew(ConcavePolygonShape3D));
-        shape_data->set_faces(collision_vertices);
+        shape_data->set_faces(vertices);
 
         CollisionShape3D* collision_shape = memnew(CollisionShape3D);
         collision_shape->set_shape(shape_data);
@@ -317,10 +213,13 @@ void Chunk::remove_block_at(Vector3 global_position) {
     generate_mesh();
 }
 
-void Chunk::greedy_collision_shape_generation(Vector3 position) {
-    visited = PackedByteArray();
-    visited.resize(CHUNK_SIZE_X * CHUNK_SIZE_Z * max_y);
-    greedy_face_count = 0;
+void Chunk::greedy_mesh_generation() {
+    visited = new bool[CHUNK_SIZE_X * CHUNK_SIZE_Z * max_y];
+    for (uint64_t i = 0; i < CHUNK_SIZE_X * CHUNK_SIZE_Z * max_y; i++) {
+        visited[i] = false;
+    }
+
+    face_count = 0;
 
     for (int x = 0; x < CHUNK_SIZE_X; x++) {
         for (int z = 0; z < CHUNK_SIZE_Z; z++) {
@@ -334,12 +233,14 @@ void Chunk::greedy_collision_shape_generation(Vector3 position) {
             }
         }
     }
+
+    delete [] visited;
 }
 
 Vector3 Chunk::greedy_scan(Vector3 start) {
     Vector3 size = Vector3(1, 1, 1);
     while (!greedy_invalid(start + Vector3(size.x, 0, 0))) {
-        visited[position_to_index(start + Vector3(size.x, 0, 0))] = 1;
+        visited[position_to_index(start + Vector3(size.x, 0, 0))] = true;
         size.x++;
     }
 
@@ -355,7 +256,7 @@ Vector3 Chunk::greedy_scan(Vector3 start) {
             break;
         }
         for (int x = 0; x < int(size.x); x++) {
-            visited[position_to_index(start + Vector3(x, 0, size.z))] = 1;
+            visited[position_to_index(start + Vector3(x, 0, size.z))] = true;
         }
         size.z++;
     }
@@ -374,7 +275,7 @@ Vector3 Chunk::greedy_scan(Vector3 start) {
         }
         for (int x = 0; x < int(size.x); x++) {
             for (int z = 0; z < int(size.z); z++) {
-                visited[position_to_index(start + Vector3(x, size.y, z))] = 1;
+                visited[position_to_index(start + Vector3(x, size.y, z))] = true;
             }
         }
         size.y++;
@@ -383,72 +284,75 @@ Vector3 Chunk::greedy_scan(Vector3 start) {
 }
 
 bool Chunk::greedy_invalid(Vector3 position) {
-    return !in_bounds(position) || get_block_id_at(position) == 0 || visited[position_to_index(position)] == 1;
+    return !in_bounds(position) || get_block_id_at(position) == 0 || visited[position_to_index(position)];
 }
 
 void Chunk::add_rectangular_prism(Vector3 start, Vector3 size) {
     // Bottom face
-    collision_vertices[greedy_face_count * 6 + 0] = start;
-    collision_vertices[greedy_face_count * 6 + 1] = start + Vector3(0, 0, size.z);
-    collision_vertices[greedy_face_count * 6 + 2] = start + Vector3(size.x, 0, 0);
+    vertices[face_count * 6 + 0] = start;
+    vertices[face_count * 6 + 1] = start + Vector3(0, 0, size.z);
+    vertices[face_count * 6 + 2] = start + Vector3(size.x, 0, 0);
+    vertices[face_count * 6 + 3] = start + Vector3(size.x, 0, 0);
+    vertices[face_count * 6 + 4] = start + Vector3(0, 0, size.z);
+    vertices[face_count * 6 + 5] = start + Vector3(size.x, 0, size.z);
+    add_face_normals(Vector3(0, -1, 0));
 
-    collision_vertices[greedy_face_count * 6 + 3] = start + Vector3(size.x, 0, 0);
-    collision_vertices[greedy_face_count * 6 + 4] = start + Vector3(0, 0, size.z);
-    collision_vertices[greedy_face_count * 6 + 5] = start + Vector3(size.x, 0, size.z);
-
-
-    greedy_face_count++;
+    face_count++;
 
     // Top face
-    collision_vertices[greedy_face_count * 6 + 0] = start + Vector3(0, size.y, 0);
-    collision_vertices[greedy_face_count * 6 + 1] = start + Vector3(size.x, size.y, 0);
-    collision_vertices[greedy_face_count * 6 + 2] = start + Vector3(0, size.y, size.z);
-    collision_vertices[greedy_face_count * 6 + 3] = start + Vector3(size.x, size.y, 0);
-    collision_vertices[greedy_face_count * 6 + 4] = start + Vector3(size.x, size.y, size.z);
-    collision_vertices[greedy_face_count * 6 + 5] = start + Vector3(0, size.y, size.z);
+    vertices[face_count * 6 + 0] = start + Vector3(0, size.y, 0);
+    vertices[face_count * 6 + 1] = start + Vector3(size.x, size.y, 0);
+    vertices[face_count * 6 + 2] = start + Vector3(0, size.y, size.z);
+    vertices[face_count * 6 + 3] = start + Vector3(size.x, size.y, 0);
+    vertices[face_count * 6 + 4] = start + Vector3(size.x, size.y, size.z);
+    vertices[face_count * 6 + 5] = start + Vector3(0, size.y, size.z);
+    add_face_normals(Vector3(0, 1, 0));
 
-    greedy_face_count++;
+    face_count++;
 
     // Z constant 1
-    collision_vertices[greedy_face_count * 6 + 0] = start + Vector3(0, size.y, 0);
-    collision_vertices[greedy_face_count * 6 + 1] = start;
-    collision_vertices[greedy_face_count * 6 + 2] = start + Vector3(size.x, size.y, 0);
-    collision_vertices[greedy_face_count * 6 + 3] = start + Vector3(size.x, size.y, 0);
-    collision_vertices[greedy_face_count * 6 + 4] = start;
-    collision_vertices[greedy_face_count * 6 + 5] = start + Vector3(size.x, 0, 0);
+    vertices[face_count * 6 + 0] = start + Vector3(0, size.y, 0);
+    vertices[face_count * 6 + 1] = start;
+    vertices[face_count * 6 + 2] = start + Vector3(size.x, size.y, 0);
+    vertices[face_count * 6 + 3] = start + Vector3(size.x, size.y, 0);
+    vertices[face_count * 6 + 4] = start;
+    vertices[face_count * 6 + 5] = start + Vector3(size.x, 0, 0);
+    add_face_normals(Vector3(0, 0, -1));
 
-    greedy_face_count++;
+    face_count++;
 
     // Z constant 2
-    collision_vertices[greedy_face_count * 6 + 0] = start + Vector3(0, size.y, size.z);
-    collision_vertices[greedy_face_count * 6 + 1] = start + Vector3(size.x, size.y, size.z);
-    collision_vertices[greedy_face_count * 6 + 2] = start + Vector3(0, 0, size.z);
-    collision_vertices[greedy_face_count * 6 + 3] = start + Vector3(size.x, size.y, size.z);
-    collision_vertices[greedy_face_count * 6 + 4] = start + Vector3(size.x, 0, size.z);
-    collision_vertices[greedy_face_count * 6 + 5] = start + Vector3(0, 0, size.z);
+    vertices[face_count * 6 + 0] = start + Vector3(0, size.y, size.z);
+    vertices[face_count * 6 + 1] = start + Vector3(size.x, size.y, size.z);
+    vertices[face_count * 6 + 2] = start + Vector3(0, 0, size.z);
+    vertices[face_count * 6 + 3] = start + Vector3(size.x, size.y, size.z);
+    vertices[face_count * 6 + 4] = start + Vector3(size.x, 0, size.z);
+    vertices[face_count * 6 + 5] = start + Vector3(0, 0, size.z);
+    add_face_normals(Vector3(0, 0, 1));
 
-    greedy_face_count++;
+    face_count++;
 
     // X constant 1
-    collision_vertices[greedy_face_count * 6 + 0] = start;
-    collision_vertices[greedy_face_count * 6 + 1] = start + Vector3(0, size.y, 0);
-    collision_vertices[greedy_face_count * 6 + 2] = start + Vector3(0, size.y, size.z);
-    collision_vertices[greedy_face_count * 6 + 3] = start;
-    collision_vertices[greedy_face_count * 6 + 4] = start + Vector3(0, size.y, size.z);
-    collision_vertices[greedy_face_count * 6 + 5] = start + Vector3(0, 0, size.z);
+    vertices[face_count * 6 + 0] = start;
+    vertices[face_count * 6 + 1] = start + Vector3(0, size.y, 0);
+    vertices[face_count * 6 + 2] = start + Vector3(0, size.y, size.z);
+    vertices[face_count * 6 + 3] = start;
+    vertices[face_count * 6 + 4] = start + Vector3(0, size.y, size.z);
+    vertices[face_count * 6 + 5] = start + Vector3(0, 0, size.z);
+    add_face_normals(Vector3(-1, 0, 0));
 
-    greedy_face_count++;
+    face_count++;
 
     // X constant 2
-    collision_vertices[greedy_face_count * 6 + 0] = start + Vector3(size.x, size.y, size.z);
-    collision_vertices[greedy_face_count * 6 + 1] = start + Vector3(size.x, 0, 0);
-    collision_vertices[greedy_face_count * 6 + 2] = start + Vector3(size.x, size.y, 0);
+    vertices[face_count * 6 + 0] = start + Vector3(size.x, size.y, size.z);
+    vertices[face_count * 6 + 1] = start + Vector3(size.x, size.y, 0);
+    vertices[face_count * 6 + 2] = start + Vector3(size.x, 0, 0);
 
-    collision_vertices[greedy_face_count * 6 + 3] = start + Vector3(size.x, 0, 0);
-    collision_vertices[greedy_face_count * 6 + 4] = start + Vector3(size.x, 0, size.z);
-    collision_vertices[greedy_face_count * 6 + 5] = start + Vector3(size.x, size.y, size.z);
+    vertices[face_count * 6 + 3] = start + Vector3(size.x, 0, 0);
+    vertices[face_count * 6 + 4] = start + Vector3(size.x, 0, size.z);
+    vertices[face_count * 6 + 5] = start + Vector3(size.x, size.y, size.z);
+    add_face_normals(Vector3(1, 0, 0));
 
-
-    greedy_face_count++;
+    face_count++;
 
 }
