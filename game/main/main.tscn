@@ -103,7 +103,6 @@ transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 
 
 [node name="RayCast3D" type="RayCast3D" parent="Player/Camera3D"]
 unique_name_in_owner = true
-visible = false
 target_position = Vector3(0, 0, -8)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]

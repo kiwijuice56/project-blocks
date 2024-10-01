@@ -389,11 +389,13 @@ bool Chunk::greedy_invalid(Vector3 position) {
 void Chunk::add_rectangular_prism(Vector3 start, Vector3 size) {
     // Bottom face
     collision_vertices[greedy_face_count * 6 + 0] = start;
-    collision_vertices[greedy_face_count * 6 + 1] = start + Vector3(size.x, 0, 0);
-    collision_vertices[greedy_face_count * 6 + 2] = start + Vector3(0, 0, size.z);
+    collision_vertices[greedy_face_count * 6 + 1] = start + Vector3(0, 0, size.z);
+    collision_vertices[greedy_face_count * 6 + 2] = start + Vector3(size.x, 0, 0);
+
     collision_vertices[greedy_face_count * 6 + 3] = start + Vector3(size.x, 0, 0);
-    collision_vertices[greedy_face_count * 6 + 4] = start + Vector3(size.x, 0, size.z);
-    collision_vertices[greedy_face_count * 6 + 5] = start + Vector3(0, 0, size.z);
+    collision_vertices[greedy_face_count * 6 + 4] = start + Vector3(0, 0, size.z);
+    collision_vertices[greedy_face_count * 6 + 5] = start + Vector3(size.x, 0, size.z);
+
 
     greedy_face_count++;
 
@@ -411,7 +413,6 @@ void Chunk::add_rectangular_prism(Vector3 start, Vector3 size) {
     collision_vertices[greedy_face_count * 6 + 0] = start + Vector3(0, size.y, 0);
     collision_vertices[greedy_face_count * 6 + 1] = start;
     collision_vertices[greedy_face_count * 6 + 2] = start + Vector3(size.x, size.y, 0);
-
     collision_vertices[greedy_face_count * 6 + 3] = start + Vector3(size.x, size.y, 0);
     collision_vertices[greedy_face_count * 6 + 4] = start;
     collision_vertices[greedy_face_count * 6 + 5] = start + Vector3(size.x, 0, 0);
@@ -422,12 +423,9 @@ void Chunk::add_rectangular_prism(Vector3 start, Vector3 size) {
     collision_vertices[greedy_face_count * 6 + 0] = start + Vector3(0, size.y, size.z);
     collision_vertices[greedy_face_count * 6 + 1] = start + Vector3(size.x, size.y, size.z);
     collision_vertices[greedy_face_count * 6 + 2] = start + Vector3(0, 0, size.z);
-
-
     collision_vertices[greedy_face_count * 6 + 3] = start + Vector3(size.x, size.y, size.z);
     collision_vertices[greedy_face_count * 6 + 4] = start + Vector3(size.x, 0, size.z);
     collision_vertices[greedy_face_count * 6 + 5] = start + Vector3(0, 0, size.z);
-
 
     greedy_face_count++;
 
