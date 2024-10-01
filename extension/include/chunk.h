@@ -18,6 +18,7 @@ private:
     Ref<NoiseTexture2D> main_noise_texture;
 
     PackedByteArray blocks;
+    PackedByteArray visited; // greedy meshing
     PackedVector3Array vertices;
     PackedInt32Array indices;
     PackedVector2Array uvs;
@@ -27,6 +28,7 @@ private:
     uint64_t id = 0;
     uint64_t face_count = 0;
     uint64_t block_count = 0;
+    uint64_t greedy_face_count = 0;
     // Easy optimization: skip checking blocks above the maximum non-empty Y,
     // as most chunks have huge spaces of empty air over them
     uint64_t max_y = 0;
@@ -44,9 +46,9 @@ protected:
 
 public:
     // The dimensions of individual chunks
-    static const int64_t CHUNK_SIZE_X = 8;
+    static const int64_t CHUNK_SIZE_X = 16;
     static const int64_t CHUNK_SIZE_Y = 256;
-    static const int64_t CHUNK_SIZE_Z = 8;
+    static const int64_t CHUNK_SIZE_Z = 16;
 
 	Chunk();
 	~Chunk();
@@ -63,6 +65,11 @@ public:
     void generate_mesh();
     void generate_data(Vector3 chunk_position);
     void generate_static_body(bool force_update);
+
+    void greedy_collision_shape_generation(Vector3 position);
+    Vector3 greedy_scan(Vector3 start);
+    void add_rectangular_prism(Vector3 start, Vector3 size);
+    bool greedy_invalid(Vector3 position);
 
     // Helper methods to access data
     uint64_t get_block_id_at(Vector3 position);
