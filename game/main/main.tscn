@@ -7,9 +7,10 @@
 [ext_resource type="Script" path="res://main/player.gd" id="6_p3o21"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_l8s5v"]
-noise_type = 3
+noise_type = 4
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_w2rym"]
+seamless = true
 noise = SubResource("FastNoiseLite_l8s5v")
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5nuc0"]
@@ -27,9 +28,12 @@ sky_material = SubResource("ProceduralSkyMaterial_5nuc0")
 background_mode = 1
 background_color = Color(0.309804, 0.431373, 0.529412, 1)
 sky = SubResource("Sky_kpkms")
+ssao_enabled = true
 ssao_light_affect = 0.5
+fog_enabled = true
 fog_light_color = Color(0.308745, 0.430974, 0.531312, 1)
 fog_density = 0.06
+volumetric_fog_enabled = true
 volumetric_fog_emission = Color(0.386405, 0.440268, 0.491682, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ferjh"]
@@ -47,9 +51,8 @@ transparency = 1
 shading_mode = 0
 albedo_color = Color(1, 1, 1, 0.0588235)
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_o6ln8"]
-radius = 0.2
-height = 1.5
+[sub_resource type="BoxShape3D" id="BoxShape3D_ksgqs"]
+size = Vector3(0.3, 1.5, 0.3)
 
 [node name="Main" type="Node"]
 
@@ -60,6 +63,7 @@ script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 36.0912, 0)
+shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_xd4t2")
@@ -88,17 +92,17 @@ mesh = SubResource("BoxMesh_us15l")
 surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
 
 [node name="Player" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 128, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 96, 0)
 collision_layer = 2
 script = ExtResource("6_p3o21")
 
 [node name="Camera3D" type="Camera3D" parent="Player"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 0.471495, 0)
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 0.9, 0)
 
 [node name="RayCast3D" type="RayCast3D" parent="Player/Camera3D"]
 unique_name_in_owner = true
 target_position = Vector3(0, 0, -8)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
-shape = SubResource("CapsuleShape3D_o6ln8")
+shape = SubResource("BoxShape3D_ksgqs")
