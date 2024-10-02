@@ -14,22 +14,28 @@ class Chunk : public MeshInstance3D {
 	GDCLASS(Chunk, MeshInstance3D)
 
 private:
+    // Mesh resources
     Ref<Material> block_material;
     Ref<NoiseTexture2D> main_noise_texture;
 
+    // Block ID data
     PackedByteArray blocks;
+
     bool* visited; // Greedy meshing
+
+    // Mesh data
     PackedVector3Array vertices;
     PackedVector2Array uvs;
+    PackedVector2Array uvs2;
     PackedVector3Array normals;
 
     uint64_t id = 0;
-    uint64_t face_count = 0;
+    uint64_t face_count = 0; // Quads, not tris
     uint64_t block_count = 0;
+    uint64_t current_greedy_block = 0;
     // Easy optimization: skip checking blocks above the maximum non-empty Y,
     // as most chunks have huge spaces of empty air over them
     uint64_t max_y = 0;
-    double texture_scale = 1/8.0;
     bool has_static_body = false;
 
 protected:

@@ -1,14 +1,8 @@
 shader_type spatial;
 
-uniform sampler2DArray textures;
-
-
+uniform sampler2DArray textures: filter_nearest;
 
 void fragment() {
-	ALBEDO = texture(textures, vec3(UV.x, UV.y, 0)).rgb;
+	// UV2.y carries the texture ID
+	ALBEDO = texture(textures, vec3(UV.x, UV.y, UV2.y)).rgb;
 }
-
-//void light() {
-	// Called for every pixel for every light affecting the material.
-	// Uncomment to replace the default light processing function with this one.
-//}
