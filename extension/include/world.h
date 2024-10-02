@@ -47,7 +47,6 @@ protected:
 	static void _bind_methods();
 
 	void initialize_chunk(uint64_t index);
-	void generate_from_queue(uint64_t n);
 	void update_loaded_region();
 
 	bool is_chunk_in_radius(Vector3i coordinate, int64_t radius);

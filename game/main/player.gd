@@ -1,6 +1,6 @@
 class_name Player extends CharacterBody3D
 
-var gravity: float = 1.25 * ProjectSettings.get_setting("physics/3d/default_gravity")
+var gravity: float = 0.2* ProjectSettings.get_setting("physics/3d/default_gravity")
 var speed: float = 5
 var jump_speed: float = 7.2
 var mouse_sensitivity: float = 0.01
@@ -40,7 +40,7 @@ func _input(event: InputEvent):
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sensitivity)
 		%Camera3D.rotate_x(-event.relative.y * mouse_sensitivity)
-		%Camera3D.rotation.x = clampf($Camera3D.rotation.x, -deg_to_rad(70), deg_to_rad(70))
+		%Camera3D.rotation.x = clampf($Camera3D.rotation.x, -deg_to_rad(90), deg_to_rad(90))
 	if event.is_action_pressed("ui_cancel", false):
 		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE

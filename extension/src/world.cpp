@@ -18,8 +18,6 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_main_noise_texture"), &World::get_main_noise_texture);
 	ClassDB::bind_method(D_METHOD("set_main_noise_texture", "new_texture"), &World::set_main_noise_texture);
 
-    ClassDB::bind_method(D_METHOD("generate_from_queue", "n"), &World::generate_from_queue);
-
     ClassDB::add_property(
         "World",
         PropertyInfo(
@@ -106,14 +104,14 @@ Vector3 World::get_center() const {
 void World::set_center(Vector3 new_center) {
     Vector3i new_center_chunk = Vector3i();
     new_center_chunk.x = new_center.x - int64_t(new_center.x) % Chunk::CHUNK_SIZE_X;
-    new_center_chunk.y = 0;
+    new_center_chunk.y = new_center.y - int64_t(new_center.y) % Chunk::CHUNK_SIZE_Y;
     new_center_chunk.z = new_center.z - int64_t(new_center.z) % Chunk::CHUNK_SIZE_Z;
 
     if (new_center_chunk != center_chunk) {
         center_chunk = new_center_chunk;
 
     }
-     update_loaded_region();
+    update_loaded_region();
 
     center = new_center;
 }
@@ -178,26 +176,28 @@ void World::update_loaded_region() {
         }
     }
     // Loop through the circular region around the center and generate chunks
-    for (int64_t chunk_x = -(instance_radius / Chunk::CHUNK_SIZE_X); chunk_x <= instance_radius / Chunk::CHUNK_SIZE_X; chunk_x++) {
-        for (int64_t chunk_z = -(instance_radius / Chunk::CHUNK_SIZE_Z); chunk_z <= instance_radius / Chunk::CHUNK_SIZE_Z; chunk_z++) {
-            Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * chunk_x, 0, Chunk::CHUNK_SIZE_Z * chunk_z) + center_chunk;
-            if (is_chunk_instanced.has(coordinate) || !is_chunk_in_radius(coordinate, instance_radius)) {
-                continue;
-            }
+    for (int64_t chunk_y = -(instance_radius / Chunk::CHUNK_SIZE_Y); chunk_y <= instance_radius / Chunk::CHUNK_SIZE_Y; chunk_y++) {
+        for (int64_t chunk_x = -(instance_radius / Chunk::CHUNK_SIZE_X); chunk_x <= instance_radius / Chunk::CHUNK_SIZE_X; chunk_x++) {
+            for (int64_t chunk_z = -(instance_radius / Chunk::CHUNK_SIZE_Z); chunk_z <= instance_radius / Chunk::CHUNK_SIZE_Z; chunk_z++) {
+                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * chunk_x, Chunk::CHUNK_SIZE_Y * chunk_y, Chunk::CHUNK_SIZE_Z * chunk_z) + center_chunk;
+                if (is_chunk_instanced.has(coordinate) || !is_chunk_in_radius(coordinate, instance_radius)) {
+                    continue;
+                }
 
-            if (loaded_chunks.has(coordinate)) {
-                add_child(Object::cast_to<Node>(loaded_chunks[coordinate]));
-            } else if (!is_chunk_in_queue.has(coordinate)) {
-                Chunk* new_chunk = memnew(Chunk);
-                new_chunk->set_position(coordinate);
-                new_chunk->set_main_noise_texture(main_noise_texture);
-                new_chunk->set_block_material(block_material);
-                add_child(new_chunk);
+                if (loaded_chunks.has(coordinate)) {
+                    add_child(Object::cast_to<Node>(loaded_chunks[coordinate]));
+                } else if (!is_chunk_in_queue.has(coordinate)) {
+                    Chunk* new_chunk = memnew(Chunk);
+                    new_chunk->set_position(coordinate);
+                    new_chunk->set_main_noise_texture(main_noise_texture);
+                    new_chunk->set_block_material(block_material);
+                    add_child(new_chunk);
 
-                is_chunk_in_queue[coordinate] = true;
+                    is_chunk_in_queue[coordinate] = true;
 
-                initiliazation_queue.append(new_chunk);
-                initiliazation_queue_positions.append(coordinate);
+                    initiliazation_queue.append(new_chunk);
+                    initiliazation_queue_positions.append(coordinate);
+                }
             }
         }
     }
@@ -205,11 +205,7 @@ void World::update_loaded_region() {
     has_task = true;
 }
 
-void World::generate_from_queue(uint64_t n) {
-
-}
-
 bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {
     Vector3i displacement = center_chunk - coordinate;
-    return displacement.x * displacement.x + displacement.z * displacement.z < radius * radius;
+    return displacement.x * displacement.x + displacement.z * displacement.z  + displacement.y * displacement.y < radius * radius;
 }

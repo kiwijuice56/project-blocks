@@ -35,10 +35,6 @@ private:
     uint64_t face_count = 0; // Quads, not tris
     uint64_t block_count = 0;
 
-    // Easy optimization: skip checking blocks above the maximum non-empty Y,
-    // as most chunks have huge spaces of empty air over them
-    uint64_t max_y = 0;
-
     bool has_static_body = false;
 
 protected:
@@ -54,9 +50,9 @@ protected:
 
 public:
     // The dimensions of individual chunks
-    static const int64_t CHUNK_SIZE_X = 16;
-    static const int64_t CHUNK_SIZE_Y = 256;
-    static const int64_t CHUNK_SIZE_Z = 16;
+    static const int64_t CHUNK_SIZE_X = 32;
+    static const int64_t CHUNK_SIZE_Y = 32;
+    static const int64_t CHUNK_SIZE_Z = 32;
 
 	Chunk();
 	~Chunk();

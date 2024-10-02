@@ -128,41 +128,38 @@ void Chunk::generate_data(Vector3 chunk_position) {
     if (chunk_uv2.x < 0.0) chunk_uv2.x = 1.0 + chunk_uv2.x;
     if (chunk_uv2.y < 0.0) chunk_uv2.y = 1.0 + chunk_uv2.y;
 
-    max_y = 0;
     for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
         for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
             Vector2 uv = chunk_uv + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 32.0;
             double height = sample_from_noise(main_noise_texture, uv);
-            uint64_t block_height = int(height * 12);
-            block_height *= block_height;
+            int64_t block_height = int(height * height * 1024);
 
             uv = chunk_uv2 + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 16.0;
             height = sample_from_noise(main_noise_texture, uv);
-            block_height += int(height * 15);
+            block_height += int(height * 32);
 
-            if (block_height >= CHUNK_SIZE_Y) {
-                block_height = CHUNK_SIZE_Y - 1;
+            if (block_height >= 1024) {
+                block_height = 1023;
             }
             if (block_height < 8) {
                 block_height = 8;
             }
 
-            max_y = max_y < block_height ? block_height : max_y;
-
-            for (uint64_t y = 0; y < block_height - 8; y++) {
-                blocks[position_to_index(Vector3(x, y, z))] = 1;
-                block_count++;
-            }
-
-            for (uint64_t y = block_height - 8; y < block_height; y++) {
-                blocks[position_to_index(Vector3(x, y, z))] = 2;
-                block_count++;
+            for (int64_t y = 0; y < CHUNK_SIZE_Y; y++) {
+                if (block_height > y + chunk_position.y) {
+                    blocks[position_to_index(Vector3(x, y, z))] = 1;
+                    block_count++;
+                }
             }
         }
     }
 }
 
 void Chunk::generate_mesh() {
+    if (block_count == 0) {
+        return;
+    }
+
     // Resize mesh data arrays to upper bounds of their sizes before culling
     // Drastically improves performance due to not needing to resize arrays constantly
     vertices.resize(6 * 6 * block_count);
@@ -226,8 +223,8 @@ void Chunk::remove_block_at(Vector3 global_position) {
 
 // Greedy mesh algorithm
 void Chunk::greedy_mesh_generation() {
-    visited = new bool[CHUNK_SIZE_X * CHUNK_SIZE_Z * max_y];
-    for (uint64_t i = 0; i < CHUNK_SIZE_X * CHUNK_SIZE_Z * max_y; i++) {
+    visited = new bool[CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y];
+    for (uint64_t i = 0; i < CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y; i++) {
         visited[i] = false;
     }
 
@@ -235,7 +232,7 @@ void Chunk::greedy_mesh_generation() {
 
     for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
-            for (uint64_t y = 0; y < max_y; y++) {
+            for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
                 current_greedy_block = get_block_id_at(Vector3(x, y, z));
                 if (greedy_invalid(Vector3(x, y, z))) continue;
                 Vector3 start = Vector3(x, y, z);
