@@ -17,7 +17,7 @@ class World : public Node3D {
 
 private:
 	int64_t instance_radius = 128;
-	int64_t unload_radius = 128 + 64;
+	int64_t unload_radius = 128 + 32;
 
 	TypedArray<Block> block_types;
 	Ref<Material> block_material;
@@ -32,11 +32,7 @@ private:
 	// Vector3i coordinate : bool mapping
 	Dictionary is_chunk_instanced;
 
-	// Vector3i coordinate : bool mapping
-	Dictionary is_chunk_in_queue;
-
-	PackedVector3Array generation_queue;
-
+	// Used to access chunks that need to be initialized (multithreaded)
 	TypedArray<Chunk> initiliazation_queue;
 	PackedVector3Array initiliazation_queue_positions;
 

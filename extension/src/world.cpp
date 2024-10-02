@@ -64,14 +64,11 @@ void World::_bind_methods() {
 
 World::World() {
     loaded_chunks = Dictionary();
-    is_chunk_in_queue = Dictionary();
     initiliazation_queue = TypedArray<Chunk>();
     initiliazation_queue_positions = PackedVector3Array();
 }
 
-World::~World() {
-
-}
+World::~World() { }
 
 void World::set_block_types(TypedArray<Block> new_block_types) {
     block_types = new_block_types;
@@ -107,13 +104,10 @@ void World::set_center(Vector3 new_center) {
     new_center_chunk.y = new_center.y - int64_t(new_center.y) % Chunk::CHUNK_SIZE_Y;
     new_center_chunk.z = new_center.z - int64_t(new_center.z) % Chunk::CHUNK_SIZE_Z;
 
-    if (new_center_chunk != center_chunk) {
-        center_chunk = new_center_chunk;
-
-    }
-    update_loaded_region();
-
+    center_chunk = new_center_chunk;
     center = new_center;
+
+    update_loaded_region();
 }
 
 void World::initialize_chunk(uint64_t index) {
@@ -133,15 +127,13 @@ void World::update_loaded_region() {
     */
 
     if (has_task) {
-        if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id)) {
-            return;
-        }
+        if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id)) return;
         WorkerThreadPool::get_singleton()->wait_for_group_task_completion(task_id);
     }
 
+    // Finalize chunks that were queued to be loaded
     for (uint64_t i = 0; i < initiliazation_queue.size(); i++) {
         is_chunk_instanced[(Vector3i) initiliazation_queue_positions[i]] = true;
-        is_chunk_in_queue.erase((Vector3i) initiliazation_queue_positions[i]);
         loaded_chunks[(Vector3i) initiliazation_queue_positions[i]] = initiliazation_queue[i];
     }
     initiliazation_queue.clear();
@@ -175,7 +167,8 @@ void World::update_loaded_region() {
             is_chunk_instanced[Vector3i(chunk->get_position())] = true;
         }
     }
-    // Loop through the circular region around the center and generate chunks
+
+    // Loop through the spherical region around the center and generate chunks
     for (int64_t chunk_y = -(instance_radius / Chunk::CHUNK_SIZE_Y); chunk_y <= instance_radius / Chunk::CHUNK_SIZE_Y; chunk_y++) {
         for (int64_t chunk_x = -(instance_radius / Chunk::CHUNK_SIZE_X); chunk_x <= instance_radius / Chunk::CHUNK_SIZE_X; chunk_x++) {
             for (int64_t chunk_z = -(instance_radius / Chunk::CHUNK_SIZE_Z); chunk_z <= instance_radius / Chunk::CHUNK_SIZE_Z; chunk_z++) {
@@ -186,14 +179,12 @@ void World::update_loaded_region() {
 
                 if (loaded_chunks.has(coordinate)) {
                     add_child(Object::cast_to<Node>(loaded_chunks[coordinate]));
-                } else if (!is_chunk_in_queue.has(coordinate)) {
+                } else {
                     Chunk* new_chunk = memnew(Chunk);
                     new_chunk->set_position(coordinate);
                     new_chunk->set_main_noise_texture(main_noise_texture);
                     new_chunk->set_block_material(block_material);
                     add_child(new_chunk);
-
-                    is_chunk_in_queue[coordinate] = true;
 
                     initiliazation_queue.append(new_chunk);
                     initiliazation_queue_positions.append(coordinate);
@@ -207,5 +198,5 @@ void World::update_loaded_region() {
 
 bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {
     Vector3i displacement = center_chunk - coordinate;
-    return displacement.x * displacement.x + displacement.z * displacement.z  + displacement.y * displacement.y < radius * radius;
+    return displacement.length_squared() < radius * radius;
 }
