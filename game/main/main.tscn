@@ -1,9 +1,11 @@
-[gd_scene load_steps=15 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=18 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/test_world.gd" id="5_ds8vp"]
-[ext_resource type="Script" path="res://main/fps_label.gd" id="5_fc4bx"]
-[ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/block_material.tres" id="5_md34j"]
-[ext_resource type="Shader" path="res://main/vhs.gdshader" id="5_quynp"]
+[ext_resource type="Script" path="res://main/ui/fps_label.gd" id="5_fc4bx"]
+[ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/rendering/block_material.tres" id="5_md34j"]
+[ext_resource type="Shader" path="res://main/ui/vhs.gdshader" id="5_quynp"]
+[ext_resource type="Texture2D" uid="uid://dny2s70gsc4cf" path="res://main/ui/crosshair.png" id="6_i0idr"]
+[ext_resource type="Shader" path="res://main/ui/crosshair_inversion.gdshader" id="6_mjg4k"]
 [ext_resource type="Script" path="res://main/player.gd" id="6_p3o21"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_uj6v8"]
@@ -13,6 +15,17 @@ frequency = 0.0161
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_5d2c4"]
 seamless = true
 noise = SubResource("FastNoiseLite_uj6v8")
+
+[sub_resource type="BoxMesh" id="BoxMesh_us15l"]
+size = Vector3(1.01, 1.01, 1.01)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bpaxa"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.0588235)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ksgqs"]
+size = Vector3(0.3, 1.5, 0.3)
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5nuc0"]
 sky_top_color = Color(0.380392, 0.52549, 0.733333, 1)
@@ -28,6 +41,7 @@ sky_material = SubResource("ProceduralSkyMaterial_5nuc0")
 [sub_resource type="Environment" id="Environment_xd4t2"]
 background_mode = 1
 background_color = Color(0.309804, 0.431373, 0.529412, 1)
+background_energy_multiplier = 0.0
 sky = SubResource("Sky_kpkms")
 ssao_enabled = true
 ssao_light_affect = 0.5
@@ -36,6 +50,7 @@ fog_light_color = Color(0.308745, 0.430974, 0.531312, 1)
 fog_density = 0.06
 volumetric_fog_enabled = true
 volumetric_fog_emission = Color(0.386405, 0.440268, 0.491682, 1)
+volumetric_fog_emission_energy = 0.6
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ferjh"]
 shader = ExtResource("5_quynp")
@@ -44,16 +59,8 @@ shader_parameter/wiggle_speed = 25.0
 shader_parameter/smear = 1.0
 shader_parameter/blur_samples = 15
 
-[sub_resource type="BoxMesh" id="BoxMesh_us15l"]
-size = Vector3(1.01, 1.01, 1.01)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bpaxa"]
-transparency = 1
-shading_mode = 0
-albedo_color = Color(1, 1, 1, 0.0588235)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_ksgqs"]
-size = Vector3(0.3, 1.5, 0.3)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3a5av"]
+shader = ExtResource("6_mjg4k")
 
 [node name="Main" type="Node"]
 
@@ -63,8 +70,34 @@ main_noise_texture = SubResource("NoiseTexture2D_5d2c4")
 script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 36.0912, 0)
+transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
 shadow_enabled = true
+
+[node name="BasicDirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.77719, -0.569685, 0.267272, 0, 0.424737, 0.905317, -0.629266, -0.703603, 0.330101, 0, 0, 0)
+light_energy = 0.05
+light_volumetric_fog_energy = 0.0
+
+[node name="Pointer" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+mesh = SubResource("BoxMesh_us15l")
+surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 128, 500, 512)
+collision_layer = 2
+script = ExtResource("6_p3o21")
+
+[node name="Camera3D" type="Camera3D" parent="Player"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 0.7, 0)
+
+[node name="RayCast3D" type="RayCast3D" parent="Player/Camera3D"]
+unique_name_in_owner = true
+target_position = Vector3(0, 0, -8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("BoxShape3D_ksgqs")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_xd4t2")
@@ -77,33 +110,31 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="FPSLabel" type="Label" parent="."]
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="FPSLabel" type="Label" parent="UI"]
 visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 script = ExtResource("5_fc4bx")
 
-[node name="Timer" type="Timer" parent="FPSLabel"]
+[node name="Timer" type="Timer" parent="UI/FPSLabel"]
 unique_name_in_owner = true
 autostart = true
 
-[node name="Pointer" type="MeshInstance3D" parent="."]
-unique_name_in_owner = true
-mesh = SubResource("BoxMesh_us15l")
-surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
-
-[node name="Player" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 900, 800, 200)
-collision_layer = 2
-script = ExtResource("6_p3o21")
-
-[node name="Camera3D" type="Camera3D" parent="Player"]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 0.9, 0)
-
-[node name="RayCast3D" type="RayCast3D" parent="Player/Camera3D"]
-unique_name_in_owner = true
-target_position = Vector3(0, 0, -8)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
-shape = SubResource("BoxShape3D_ksgqs")
+[node name="Crosshair" type="TextureRect" parent="UI"]
+modulate = Color(1, 1, 1, 0.415686)
+material = SubResource("ShaderMaterial_3a5av")
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -4.5
+offset_top = -4.5
+offset_right = 4.5
+offset_bottom = 4.5
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("6_i0idr")
+stretch_mode = 2

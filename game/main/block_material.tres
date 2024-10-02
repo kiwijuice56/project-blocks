@@ -1,9 +1,0 @@
-[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://mo5hyyhqxh67"]
-
-[ext_resource type="Shader" path="res://main/block_render.gdshader" id="1_s1p5q"]
-[ext_resource type="CompressedTexture2DArray" uid="uid://c62exfruuow3g" path="res://main/textures.png" id="2_m118b"]
-
-[resource]
-render_priority = 0
-shader = ExtResource("1_s1p5q")
-shader_parameter/textures = ExtResource("2_m118b")
