@@ -14,28 +14,31 @@ class Chunk : public MeshInstance3D {
 	GDCLASS(Chunk, MeshInstance3D)
 
 private:
-    // Mesh resources
+    // Resources
     Ref<Material> block_material;
     Ref<NoiseTexture2D> main_noise_texture;
 
     // Block ID data
     PackedByteArray blocks;
 
-    bool* visited; // Greedy meshing
+    // Greedy meshing state variables
+    bool* visited;
+    uint64_t current_greedy_block = 0;
 
     // Mesh data
     PackedVector3Array vertices;
+    PackedVector3Array normals;
     PackedVector2Array uvs;
     PackedVector2Array uvs2;
-    PackedVector3Array normals;
 
     uint64_t id = 0;
     uint64_t face_count = 0; // Quads, not tris
     uint64_t block_count = 0;
-    uint64_t current_greedy_block = 0;
+
     // Easy optimization: skip checking blocks above the maximum non-empty Y,
     // as most chunks have huge spaces of empty air over them
     uint64_t max_y = 0;
+
     bool has_static_body = false;
 
 protected:
@@ -44,6 +47,10 @@ protected:
     // Helper methods to generate chunk mesh
     void add_face_uvs(uint64_t id, Vector2 scale);
     void add_face_normals(Vector3 normal);
+    void add_rectangular_prism(Vector3 start, Vector3 size);
+    void greedy_mesh_generation();
+    Vector3 greedy_scan(Vector3 start);
+    bool greedy_invalid(Vector3 position);
 
 public:
     // The dimensions of individual chunks
@@ -54,25 +61,20 @@ public:
 	Chunk();
 	~Chunk();
 
+    // Boilerplate setters and getters
     uint64_t get_id() const;
 	void set_id(uint64_t new_id);
-
     Ref<Material> get_block_material() const;
     void set_block_material(Ref<Material> new_material);
-
     Ref<NoiseTexture2D> get_main_noise_texture() const;
     void set_main_noise_texture(Ref<NoiseTexture2D> new_texture);
 
+    // Generation methods
     void generate_mesh();
     void generate_data(Vector3 chunk_position);
     void generate_static_body(bool force_update);
 
-    void greedy_mesh_generation();
-    Vector3 greedy_scan(Vector3 start);
-    void add_rectangular_prism(Vector3 start, Vector3 size);
-    bool greedy_invalid(Vector3 position);
-
-    // Helper methods to access data
+    // Helper methods to interface with internal data structures
     uint64_t get_block_id_at(Vector3 position);
     uint64_t position_to_index(Vector3 position);
     Vector3 index_to_position(uint64_t index);
@@ -80,7 +82,6 @@ public:
     bool in_bounds(Vector3 position);
 
     // Modifying methods
-
     void remove_block_at(Vector3 global_position);
 };
 

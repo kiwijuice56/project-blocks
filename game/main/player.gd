@@ -1,8 +1,8 @@
 class_name Player extends CharacterBody3D
 
-var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-var speed: float = 4
-var jump_speed: float = 6.5
+var gravity: float = 1.25 * ProjectSettings.get_setting("physics/3d/default_gravity")
+var speed: float = 5
+var jump_speed: float = 7.2
 var mouse_sensitivity: float = 0.01
 
 func _ready() -> void:

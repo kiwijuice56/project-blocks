@@ -37,8 +37,7 @@ Chunk::Chunk() {
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 }
 
-Chunk::~Chunk() {
-}
+Chunk::~Chunk() { }
 
 uint64_t Chunk::get_id() const {
     return id;
@@ -108,6 +107,7 @@ void Chunk::add_face_normals(Vector3 normal) {
     }
 }
 
+// Generate the block data for this chunk
 void Chunk::generate_data(Vector3 chunk_position) {
     block_count = 0;
 
@@ -224,6 +224,7 @@ void Chunk::remove_block_at(Vector3 global_position) {
     generate_mesh();
 }
 
+// Greedy mesh algorithm
 void Chunk::greedy_mesh_generation() {
     visited = new bool[CHUNK_SIZE_X * CHUNK_SIZE_Z * max_y];
     for (uint64_t i = 0; i < CHUNK_SIZE_X * CHUNK_SIZE_Z * max_y; i++) {
@@ -247,6 +248,7 @@ void Chunk::greedy_mesh_generation() {
     delete [] visited;
 }
 
+// Greedily find the size of the largest prism we can add to our mesh
 Vector3 Chunk::greedy_scan(Vector3 start) {
     Vector3 size = Vector3(1, 1, 1);
     while (!greedy_invalid(start + Vector3(size.x, 0, 0))) {
@@ -290,10 +292,12 @@ Vector3 Chunk::greedy_scan(Vector3 start) {
     return size;
 }
 
+// Check if a position contains a block that can be merged with our current greedy scan
 bool Chunk::greedy_invalid(Vector3 position) {
     return !in_bounds(position) || get_block_id_at(position) == 0 || get_block_id_at(position) != current_greedy_block || visited[position_to_index(position)];
 }
 
+// Adds vertices, uvs, and normals for a rectangular prism to our mesh
 void Chunk::add_rectangular_prism(Vector3 start, Vector3 size) {
     // Y, facing up
     vertices[face_count * 6 + 0] = start + Vector3(0, size.y, size.z);
