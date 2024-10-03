@@ -1,5 +1,6 @@
-[gd_scene load_steps=18 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=20 format=3 uid="uid://dtav4pssg0xe2"]
 
+[ext_resource type="Shader" path="res://main/dithering.gdshader" id="4_25hyt"]
 [ext_resource type="Script" path="res://main/test_world.gd" id="5_ds8vp"]
 [ext_resource type="Script" path="res://main/ui/fps_label.gd" id="5_fc4bx"]
 [ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/rendering/block_material.tres" id="5_md34j"]
@@ -52,6 +53,12 @@ volumetric_fog_enabled = true
 volumetric_fog_emission = Color(0.386405, 0.440268, 0.491682, 1)
 volumetric_fog_emission_energy = 0.6
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
+shader = ExtResource("4_25hyt")
+shader_parameter/fog_color = Color(1, 1, 1, 1)
+shader_parameter/resolution_downsampling = 1.0
+shader_parameter/bit_depth = 8.0
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ferjh"]
 shader = ExtResource("5_quynp")
 shader_parameter/wiggle = 0.03
@@ -75,7 +82,7 @@ shadow_enabled = true
 
 [node name="BasicDirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.77719, -0.569685, 0.267272, 0, 0.424737, 0.905317, -0.629266, -0.703603, 0.330101, 0, 0, 0)
-light_energy = 0.05
+light_energy = 0.03
 light_volumetric_fog_energy = 0.0
 
 [node name="Pointer" type="MeshInstance3D" parent="."]
@@ -84,7 +91,7 @@ mesh = SubResource("BoxMesh_us15l")
 surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
 
 [node name="Player" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 128, 500, 512)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 512, 500, 512)
 collision_layer = 2
 script = ExtResource("6_p3o21")
 
@@ -102,7 +109,16 @@ shape = SubResource("BoxShape3D_ksgqs")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_xd4t2")
 
+[node name="Dithering" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_6f7p0")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="VHSCover" type="ColorRect" parent="."]
+visible = false
 material = SubResource("ShaderMaterial_ferjh")
 anchors_preset = 15
 anchor_right = 1.0
@@ -123,7 +139,7 @@ unique_name_in_owner = true
 autostart = true
 
 [node name="Crosshair" type="TextureRect" parent="UI"]
-modulate = Color(1, 1, 1, 0.415686)
+modulate = Color(1, 1, 1, 0.4)
 material = SubResource("ShaderMaterial_3a5av")
 anchors_preset = 8
 anchor_left = 0.5
