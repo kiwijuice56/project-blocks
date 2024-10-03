@@ -51,15 +51,17 @@ public:
 	World();
 	~World();
 
+	// Boilerplate setters and getters
+	void set_instance_radius(int64_t new_radius);
+	int64_t get_instance_radius() const;
+	void set_unload_radius(int64_t new_radius);
+	int64_t get_unload_radius() const;
 	TypedArray<Block> get_block_types() const;
     void set_block_types(const TypedArray<Block> new_block_types);
-
 	Ref<Material> get_block_material() const;
     void set_block_material(Ref<Material> new_material);
-
 	Ref<NoiseTexture2D> get_main_noise_texture() const;
     void set_main_noise_texture(Ref<NoiseTexture2D> new_texture);
-
 	Vector3 get_center() const;
 	void set_center(Vector3 new_center);
 };

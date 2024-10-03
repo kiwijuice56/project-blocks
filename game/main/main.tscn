@@ -1,6 +1,7 @@
-[gd_scene load_steps=20 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=18 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Shader" path="res://main/dithering.gdshader" id="4_25hyt"]
+[ext_resource type="Environment" uid="uid://sx2cj4i72spa" path="res://main/rendering/low_graphics_environment.tres" id="4_56shc"]
 [ext_resource type="Script" path="res://main/test_world.gd" id="5_ds8vp"]
 [ext_resource type="Script" path="res://main/ui/fps_label.gd" id="5_fc4bx"]
 [ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/rendering/block_material.tres" id="5_md34j"]
@@ -28,31 +29,6 @@ albedo_color = Color(1, 1, 1, 0.0588235)
 [sub_resource type="BoxShape3D" id="BoxShape3D_ksgqs"]
 size = Vector3(0.3, 1.5, 0.3)
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5nuc0"]
-sky_top_color = Color(0.380392, 0.52549, 0.733333, 1)
-sky_horizon_color = Color(0.380392, 0.52549, 0.733333, 1)
-ground_bottom_color = Color(0.380392, 0.52549, 0.733333, 1)
-ground_horizon_color = Color(0.380392, 0.52549, 0.733333, 1)
-sun_angle_max = 15.43
-use_debanding = false
-
-[sub_resource type="Sky" id="Sky_kpkms"]
-sky_material = SubResource("ProceduralSkyMaterial_5nuc0")
-
-[sub_resource type="Environment" id="Environment_xd4t2"]
-background_mode = 1
-background_color = Color(0.309804, 0.431373, 0.529412, 1)
-background_energy_multiplier = 0.0
-sky = SubResource("Sky_kpkms")
-ssao_enabled = true
-ssao_light_affect = 0.5
-fog_enabled = true
-fog_light_color = Color(0.308745, 0.430974, 0.531312, 1)
-fog_density = 0.06
-volumetric_fog_enabled = true
-volumetric_fog_emission = Color(0.386405, 0.440268, 0.491682, 1)
-volumetric_fog_emission_energy = 0.6
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
 shader_parameter/fog_color = Color(1, 1, 1, 1)
@@ -74,15 +50,17 @@ shader = ExtResource("6_mjg4k")
 [node name="TestWorld" type="World" parent="."]
 block_material = ExtResource("5_md34j")
 main_noise_texture = SubResource("NoiseTexture2D_5d2c4")
+unload_radius = 288
+instance_radius = 256
 script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
+visible = false
 shadow_enabled = true
 
 [node name="BasicDirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.77719, -0.569685, 0.267272, 0, 0.424737, 0.905317, -0.629266, -0.703603, 0.330101, 0, 0, 0)
-light_energy = 0.03
 light_volumetric_fog_energy = 0.0
 
 [node name="Pointer" type="MeshInstance3D" parent="."]
@@ -107,7 +85,7 @@ target_position = Vector3(0, 0, -8)
 shape = SubResource("BoxShape3D_ksgqs")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_xd4t2")
+environment = ExtResource("4_56shc")
 
 [node name="Dithering" type="ColorRect" parent="."]
 material = SubResource("ShaderMaterial_6f7p0")
@@ -129,7 +107,6 @@ grow_vertical = 2
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="FPSLabel" type="Label" parent="UI"]
-visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 script = ExtResource("5_fc4bx")
