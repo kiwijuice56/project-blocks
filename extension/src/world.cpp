@@ -86,11 +86,6 @@ World::World() {
     loaded_chunks = Dictionary();
     initiliazation_queue = TypedArray<Chunk>();
     initiliazation_queue_positions = PackedVector3Array();
-    chunk_pool = TypedArray<Chunk>();
-    chunk_pool.resize(3 * Chunk::CHUNK_SIZE_X * Chunk::CHUNK_SIZE_Y * Chunk::CHUNK_SIZE_Z);
-    for (int64_t i = 0; i < chunk_pool.size(); i++) {
-        chunk_pool[i] = memnew(Chunk);
-    }
 }
 
 World::~World() { }
@@ -192,7 +187,7 @@ void World::update_loaded_region() {
         if (to_unload->is_inside_tree()) {
             to_unload->get_parent()->remove_child(to_unload);
         }
-        //to_unload->queue_free();
+        to_unload->queue_free();
         loaded_chunks.erase(chunks_to_unload[i]);
     }
 
@@ -226,14 +221,7 @@ void World::update_loaded_region() {
                 if (loaded_chunks.has(coordinate)) {
                     add_child(Object::cast_to<Node>(loaded_chunks[coordinate]));
                 } else {
-                    while (Object::cast_to<Chunk>(chunk_pool[pool_index])->is_inside_tree()) {
-                        pool_index++;
-                        if (pool_index >= chunk_pool.size()) {
-                            pool_index = 0;
-                        }
-                    }
-                    Chunk* new_chunk = Object::cast_to<Chunk>(chunk_pool[pool_index]);
-
+                    Chunk* new_chunk = memnew(Chunk);
                     new_chunk->set_position(coordinate);
                     new_chunk->set_main_noise_texture(main_noise_texture);
                     new_chunk->set_block_material(block_material);

@@ -36,9 +36,6 @@ private:
 	TypedArray<Chunk> initiliazation_queue;
 	PackedVector3Array initiliazation_queue_positions;
 
-	TypedArray<Chunk> chunk_pool;
-	uint64_t pool_index = 0;
-
 	uint64_t task_id = 0;
 	bool has_task = false;
 
