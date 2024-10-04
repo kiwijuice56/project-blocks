@@ -50,7 +50,6 @@ shader = ExtResource("6_mjg4k")
 [node name="TestWorld" type="World" parent="."]
 block_material = ExtResource("5_md34j")
 main_noise_texture = SubResource("NoiseTexture2D_5d2c4")
-unload_radius = 288
 instance_radius = 256
 script = ExtResource("5_ds8vp")
 

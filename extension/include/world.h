@@ -17,7 +17,6 @@ class World : public Node3D {
 
 private:
 	int64_t instance_radius = 128;
-	int64_t unload_radius = 128 + 32;
 
 	TypedArray<Block> block_types;
 	Ref<Material> block_material;
@@ -25,9 +24,6 @@ private:
 
 	Vector3 center;
 	Vector3i center_chunk;
-
-	// Vector3i coordinate : Chunk instance mapping
-	Dictionary loaded_chunks;
 
 	// Vector3i coordinate : bool mapping
 	Dictionary is_chunk_instanced;
@@ -54,8 +50,6 @@ public:
 	// Boilerplate setters and getters
 	void set_instance_radius(int64_t new_radius);
 	int64_t get_instance_radius() const;
-	void set_unload_radius(int64_t new_radius);
-	int64_t get_unload_radius() const;
 	TypedArray<Block> get_block_types() const;
     void set_block_types(const TypedArray<Block> new_block_types);
 	Ref<Material> get_block_material() const;

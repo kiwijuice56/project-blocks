@@ -18,9 +18,6 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_main_noise_texture"), &World::get_main_noise_texture);
 	ClassDB::bind_method(D_METHOD("set_main_noise_texture", "new_texture"), &World::set_main_noise_texture);
 
-    ClassDB::bind_method(D_METHOD("get_unload_radius"), &World::get_unload_radius);
-	ClassDB::bind_method(D_METHOD("set_unload_radius", "new_radius"), &World::set_unload_radius);
-
     ClassDB::bind_method(D_METHOD("get_instance_radius"), &World::get_instance_radius);
 	ClassDB::bind_method(D_METHOD("set_instance_radius", "new_radius"), &World::set_instance_radius);
 
@@ -69,13 +66,6 @@ void World::_bind_methods() {
 
     ClassDB::add_property(
         "World",
-        PropertyInfo(Variant::INT, "unload_radius"),
-        "set_unload_radius",
-        "get_unload_radius"
-    );
-
-    ClassDB::add_property(
-        "World",
         PropertyInfo(Variant::INT, "instance_radius"),
         "set_instance_radius",
         "get_instance_radius"
@@ -83,7 +73,6 @@ void World::_bind_methods() {
 }
 
 World::World() {
-    loaded_chunks = Dictionary();
     initiliazation_queue = TypedArray<Chunk>();
     initiliazation_queue_positions = PackedVector3Array();
 }
@@ -126,14 +115,6 @@ int64_t World::get_instance_radius() const {
     return instance_radius;
 }
 
-void World::set_unload_radius(int64_t new_radius) {
-    unload_radius = new_radius;
-}
-
-int64_t World::get_unload_radius() const {
-    return unload_radius;
-}
-
 void World::set_center(Vector3 new_center) {
     Vector3i new_center_chunk = Vector3i();
     new_center_chunk.x = new_center.x - int64_t(new_center.x) % Chunk::CHUNK_SIZE_X;
@@ -167,29 +148,8 @@ void World::update_loaded_region() {
         WorkerThreadPool::get_singleton()->wait_for_group_task_completion(task_id);
     }
 
-    // Finalize chunks that were queued to be loaded
-    for (uint64_t i = 0; i < initiliazation_queue.size(); i++) {
-        loaded_chunks[(Vector3i) initiliazation_queue_positions[i]] = initiliazation_queue[i];
-    }
     initiliazation_queue.clear();
     initiliazation_queue_positions.clear();
-
-    // Unload chunks outside of unload radius
-    Array keys = loaded_chunks.keys();
-    TypedArray<Vector3i> chunks_to_unload;
-    for (int64_t i = 0; i < keys.size(); i++) {
-        if (!is_chunk_in_radius(Object::cast_to<Chunk>(loaded_chunks[keys[i]])->get_position(), unload_radius)) {
-            chunks_to_unload.append(keys[i]);
-        }
-    }
-    for (int64_t i = 0; i < chunks_to_unload.size(); i++) {
-        Chunk* to_unload = Object::cast_to<Chunk>(loaded_chunks[chunks_to_unload[i]]);
-        if (to_unload->is_inside_tree()) {
-            to_unload->get_parent()->remove_child(to_unload);
-        }
-        to_unload->queue_free();
-        loaded_chunks.erase(chunks_to_unload[i]);
-    }
 
     // Loop through instanced chunks to remove any that are outside of instance radius
     for (uint64_t i = 0; i < get_child_count(); i++) {
@@ -197,6 +157,7 @@ void World::update_loaded_region() {
         if (!is_chunk_in_radius(Vector3i(chunk->get_position()), instance_radius)) {
             i--; // We do not want to skip over children when we remove one
             remove_child(chunk);
+            chunk->queue_free();
             is_chunk_instanced.erase(Vector3i(chunk->get_position()));
         }
     }
@@ -218,18 +179,14 @@ void World::update_loaded_region() {
 
                 is_chunk_instanced[coordinate] = true;
 
-                if (loaded_chunks.has(coordinate)) {
-                    add_child(Object::cast_to<Node>(loaded_chunks[coordinate]));
-                } else {
-                    Chunk* new_chunk = memnew(Chunk);
-                    new_chunk->set_position(coordinate);
-                    new_chunk->set_main_noise_texture(main_noise_texture);
-                    new_chunk->set_block_material(block_material);
-                    add_child(new_chunk);
+                Chunk* new_chunk = memnew(Chunk);
+                new_chunk->set_position(coordinate);
+                new_chunk->set_main_noise_texture(main_noise_texture);
+                new_chunk->set_block_material(block_material);
+                add_child(new_chunk);
 
-                    initiliazation_queue.append(new_chunk);
-                    initiliazation_queue_positions.append(coordinate);
-                }
+                initiliazation_queue.append(new_chunk);
+                initiliazation_queue_positions.append(coordinate);
             }
         }
     }
