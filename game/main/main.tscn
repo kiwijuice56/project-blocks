@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=19 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Shader" path="res://main/dithering.gdshader" id="4_25hyt"]
 [ext_resource type="Environment" uid="uid://sx2cj4i72spa" path="res://main/rendering/low_graphics_environment.tres" id="4_56shc"]
@@ -10,13 +10,13 @@
 [ext_resource type="Shader" path="res://main/ui/crosshair_inversion.gdshader" id="6_mjg4k"]
 [ext_resource type="Script" path="res://main/player.gd" id="6_p3o21"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_uj6v8"]
-noise_type = 3
-frequency = 0.0161
+[sub_resource type="Block" id="Block_ttxbt"]
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_5d2c4"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_pqdmm"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ags5r"]
 seamless = true
-noise = SubResource("FastNoiseLite_uj6v8")
+noise = SubResource("FastNoiseLite_pqdmm")
 
 [sub_resource type="BoxMesh" id="BoxMesh_us15l"]
 size = Vector3(1.01, 1.01, 1.01)
@@ -48,9 +48,10 @@ shader = ExtResource("6_mjg4k")
 [node name="Main" type="Node"]
 
 [node name="TestWorld" type="World" parent="."]
+block_types = Array[Block]([SubResource("Block_ttxbt")])
 block_material = ExtResource("5_md34j")
-main_noise_texture = SubResource("NoiseTexture2D_5d2c4")
-instance_radius = 256
+main_noise_texture = SubResource("NoiseTexture2D_ags5r")
+instance_radius = 512
 script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -68,13 +69,15 @@ mesh = SubResource("BoxMesh_us15l")
 surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
 
 [node name="Player" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 512, 500, 512)
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1024, 256, 1024)
 collision_layer = 2
 script = ExtResource("6_p3o21")
 
 [node name="Camera3D" type="Camera3D" parent="Player"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 0.7, 0)
+fov = 80.0
 
 [node name="RayCast3D" type="RayCast3D" parent="Player/Camera3D"]
 unique_name_in_owner = true
@@ -87,6 +90,7 @@ shape = SubResource("BoxShape3D_ksgqs")
 environment = ExtResource("4_56shc")
 
 [node name="Dithering" type="ColorRect" parent="."]
+visible = false
 material = SubResource("ShaderMaterial_6f7p0")
 anchors_preset = 15
 anchor_right = 1.0

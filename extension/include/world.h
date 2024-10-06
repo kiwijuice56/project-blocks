@@ -9,6 +9,7 @@
 #include <godot_cpp/classes/noise_texture2d.hpp>
 #include <godot_cpp/classes/worker_thread_pool.hpp>
 #include <godot_cpp/classes/thread.hpp>
+#include <godot_cpp/classes/engine.hpp>
 
 namespace godot {
 
@@ -25,8 +26,7 @@ private:
 	Vector3 center;
 	Vector3i center_chunk;
 
-	// Vector3i coordinate : bool mapping
-	Dictionary is_chunk_instanced;
+	std::vector<Chunk*> all_chunks;
 
 	// Used to access chunks that need to be initialized (multithreaded)
 	TypedArray<Chunk> initiliazation_queue;
@@ -38,6 +38,7 @@ private:
 protected:
 	static void _bind_methods();
 
+	void regenerate_chunks();
 	void initialize_chunk(uint64_t index);
 	void update_loaded_region();
 
@@ -46,6 +47,8 @@ protected:
 public:
 	World();
 	~World();
+
+	void initialize();
 
 	// Boilerplate setters and getters
 	void set_instance_radius(int64_t new_radius);

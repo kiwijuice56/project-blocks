@@ -17,6 +17,7 @@ private:
     // Resources
     Ref<Material> block_material;
     Ref<NoiseTexture2D> main_noise_texture;
+    ConcavePolygonShape3D* shape_data;
 
     // Block ID data
     PackedByteArray blocks;
@@ -68,7 +69,8 @@ public:
     // Generation methods
     void generate_mesh();
     void generate_data(Vector3 chunk_position);
-    void generate_static_body(bool force_update);
+    void generate_static_body();
+    void clear_collision();
 
     // Helper methods to interface with internal data structures
     uint64_t get_block_id_at(Vector3 position);

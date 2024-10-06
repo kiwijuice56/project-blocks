@@ -109,6 +109,7 @@ void Chunk::add_face_normals(Vector3 normal) {
 
 // Generate the block data for this chunk
 void Chunk::generate_data(Vector3 chunk_position) {
+    blocks.fill(0);
     block_count = 0;
 
     Vector2 chunk_uv = Vector2(
@@ -117,34 +118,15 @@ void Chunk::generate_data(Vector3 chunk_position) {
         % Vector2i(32, 32)
     ) / 32.0;
 
-    Vector2 chunk_uv2 = Vector2(
-        Vector2i(chunk_position.x, chunk_position.z)
-        / Vector2i(CHUNK_SIZE_X, CHUNK_SIZE_Z)
-        % Vector2i(16, 16)
-    ) / 16.0;
-
     if (chunk_uv.x < 0.0) chunk_uv.x = 1.0 + chunk_uv.x;
     if (chunk_uv.y < 0.0) chunk_uv.y = 1.0 + chunk_uv.y;
-    if (chunk_uv2.x < 0.0) chunk_uv2.x = 1.0 + chunk_uv2.x;
-    if (chunk_uv2.y < 0.0) chunk_uv2.y = 1.0 + chunk_uv2.y;
 
-    for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
-        for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
+    for (int64_t z = 0; z < CHUNK_SIZE_Z; z++) {
+        for (int64_t x = 0; x < CHUNK_SIZE_X; x++) {
             Vector2 uv = chunk_uv + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 32.0;
+
             double height = sample_from_noise(main_noise_texture, uv);
-            int64_t block_height = int(height * height * 1024);
-
-            uv = chunk_uv2 + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 16.0;
-            height = sample_from_noise(main_noise_texture, uv);
-            block_height += int(height * 32);
-
-            if (block_height >= 1024) {
-                block_height = 1023;
-            }
-            if (block_height < 8) {
-                block_height = 8;
-            }
-
+            int64_t block_height = int(height * 48);
             for (int64_t y = 0; y < CHUNK_SIZE_Y; y++) {
                 if (block_height > y + chunk_position.y) {
                     blocks[position_to_index(Vector3(x, y, z))] = 1;
@@ -186,19 +168,13 @@ void Chunk::generate_mesh() {
     Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
     array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
     call_deferred("set_mesh", array_mesh);
-
-    generate_static_body(true);
+    call_deferred("set_visible", true);
+    generate_static_body();
 }
 
-void Chunk::generate_static_body(bool force_update) {
-    if (force_update || !has_static_body) {
-        if (has_static_body && get_child_count() > 0) {
-            Node* old_body = get_child(0);
-            call_deferred("remove_child", old_body);
-            old_body->call_deferred("queue_free");
-        }
-        Ref<ConcavePolygonShape3D> shape_data(memnew(ConcavePolygonShape3D));
-        shape_data->set_faces(vertices);
+void Chunk::generate_static_body() {
+    if (!has_static_body) {
+        shape_data = memnew(ConcavePolygonShape3D);
 
         CollisionShape3D* collision_shape = memnew(CollisionShape3D);
         collision_shape->set_shape(shape_data);
@@ -208,6 +184,13 @@ void Chunk::generate_static_body(bool force_update) {
 
         call_deferred("add_child", static_body);
         has_static_body = true;
+    }
+    shape_data->call_deferred("set_faces", vertices);
+}
+
+void Chunk::clear_collision() {
+    if (has_static_body) {
+        shape_data->call_deferred("set_faces", PackedVector3Array());
     }
 }
 

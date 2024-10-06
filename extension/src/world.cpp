@@ -6,6 +6,8 @@
 using namespace godot;
 
 void World::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("initialize"), &World::initialize);
+
     ClassDB::bind_method(D_METHOD("get_block_types"), &World::get_block_types);
 	ClassDB::bind_method(D_METHOD("set_block_types", "new_block_types"), &World::set_block_types);
 
@@ -77,6 +79,12 @@ World::World() {
     initiliazation_queue_positions = PackedVector3Array();
 }
 
+void World::initialize() {
+    if (!Engine::get_singleton()->is_editor_hint()) {
+        regenerate_chunks();
+    }
+}
+
 World::~World() { }
 
 void World::set_block_types(TypedArray<Block> new_block_types) {
@@ -121,10 +129,41 @@ void World::set_center(Vector3 new_center) {
     new_center_chunk.y = new_center.y - int64_t(new_center.y) % Chunk::CHUNK_SIZE_Y;
     new_center_chunk.z = new_center.z - int64_t(new_center.z) % Chunk::CHUNK_SIZE_Z;
 
-    center_chunk = new_center_chunk;
-    center = new_center;
+    if (center_chunk != new_center_chunk) {
+        center_chunk = new_center_chunk;
+        update_loaded_region();
+    }
 
-    update_loaded_region();
+    center = new_center;
+}
+
+void World::regenerate_chunks() {
+    all_chunks.clear();
+
+    center_chunk = Vector3i(0, 0, 0);
+    int64_t max_y = instance_radius / Chunk::CHUNK_SIZE_Y; int64_t min_y = -max_y;
+    int64_t max_x = instance_radius / Chunk::CHUNK_SIZE_X; int64_t min_x = -max_x;
+    int64_t max_z = instance_radius / Chunk::CHUNK_SIZE_Z; int64_t min_z = -max_z;
+    for (int64_t chunk_y = min_y; chunk_y <= max_y; chunk_y++) {
+        for (int64_t chunk_x = min_x; chunk_x <= max_x; chunk_x++) {
+            for (int64_t chunk_z = min_z; chunk_z <= max_z; chunk_z++) {
+                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * chunk_x, Chunk::CHUNK_SIZE_Y * chunk_y, Chunk::CHUNK_SIZE_Z * chunk_z);
+                if (!is_chunk_in_radius(coordinate, instance_radius)) {
+                    continue;
+                }
+
+                Chunk* new_chunk = memnew(Chunk);
+
+                new_chunk->set_position(coordinate);
+                new_chunk->set_main_noise_texture(main_noise_texture);
+                new_chunk->set_block_material(block_material);
+
+                add_child(new_chunk);
+
+                all_chunks.push_back(new_chunk);
+            }
+        }
+    }
 }
 
 void World::initialize_chunk(uint64_t index) {
@@ -133,58 +172,46 @@ void World::initialize_chunk(uint64_t index) {
 }
 
 void World::update_loaded_region() {
-    /*
-    There are two radii relevant to chunk loading:
-    - instance_radius (blocks):
-    - - If a chunk's distance from the center is < instance_radius, instantiate it and add it to the scene tree;
-    - - If the chunk is not in memory, generate it from scratch / storage;
-    - - If a chunk is > instance_radius, remove it from the screne tree and place it in memory;
-    - unload_radius (blocks):
-    - - If a chunk's distance from the center is is > unload_radius, delete it from the scene tree AND memory
-    */
-
     if (has_task) {
-        if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id)) return;
+        if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id)) {
+            return;
+        }
         WorkerThreadPool::get_singleton()->wait_for_group_task_completion(task_id);
     }
 
     initiliazation_queue.clear();
     initiliazation_queue_positions.clear();
 
+    Dictionary is_chunk_instanced;
+    std::vector<Chunk*> available_chunks;
     // Loop through instanced chunks to remove any that are outside of instance radius
-    for (uint64_t i = 0; i < get_child_count(); i++) {
-        Chunk* chunk = Object::cast_to<Chunk>(get_child(i));
-        if (!is_chunk_in_radius(Vector3i(chunk->get_position()), instance_radius)) {
-            i--; // We do not want to skip over children when we remove one
-            remove_child(chunk);
-            chunk->queue_free();
-            is_chunk_instanced.erase(Vector3i(chunk->get_position()));
+    for (uint64_t i = 0; i < all_chunks.size(); i++) {
+        Chunk* chunk = all_chunks[i];
+        Vector3i coordinate = Vector3i(chunk->get_position());
+        if (!is_chunk_in_radius(coordinate, instance_radius)) {
+            available_chunks.push_back(chunk);
+        } else {
+            is_chunk_instanced[coordinate] = true;
         }
     }
 
     // Loop through the spherical region around the center and generate chunks
-    int64_t min_y = -(instance_radius / Chunk::CHUNK_SIZE_Y);
-    int64_t max_y = +(instance_radius / Chunk::CHUNK_SIZE_Y);
-    int64_t min_x = -(instance_radius / Chunk::CHUNK_SIZE_X);
-    int64_t max_x = +(instance_radius / Chunk::CHUNK_SIZE_X);
-    int64_t min_z = -(instance_radius / Chunk::CHUNK_SIZE_Z);
-    int64_t max_z = +(instance_radius / Chunk::CHUNK_SIZE_Z);
+    int64_t max_y = instance_radius / Chunk::CHUNK_SIZE_Y; int64_t min_y = -max_y;
+    int64_t max_x = instance_radius / Chunk::CHUNK_SIZE_X; int64_t min_x = -max_x;
+    int64_t max_z = instance_radius / Chunk::CHUNK_SIZE_Z; int64_t min_z = -max_z;
     for (int64_t chunk_y = min_y; chunk_y <= max_y; chunk_y++) {
         for (int64_t chunk_x = min_x; chunk_x <= max_x; chunk_x++) {
             for (int64_t chunk_z = min_z; chunk_z <= max_z; chunk_z++) {
                 Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * chunk_x, Chunk::CHUNK_SIZE_Y * chunk_y, Chunk::CHUNK_SIZE_Z * chunk_z) + center_chunk;
-                if (is_chunk_instanced.has(coordinate) || !is_chunk_in_radius(coordinate, instance_radius)) {
+                if (is_chunk_instanced[coordinate] || !is_chunk_in_radius(coordinate, instance_radius)) {
                     continue;
                 }
+                Chunk* new_chunk = available_chunks.back();
+                available_chunks.pop_back();
 
-                is_chunk_instanced[coordinate] = true;
-
-                Chunk* new_chunk = memnew(Chunk);
+                new_chunk->set_visible(false);
                 new_chunk->set_position(coordinate);
-                new_chunk->set_main_noise_texture(main_noise_texture);
-                new_chunk->set_block_material(block_material);
-                add_child(new_chunk);
-
+                new_chunk->clear_collision();
                 initiliazation_queue.append(new_chunk);
                 initiliazation_queue_positions.append(coordinate);
             }
@@ -199,6 +226,5 @@ void World::update_loaded_region() {
 }
 
 bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {
-    Vector3i displacement = center_chunk - coordinate;
-    return displacement.length_squared() < radius * radius;
+    return (center_chunk - coordinate).length_squared() < radius * radius;
 }
