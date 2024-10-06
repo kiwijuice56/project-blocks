@@ -36,18 +36,16 @@ private:
     uint64_t face_count = 0; // Quads, not tris
     uint64_t block_count = 0;
 
-    bool has_static_body = false;
-
 protected:
 	static void _bind_methods();
 
     // Helper methods to generate chunk mesh
-    void add_face_uvs(uint64_t id, Vector2 scale);
-    void add_face_normals(Vector3 normal);
-    void add_rectangular_prism(Vector3 start, Vector3 size);
+    void add_face_uvs(uint64_t id, Vector2i scale);
+    void add_face_normals(Vector3i normal);
+    void add_rectangular_prism(Vector3i start, Vector3i size);
     void greedy_mesh_generation();
-    Vector3 greedy_scan(Vector3 start);
-    bool greedy_invalid(Vector3 position);
+    Vector3i greedy_scan(Vector3i start);
+    bool greedy_invalid(Vector3i position);
 
 public:
     // The dimensions of individual chunks
@@ -68,19 +66,18 @@ public:
 
     // Generation methods
     void generate_mesh();
-    void generate_data(Vector3 chunk_position);
-    void generate_static_body();
+    void generate_data(Vector3i chunk_position);
     void clear_collision();
 
     // Helper methods to interface with internal data structures
-    uint64_t get_block_id_at(Vector3 position);
-    uint64_t position_to_index(Vector3 position);
-    Vector3 index_to_position(uint64_t index);
+    uint64_t get_block_id_at(Vector3i position);
+    uint64_t position_to_index(Vector3i position);
+    Vector3i index_to_position(uint64_t index);
     double sample_from_noise(Ref<NoiseTexture2D> texture, Vector2 uv);
-    bool in_bounds(Vector3 position);
+    bool in_bounds(Vector3i position);
 
     // Modifying methods
-    void remove_block_at(Vector3 global_position);
+    void remove_block_at(Vector3i global_position);
 };
 
 }

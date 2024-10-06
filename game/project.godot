@@ -21,7 +21,7 @@ window/size/viewport_width=384
 window/size/viewport_height=256
 window/size/window_width_override=768
 window/size/window_height_override=512
-window/stretch/mode="canvas_items"
+window/stretch/mode="viewport"
 window/stretch/aspect="keep_height"
 window/vsync/vsync_mode=0
 

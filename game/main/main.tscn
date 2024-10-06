@@ -1,7 +1,7 @@
 [gd_scene load_steps=19 format=3 uid="uid://dtav4pssg0xe2"]
 
+[ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/rendering/high_graphics_environment.tres" id="4_12ti1"]
 [ext_resource type="Shader" path="res://main/dithering.gdshader" id="4_25hyt"]
-[ext_resource type="Environment" uid="uid://sx2cj4i72spa" path="res://main/rendering/low_graphics_environment.tres" id="4_56shc"]
 [ext_resource type="Script" path="res://main/test_world.gd" id="5_ds8vp"]
 [ext_resource type="Script" path="res://main/ui/fps_label.gd" id="5_fc4bx"]
 [ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/rendering/block_material.tres" id="5_md34j"]
@@ -51,17 +51,18 @@ shader = ExtResource("6_mjg4k")
 block_types = Array[Block]([SubResource("Block_ttxbt")])
 block_material = ExtResource("5_md34j")
 main_noise_texture = SubResource("NoiseTexture2D_ags5r")
-instance_radius = 512
 script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
-visible = false
+light_energy = 0.6
 shadow_enabled = true
 
 [node name="BasicDirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.77719, -0.569685, 0.267272, 0, 0.424737, 0.905317, -0.629266, -0.703603, 0.330101, 0, 0, 0)
+transform = Transform3D(0.589957, -0.762027, 0.266957, 0.116925, 0.407767, 0.905569, -0.798924, -0.503032, 0.329665, 0, 0, 0)
+light_energy = 0.03
 light_volumetric_fog_energy = 0.0
+light_angular_distance = 66.44
 
 [node name="Pointer" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true
@@ -70,7 +71,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
 
 [node name="Player" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1024, 256, 1024)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 700, 800, 900)
 collision_layer = 2
 script = ExtResource("6_p3o21")
 
@@ -87,10 +88,9 @@ target_position = Vector3(0, 0, -8)
 shape = SubResource("BoxShape3D_ksgqs")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("4_56shc")
+environment = ExtResource("4_12ti1")
 
 [node name="Dithering" type="ColorRect" parent="."]
-visible = false
 material = SubResource("ShaderMaterial_6f7p0")
 anchors_preset = 15
 anchor_right = 1.0
@@ -110,6 +110,7 @@ grow_vertical = 2
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="FPSLabel" type="Label" parent="UI"]
+visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 script = ExtResource("5_fc4bx")

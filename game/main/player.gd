@@ -1,8 +1,8 @@
 class_name Player extends CharacterBody3D
 
-var gravity: float = 0#1.25 * ProjectSettings.get_setting("physics/3d/default_gravity")
-var speed: float = 64#
-var jump_speed: float = 16
+var gravity: float = 1.25 * ProjectSettings.get_setting("physics/3d/default_gravity")
+var speed: float = 4
+var jump_speed: float = 7
 var mouse_sensitivity: float = 0.01
 
 func _ready() -> void:
@@ -15,9 +15,8 @@ func _physics_process(delta: float):
 		if is_instance_valid(collider):
 			var chunk: Chunk = collider.get_parent()
 			var block_position: Vector3 = %RayCast3D.get_collision_point() - %RayCast3D.get_collision_normal() * 0.25
-			
 			if Input.is_action_just_pressed("main_interact"):
-				chunk.remove_block_at(block_position)
+				chunk.remove_block_at.call_deferred(Vector3i(block_position.floor()))
 			block_position -= chunk.global_position
 			block_position.x = int(block_position.x)
 			block_position.y = int(block_position.y)
@@ -33,7 +32,7 @@ func _physics_process(delta: float):
 	velocity.z = movement_dir.z * speed
 
 	move_and_slide()
-	if Input.is_action_pressed("jump"):
+	if is_on_floor() and Input.is_action_pressed("jump"):
 		velocity.y = jump_speed
 
 func _input(event: InputEvent):
