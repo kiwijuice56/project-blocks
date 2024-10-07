@@ -164,8 +164,11 @@ void World::regenerate_chunks() {
     }
 }
 
-void World::initialize_chunk(uint64_t index) {
+void World::initialize_chunk_data(uint64_t index) {
     Object::cast_to<Chunk>(initiliazation_queue[index])->generate_data(initiliazation_queue_positions[index]);
+}
+
+void World::initialize_chunk_mesh(uint64_t index) {
     Object::cast_to<Chunk>(initiliazation_queue[index])->generate_mesh();
 }
 
@@ -173,6 +176,12 @@ void World::update_loaded_region() {
     if (has_task) {
         if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id)) return;
         WorkerThreadPool::get_singleton()->wait_for_group_task_completion(task_id);
+
+        if (is_task_data) {
+            task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk_mesh), initiliazation_queue.size());
+            is_task_data = false;
+            return;
+        }
     }
 
     initiliazation_queue.clear();
@@ -194,16 +203,24 @@ void World::update_loaded_region() {
     }
 
     // Loop through the spherical region around the center and generate chunks
-    int64_t max_y = instance_radius / Chunk::CHUNK_SIZE_Y; int64_t min_y = -max_y;
-    int64_t max_x = instance_radius / Chunk::CHUNK_SIZE_X; int64_t min_x = -max_x;
-    int64_t max_z = instance_radius / Chunk::CHUNK_SIZE_Z; int64_t min_z = -max_z;
-    for (int64_t chunk_y = min_y; chunk_y <= max_y; chunk_y++) {
-        for (int64_t chunk_x = min_x; chunk_x <= max_x; chunk_x++) {
-            for (int64_t chunk_z = min_z; chunk_z <= max_z; chunk_z++) {
-                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * chunk_x, Chunk::CHUNK_SIZE_Y * chunk_y, Chunk::CHUNK_SIZE_Z * chunk_z) + center_chunk;
-                if (is_chunk_instanced[coordinate] || !is_chunk_in_radius(coordinate, instance_radius)) {
+    // Use a different ordering to generate closer chunks first -- helps reduce jarring loading barriers
+    for (int64_t chunk_y = 0; chunk_y <= 2 * instance_radius / Chunk::CHUNK_SIZE_Y; chunk_y++) {
+        int64_t actual_chunk_y = (chunk_y % 2 == 0) ? -chunk_y / 2 : (chunk_y + 1) / 2;
+
+        for (int64_t chunk_x = 0; chunk_x <= 2 * instance_radius / Chunk::CHUNK_SIZE_X; chunk_x++) {
+            int64_t actual_chunk_x = (chunk_x % 2 == 0) ? -chunk_x / 2 : (chunk_x + 1) / 2;
+
+            for (int64_t chunk_z = 0; chunk_z <= 2 * instance_radius / Chunk::CHUNK_SIZE_Z; chunk_z++) {
+                int64_t actual_chunk_z = (chunk_z % 2 == 0) ? -chunk_z / 2 : (chunk_z + 1) / 2;
+
+                Vector3i coordinate = Vector3i(
+                    Chunk::CHUNK_SIZE_X * actual_chunk_x,
+                    Chunk::CHUNK_SIZE_Y * actual_chunk_y,
+                    Chunk::CHUNK_SIZE_Z * actual_chunk_z) + center_chunk;
+
+                if (is_chunk_instanced[coordinate] || !is_chunk_in_radius(coordinate, instance_radius))
                     continue;
-                }
+
                 Chunk* new_chunk = available_chunks.back();
                 available_chunks.pop_back();
 
@@ -219,7 +236,8 @@ void World::update_loaded_region() {
     has_task = initiliazation_queue.size() > 0;
 
     if (has_task) {
-        task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk), initiliazation_queue.size());
+        task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk_data), initiliazation_queue.size());
+        is_task_data = true;
     }
 }
 

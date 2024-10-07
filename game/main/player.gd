@@ -1,9 +1,11 @@
 class_name Player extends CharacterBody3D
 
+@export var fly: bool = false
+@export var speed: float = 4
+@export var jump_speed: float = 7
+@export var mouse_sensitivity: float = 0.01
+
 var gravity: float = 1.25 * ProjectSettings.get_setting("physics/3d/default_gravity")
-var speed: float = 4
-var jump_speed: float = 7
-var mouse_sensitivity: float = 0.01
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -28,12 +30,12 @@ func _physics_process(delta: float):
 	
 	var input: Vector2 = Input.get_vector("left", "right", "up", "down")
 	var movement_dir: Vector3 = transform.basis * Vector3(input.x, 0, input.y)
-	velocity.x = movement_dir.x * speed
-	velocity.z = movement_dir.z * speed
+	velocity.x = movement_dir.x * speed * (6 if fly else 1)
+	velocity.z = movement_dir.z * speed * (6 if fly else 1)
 
 	move_and_slide()
-	if is_on_floor() and Input.is_action_pressed("jump"):
-		velocity.y = jump_speed
+	if (fly or is_on_floor()) and Input.is_action_pressed("jump"):
+		velocity.y = jump_speed * (4 if fly else 1)
 
 func _input(event: InputEvent):
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:

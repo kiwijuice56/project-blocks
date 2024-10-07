@@ -1,7 +1,7 @@
 [gd_scene load_steps=19 format=3 uid="uid://dtav4pssg0xe2"]
 
-[ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/rendering/high_graphics_environment.tres" id="4_12ti1"]
 [ext_resource type="Shader" path="res://main/dithering.gdshader" id="4_25hyt"]
+[ext_resource type="Environment" uid="uid://sx2cj4i72spa" path="res://main/rendering/debug_environment.tres" id="4_lddk4"]
 [ext_resource type="Script" path="res://main/test_world.gd" id="5_ds8vp"]
 [ext_resource type="Script" path="res://main/ui/fps_label.gd" id="5_fc4bx"]
 [ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/rendering/block_material.tres" id="5_md34j"]
@@ -51,6 +51,7 @@ shader = ExtResource("6_mjg4k")
 block_types = Array[Block]([SubResource("Block_ttxbt")])
 block_material = ExtResource("5_md34j")
 main_noise_texture = SubResource("NoiseTexture2D_ags5r")
+instance_radius = 256
 script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -71,9 +72,10 @@ surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
 
 [node name="Player" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1140, 600, 1200)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1140, 64, 1200)
 collision_layer = 2
 script = ExtResource("6_p3o21")
+fly = true
 
 [node name="Camera3D" type="Camera3D" parent="Player"]
 unique_name_in_owner = true
@@ -88,7 +90,7 @@ target_position = Vector3(0, 0, -8)
 shape = SubResource("BoxShape3D_ksgqs")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("4_12ti1")
+environment = ExtResource("4_lddk4")
 
 [node name="Dithering" type="ColorRect" parent="."]
 material = SubResource("ShaderMaterial_6f7p0")

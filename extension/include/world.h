@@ -34,12 +34,14 @@ private:
 
 	uint64_t task_id = 0;
 	bool has_task = false;
+	bool is_task_data = false;
 
 protected:
 	static void _bind_methods();
 
 	void regenerate_chunks();
-	void initialize_chunk(uint64_t index);
+	void initialize_chunk_data(uint64_t index);
+	void initialize_chunk_mesh(uint64_t index);
 	void update_loaded_region();
 
 	bool is_chunk_in_radius(Vector3i coordinate, int64_t radius);

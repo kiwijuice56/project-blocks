@@ -112,7 +112,7 @@ void Chunk::generate_data(Vector3i chunk_position) {
             Vector2 uv = chunk_uv + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 32.0;
 
             double height = sample_from_noise(main_noise_texture, uv);
-            int64_t block_height = int(height * height * 1024);
+            int64_t block_height = int(height * 32);
             for (int64_t y = 0; y < CHUNK_SIZE_Y; y++) {
                 if (block_height > y + chunk_position.y) {
                     blocks[position_to_index(Vector3i(x, y, z))] = 1;
@@ -121,6 +121,8 @@ void Chunk::generate_data(Vector3i chunk_position) {
             }
         }
     }
+
+    completely_filled = block_count == uint64_t(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 }
 
 void Chunk::generate_mesh() {

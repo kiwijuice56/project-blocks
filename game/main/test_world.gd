@@ -9,4 +9,4 @@ func _ready() -> void:
 	set_physics_process(true)
 
 func _physics_process(_delta: float) -> void:
-	center = %Player.global_position - Vector3(16, 16, 16)
+	center = %Player.global_position - Vector3(16, 64, 16)
