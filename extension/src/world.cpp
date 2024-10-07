@@ -74,16 +74,7 @@ void World::_bind_methods() {
     );
 }
 
-World::World() {
-    initiliazation_queue = TypedArray<Chunk>();
-    initiliazation_queue_positions = PackedVector3Array();
-}
-
-void World::initialize() {
-    if (!Engine::get_singleton()->is_editor_hint()) {
-        regenerate_chunks();
-    }
-}
+World::World() { }
 
 World::~World() { }
 
@@ -111,16 +102,16 @@ void World::set_main_noise_texture(Ref<NoiseTexture2D> new_texture) {
     main_noise_texture = new_texture;
 }
 
-Vector3 World::get_center() const {
-    return center;
-}
-
 void World::set_instance_radius(int64_t new_radius) {
     instance_radius = new_radius;
 }
 
 int64_t World::get_instance_radius() const {
     return instance_radius;
+}
+
+Vector3 World::get_center() const {
+    return center;
 }
 
 void World::set_center(Vector3 new_center) {
@@ -135,6 +126,13 @@ void World::set_center(Vector3 new_center) {
     }
 
     center = new_center;
+}
+
+void World::initialize() {
+    // Do not create chunk children when only in the editor
+    if (!Engine::get_singleton()->is_editor_hint()) {
+        regenerate_chunks();
+    }
 }
 
 void World::regenerate_chunks() {
@@ -173,18 +171,18 @@ void World::initialize_chunk(uint64_t index) {
 
 void World::update_loaded_region() {
     if (has_task) {
-        if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id)) {
-            return;
-        }
+        if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id)) return;
         WorkerThreadPool::get_singleton()->wait_for_group_task_completion(task_id);
     }
 
     initiliazation_queue.clear();
     initiliazation_queue_positions.clear();
 
+    // Vector3 does not have a proper hash function for C++, so we need to use Godot's dictionary
     Dictionary is_chunk_instanced;
     std::vector<Chunk*> available_chunks;
-    // Loop through instanced chunks to remove any that are outside of instance radius
+
+    // Loop through chunks to remove any that are outside of instance radius
     for (uint64_t i = 0; i < all_chunks.size(); i++) {
         Chunk* chunk = all_chunks[i];
         Vector3i coordinate = Vector3i(chunk->get_position());
@@ -212,8 +210,8 @@ void World::update_loaded_region() {
                 new_chunk->set_visible(false);
                 new_chunk->set_position(coordinate);
                 new_chunk->clear_collision();
-                initiliazation_queue.append(new_chunk);
-                initiliazation_queue_positions.append(coordinate);
+                initiliazation_queue.push_back(new_chunk);
+                initiliazation_queue_positions.push_back(coordinate);
             }
         }
     }

@@ -32,7 +32,6 @@ private:
     PackedVector2Array uvs;
     PackedVector2Array uvs2;
 
-    uint64_t id = 0;
     uint64_t face_count = 0; // Quads, not tris
     uint64_t block_count = 0;
 
@@ -57,8 +56,6 @@ public:
 	~Chunk();
 
     // Boilerplate setters and getters
-    uint64_t get_id() const;
-	void set_id(uint64_t new_id);
     Ref<Material> get_block_material() const;
     void set_block_material(Ref<Material> new_material);
     Ref<NoiseTexture2D> get_main_noise_texture() const;

@@ -36,6 +36,7 @@ Chunk::Chunk() {
     blocks = PackedByteArray();
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 
+    // Initialize StaticBody3D data
     shape_data = memnew(ConcavePolygonShape3D);
 
     CollisionShape3D* collision_shape = memnew(CollisionShape3D);
@@ -48,14 +49,6 @@ Chunk::Chunk() {
 }
 
 Chunk::~Chunk() { }
-
-uint64_t Chunk::get_id() const {
-    return id;
-}
-
-void Chunk::set_id(uint64_t new_id) {
-    id = new_id;
-}
 
 Ref<Material> Chunk::get_block_material() const {
     return block_material;
@@ -83,7 +76,7 @@ uint64_t Chunk::position_to_index(Vector3i position) {
 }
 
 Vector3i Chunk::index_to_position(uint64_t index) {
-    return Vector3(index % CHUNK_SIZE_X, index / (CHUNK_SIZE_X * CHUNK_SIZE_Z), (index / CHUNK_SIZE_X) % CHUNK_SIZE_Z);
+    return Vector3i(index % CHUNK_SIZE_X, index / (CHUNK_SIZE_X * CHUNK_SIZE_Z), (index / CHUNK_SIZE_X) % CHUNK_SIZE_Z);
 }
 
 double Chunk::sample_from_noise(Ref<NoiseTexture2D> texture, Vector2 uv) {
@@ -98,27 +91,10 @@ bool Chunk::in_bounds(Vector3i position) {
     0 <= position.z && position.z < CHUNK_SIZE_Z;
 }
 
-void Chunk::add_face_uvs(uint64_t id, Vector2i scale) {
-    uvs[face_count * 6 + 0] = scale * Vector2i(0, 1);
-	uvs[face_count * 6 + 1] = scale * Vector2i(0, 0);
-	uvs[face_count * 6 + 2] = scale * Vector2i(1, 0);
-	uvs[face_count * 6 + 3] = scale * Vector2i(0, 1);
-    uvs[face_count * 6 + 4] = scale * Vector2i(1, 0);
-	uvs[face_count * 6 + 5] = scale * Vector2i(1, 1);
-
-    for (uint8_t i = 0; i < 6; i++) {
-        uvs2[face_count * 6 + i] = Vector2i(0, id);
-    }
-}
-
-void Chunk::add_face_normals(Vector3i normal) {
-    for (uint8_t i = 0; i < 6; i++) {
-        normals[face_count * 6 + i] = normal;
-    }
-}
-
 // Generate the block data for this chunk
 void Chunk::generate_data(Vector3i chunk_position) {
+    // Basic "mountains" biome for testing
+
     blocks.fill(0);
     block_count = 0;
 
@@ -148,11 +124,9 @@ void Chunk::generate_data(Vector3i chunk_position) {
 }
 
 void Chunk::generate_mesh() {
-    if (block_count == 0) {
-        return;
-    }
+    if (block_count == 0) return;
 
-    // Resize mesh data arrays to upper bounds of their sizes before culling
+    // Resize mesh data arrays to upper bounds of their sizes
     vertices.resize(6 * 6 * block_count);
     normals.resize(6 * 6 * block_count);
     uvs.resize(6 * 6 * block_count);
@@ -189,14 +163,12 @@ void Chunk::clear_collision() {
 void Chunk::remove_block_at(Vector3i global_position) {
     Vector3i block_position = global_position - Vector3i(get_global_position());
     uint64_t index = position_to_index(block_position);
-    if (blocks[index] > 0) {
-        block_count--;
-    }
+    if (blocks[index] > 0) block_count--;
     blocks[index] = 0;
     generate_mesh();
 }
 
-// Greedy mesh algorithm
+// Fill vertex, normal, and uv arrays with proper triangles (using the greedy meshing algorithm)
 void Chunk::greedy_mesh_generation() {
     visited = new bool[CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y];
     for (uint64_t i = 0; i < CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y; i++) {
@@ -342,4 +314,18 @@ void Chunk::add_rectangular_prism(Vector3i start, Vector3i size) {
     add_face_uvs(current_greedy_block * 6 + 5, Vector2i(size.z, size.y));
 
     face_count++;
+}
+
+void Chunk::add_face_uvs(uint64_t id, Vector2i scale) {
+    uvs[face_count * 6 + 0] = scale * Vector2i(0, 1);
+	uvs[face_count * 6 + 1] = scale * Vector2i(0, 0);
+	uvs[face_count * 6 + 2] = scale * Vector2i(1, 0);
+	uvs[face_count * 6 + 3] = scale * Vector2i(0, 1);
+    uvs[face_count * 6 + 4] = scale * Vector2i(1, 0);
+	uvs[face_count * 6 + 5] = scale * Vector2i(1, 1);
+    for (uint8_t i = 0; i < 6; i++) uvs2[face_count * 6 + i] = Vector2i(0, id);
+}
+
+void Chunk::add_face_normals(Vector3i normal) {
+    for (uint8_t i = 0; i < 6; i++) normals[face_count * 6 + i] = normal;
 }

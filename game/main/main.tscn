@@ -71,7 +71,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
 
 [node name="Player" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 700, 800, 900)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1140, 600, 1200)
 collision_layer = 2
 script = ExtResource("6_p3o21")
 

@@ -29,8 +29,8 @@ private:
 	std::vector<Chunk*> all_chunks;
 
 	// Used to access chunks that need to be initialized (multithreaded)
-	TypedArray<Chunk> initiliazation_queue;
-	PackedVector3Array initiliazation_queue_positions;
+	std::vector<Chunk*> initiliazation_queue;
+	std::vector<Vector3> initiliazation_queue_positions;
 
 	uint64_t task_id = 0;
 	bool has_task = false;
