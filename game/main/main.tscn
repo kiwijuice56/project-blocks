@@ -1,7 +1,7 @@
 [gd_scene load_steps=19 format=3 uid="uid://dtav4pssg0xe2"]
 
+[ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/rendering/high_graphics_environment.tres" id="4_12ti1"]
 [ext_resource type="Shader" path="res://main/dithering.gdshader" id="4_25hyt"]
-[ext_resource type="Environment" uid="uid://sx2cj4i72spa" path="res://main/rendering/debug_environment.tres" id="4_lddk4"]
 [ext_resource type="Script" path="res://main/test_world.gd" id="5_ds8vp"]
 [ext_resource type="Script" path="res://main/ui/fps_label.gd" id="5_fc4bx"]
 [ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/rendering/block_material.tres" id="5_md34j"]
@@ -90,7 +90,7 @@ target_position = Vector3(0, 0, -8)
 shape = SubResource("BoxShape3D_ksgqs")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("4_lddk4")
+environment = ExtResource("4_12ti1")
 
 [node name="Dithering" type="ColorRect" parent="."]
 material = SubResource("ShaderMaterial_6f7p0")
@@ -112,7 +112,6 @@ grow_vertical = 2
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="FPSLabel" type="Label" parent="UI"]
-visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 script = ExtResource("5_fc4bx")
