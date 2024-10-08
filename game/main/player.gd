@@ -21,11 +21,17 @@ class_name Player extends CharacterBody3D
 
 @export_group("Other Settings")
 @export var mouse_sensitivity: float = 0.01
+@export var fov: float = 86
+@export var sprint_fov_scale: float = 1.1
+@export var sprint_fov_animation_speed: float = 0.25
 
 var is_sprinting: bool = false
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+func _process(delta: float) -> void:
+	%Camera3D.fov = lerp(%Camera3D.fov, fov * (sprint_fov_scale if is_sprinting else 1.0), sprint_fov_animation_speed * delta)
 
 func _physics_process(delta: float):
 	# Block picking logic
@@ -64,7 +70,7 @@ func _physics_process(delta: float):
 		target_speed *= jump_speed_multiplier
 	
 	var temp: float = velocity.y
-	velocity = lerp(velocity, movement_dir * target_speed, accel)
+	velocity = lerp(velocity, movement_dir * target_speed, accel * delta)
 	
 	# Exclude vertical direction from xz lerping
 	velocity.y = temp - gravity * delta

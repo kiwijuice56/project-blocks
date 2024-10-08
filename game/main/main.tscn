@@ -48,6 +48,7 @@ shader = ExtResource("6_mjg4k")
 block_types = Array[Block]([SubResource("Block_ttxbt")])
 block_material = ExtResource("5_md34j")
 main_noise_texture = SubResource("NoiseTexture2D_ags5r")
+instance_radius = 160
 script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
