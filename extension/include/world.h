@@ -32,9 +32,6 @@ private:
 	std::vector<Chunk*> initiliazation_queue;
 	std::vector<Vector3> initiliazation_queue_positions;
 
-	Dictionary loaded_chunks;
-	Dictionary filled_chunks;
-
 	uint64_t task_id = 0;
 	bool has_task = false;
 	bool is_task_data = false;
@@ -48,7 +45,6 @@ protected:
 	void update_loaded_region();
 
 	bool is_chunk_in_radius(Vector3i coordinate, int64_t radius);
-	bool is_chunk_obscuring(Vector3i coordinate);
 
 public:
 	World();

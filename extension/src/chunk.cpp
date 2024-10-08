@@ -166,7 +166,6 @@ void Chunk::remove_block_at(Vector3i global_position) {
     Vector3i block_position = global_position - Vector3i(get_global_position());
     uint64_t index = position_to_index(block_position);
     if (blocks[index] > 0) block_count--;
-    completely_filled = false;
     blocks[index] = 0;
     generate_mesh();
 }

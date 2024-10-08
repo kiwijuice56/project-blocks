@@ -74,10 +74,7 @@ void World::_bind_methods() {
     );
 }
 
-World::World() {
-    loaded_chunks = Dictionary();
-    filled_chunks = Dictionary();
-}
+World::World() { }
 
 World::~World() { }
 
@@ -171,23 +168,7 @@ void World::initialize_chunk_data(uint64_t index) {
     Object::cast_to<Chunk>(initiliazation_queue[index])->generate_data(initiliazation_queue_positions[index]);
 }
 
-bool World::is_chunk_obscuring(Vector3i coordinate) {
-    return filled_chunks.has(coordinate) || !loaded_chunks.has(coordinate);
-}
-
 void World::initialize_chunk_mesh(uint64_t index) {
-
-    Vector3i p = Vector3i(initiliazation_queue_positions[index]);
-    if (
-        is_chunk_obscuring(p + Chunk::CHUNK_SIZE_X * Vector3i( 1, 0, 0)) &&
-        is_chunk_obscuring(p + Chunk::CHUNK_SIZE_X * Vector3i(-1, 0, 0)) &&
-        is_chunk_obscuring(p + Chunk::CHUNK_SIZE_Y * Vector3i(0,  1, 0)) &&
-        is_chunk_obscuring(p + Chunk::CHUNK_SIZE_Y * Vector3i(0, -1, 0)) &&
-        is_chunk_obscuring(p + Chunk::CHUNK_SIZE_Z * Vector3i(0, 0,  1)) &&
-        is_chunk_obscuring(p + Chunk::CHUNK_SIZE_Z * Vector3i(0, 0, -1))
-    ) {
-        return;
-    }
     Object::cast_to<Chunk>(initiliazation_queue[index])->generate_mesh();
 }
 
@@ -197,14 +178,8 @@ void World::update_loaded_region() {
         WorkerThreadPool::get_singleton()->wait_for_group_task_completion(task_id);
 
         if (is_task_data) {
-            for (uint64_t i = 0; i < initiliazation_queue.size(); i++) {
-                if (initiliazation_queue[i]->completely_filled) {
-                    filled_chunks[Vector3i(initiliazation_queue[i]->get_position())] = true;
-                }
-            }
             task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk_mesh), initiliazation_queue.size());
             is_task_data = false;
-
             return;
         }
     }
@@ -212,6 +187,8 @@ void World::update_loaded_region() {
     initiliazation_queue.clear();
     initiliazation_queue_positions.clear();
 
+    // Vector3 does not have a proper hash function for C++, so we need to use Godot's dictionary
+    Dictionary is_chunk_instanced;
     std::vector<Chunk*> available_chunks;
 
     // Loop through chunks to remove any that are outside of instance radius
@@ -220,10 +197,8 @@ void World::update_loaded_region() {
         Vector3i coordinate = Vector3i(chunk->get_position());
         if (!is_chunk_in_radius(coordinate, instance_radius)) {
             available_chunks.push_back(chunk);
-            if (filled_chunks.has(coordinate)) {
-                filled_chunks.erase(coordinate);
-            }
-            loaded_chunks.erase(coordinate);
+        } else {
+            is_chunk_instanced[coordinate] = true;
         }
     }
 
@@ -243,10 +218,8 @@ void World::update_loaded_region() {
                     Chunk::CHUNK_SIZE_Y * actual_chunk_y,
                     Chunk::CHUNK_SIZE_Z * actual_chunk_z) + center_chunk;
 
-                if (loaded_chunks.has(coordinate) || !is_chunk_in_radius(coordinate, instance_radius))
+                if (is_chunk_instanced[coordinate] || !is_chunk_in_radius(coordinate, instance_radius))
                     continue;
-
-                loaded_chunks[coordinate] = true;
 
                 Chunk* new_chunk = available_chunks.back();
                 available_chunks.pop_back();
