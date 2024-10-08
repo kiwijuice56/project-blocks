@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://8xdecekdoe2h"]
+
+[ext_resource type="Script" path="res://main/player.gd" id="1_bnl75"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ksgqs"]
+size = Vector3(0.6, 1.6, 0.6)
+
+[node name="Player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+collision_layer = 2
+script = ExtResource("1_bnl75")
+ground_accel = 0.96
+air_accel = 0.7
+
+[node name="Camera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 0.611, -0.176879)
+fov = 80.0
+
+[node name="RayCast3D" type="RayCast3D" parent="Camera3D"]
+unique_name_in_owner = true
+target_position = Vector3(0, 0, -4.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_ksgqs")

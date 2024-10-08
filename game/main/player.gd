@@ -1,16 +1,34 @@
 class_name Player extends CharacterBody3D
 
-@export var fly: bool = false
-@export var speed: float = 4
-@export var jump_speed: float = 7
+@export_group("Toggles")
+@export var flying: bool = false
+@export var sprint_toggle: bool = false
+
+@export_group("Acceleration")
+@export var ground_accel: float = 0.98
+@export var air_accel: float = 0.8
+@export var gravity: float = 32
+
+@export_group("Speed")
+@export var sprint_speed: float = 5.2
+@export var jump_speed_multiplier: float = 1.1
+@export var fly_speed: float = 16
+@export var walk_speed: float = 3.9
+
+@export_group("Impulse")
+@export var jump_impulse: float = 9
+@export var fly_impulse: float = 32
+
+@export_group("Other Settings")
 @export var mouse_sensitivity: float = 0.01
 
-var gravity: float = 1.25 * ProjectSettings.get_setting("physics/3d/default_gravity")
+var is_sprinting: bool = false
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _physics_process(delta: float):
+	# Block picking logic
 	%Pointer.visible = %RayCast3D.is_colliding()
 	if %RayCast3D.is_colliding():
 		var collider: Node = %RayCast3D.get_collider()
@@ -26,22 +44,44 @@ func _physics_process(delta: float):
 			
 			%Pointer.global_position = chunk.global_position + block_position + Vector3(0.5, 0.5, 0.5)
 	
-	velocity.y += -gravity * delta
-	
+	# Movement logic
 	var input: Vector2 = Input.get_vector("left", "right", "up", "down")
 	var movement_dir: Vector3 = transform.basis * Vector3(input.x, 0, input.y)
-	velocity.x = movement_dir.x * speed * (6 if fly else 1)
-	velocity.z = movement_dir.z * speed * (6 if fly else 1)
-
+	
+	if not sprint_toggle:
+		is_sprinting = Input.is_action_pressed("sprint")
+	
+	var target_speed: float = walk_speed
+	var accel: float = ground_accel
+	
+	if is_sprinting:
+		target_speed = sprint_speed
+	if flying:
+		target_speed = fly_speed
+	
+	if not is_on_floor():
+		accel = air_accel
+		target_speed *= jump_speed_multiplier
+	
+	var temp: float = velocity.y
+	velocity = lerp(velocity, movement_dir * target_speed, accel)
+	
+	# Exclude vertical direction from xz lerping
+	velocity.y = temp - gravity * delta
+	
 	move_and_slide()
-	if (fly or is_on_floor()) and Input.is_action_pressed("jump"):
-		velocity.y = jump_speed * (4 if fly else 1)
+	if (flying or is_on_floor()) and Input.is_action_pressed("jump"):
+		velocity.y = fly_impulse if flying else jump_impulse 
 
 func _input(event: InputEvent):
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sensitivity)
 		%Camera3D.rotate_x(-event.relative.y * mouse_sensitivity)
 		%Camera3D.rotation.x = clampf($Camera3D.rotation.x, -deg_to_rad(90), deg_to_rad(90))
+	
+	if sprint_toggle and event.is_action_pressed("sprint", false):
+		is_sprinting = not is_sprinting
+	
 	if event.is_action_pressed("ui_cancel", false):
 		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
