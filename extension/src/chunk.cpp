@@ -116,10 +116,22 @@ void Chunk::generate_data(Vector3i chunk_position) {
             Vector2 uv = chunk_uv + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 32.0;
 
             double height = sample_from_noise(main_noise_texture, uv);
-            int64_t block_height = int(height * 32);
+            int64_t block_height = 1 + int(height * 64);
             for (int64_t y = 0; y < CHUNK_SIZE_Y; y++) {
-                if (block_height > y + chunk_position.y) {
-                    blocks[position_to_index(Vector3i(x, y, z))] = 1;
+                int64_t real_height = y + chunk_position.y;
+                uint64_t block_type = 0;
+
+                if (block_height == real_height) {
+                    block_type = 3;
+                } else if (0 < block_height - real_height && block_height - real_height < 5 ) {
+                    block_type = 2;
+                } else if (real_height < block_height) {
+                    block_type = 1;
+                }
+
+                blocks[position_to_index(Vector3i(x, y, z))] = block_type;
+
+                if (block_type > 0) {
                     block_count++;
                 }
             }
@@ -133,8 +145,6 @@ void Chunk::generate_mesh() {
     if (block_count == 0) {
         return;
     }
-
-    auto start = std::chrono::high_resolution_clock::now();
 
     vertices.clear();
     normals.clear();
@@ -159,10 +169,6 @@ void Chunk::generate_mesh() {
     call_deferred("set_visible", true);
 
     shape_data->call_deferred("set_faces", vertices);
-
-    auto stop = std::chrono::high_resolution_clock::now();
-
-    //UtilityFunctions::print(std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count());
 }
 
 void Chunk::clear_collision() {
@@ -244,7 +250,29 @@ Vector3i Chunk::greedy_scan(Vector3i start) {
 
 // Check if a position contains a block that can be merged with our current greedy scan
 bool Chunk::greedy_invalid(Vector3i position) {
-    return !in_bounds(position) || get_block_id_at(position) == 0 || get_block_id_at(position) != current_greedy_block || visited[position_to_index(position)];
+    if (!in_bounds(position) || visited[position_to_index(position)]) {
+        return true;
+    }
+
+    uint64_t block_id = get_block_id_at(position);
+
+    if (block_id == 0) {
+        return true;
+    }
+
+    if (block_id == current_greedy_block) {
+        return false;
+    }
+
+    bool fully_covered =
+        in_bounds(Vector3i(+1, 0, 0) + position) && get_block_id_at(Vector3i(+1, 0, 0) + position) != 0 &&
+        in_bounds(Vector3i(-1, 0, 0) + position) && get_block_id_at(Vector3i(-1, 0, 0) + position) != 0 &&
+        in_bounds(Vector3i(0, +1, 0) + position) && get_block_id_at(Vector3i(0, +1, 0) + position) != 0 &&
+        in_bounds(Vector3i(0, -1, 0) + position) && get_block_id_at(Vector3i(0, -1, 0) + position) != 0 &&
+        in_bounds(Vector3i(0, 0, +1) + position) && get_block_id_at(Vector3i(0, 0, +1) + position) != 0 &&
+        in_bounds(Vector3i(0, 0, -1) + position) && get_block_id_at(Vector3i(0, 0, -1) + position) != 0;
+
+    return !fully_covered;
 }
 
 // Adds vertices, uvs, and normals for a rectangular prism to our mesh

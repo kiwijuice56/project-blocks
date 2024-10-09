@@ -9,8 +9,6 @@
 #include <godot_cpp/classes/static_body3d.hpp>
 #include <godot_cpp/classes/collision_shape3d.hpp>
 
-#include <chrono>
-
 namespace godot {
 class Chunk : public MeshInstance3D {
 	GDCLASS(Chunk, MeshInstance3D)

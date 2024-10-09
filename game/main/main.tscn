@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=20 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="PackedScene" uid="uid://8xdecekdoe2h" path="res://main/player/player.tscn" id="3_ddlvf"]
 [ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/rendering/high_graphics_environment.tres" id="4_6ud5x"]
@@ -11,6 +11,13 @@
 [ext_resource type="Shader" path="res://main/ui/crosshair_inversion.gdshader" id="6_mjg4k"]
 
 [sub_resource type="Block" id="Block_ttxbt"]
+id = 1
+
+[sub_resource type="Block" id="Block_qubqs"]
+id = 2
+
+[sub_resource type="Block" id="Block_tdqgg"]
+id = 2
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_pqdmm"]
 
@@ -45,22 +52,18 @@ shader = ExtResource("6_mjg4k")
 [node name="Main" type="Node"]
 
 [node name="MainWorld" type="World" parent="."]
-block_types = Array[Block]([SubResource("Block_ttxbt")])
+block_types = Array[Block]([SubResource("Block_ttxbt"), SubResource("Block_qubqs"), SubResource("Block_tdqgg")])
 block_material = ExtResource("5_md34j")
 main_noise_texture = SubResource("NoiseTexture2D_ags5r")
-instance_radius = 160
+instance_radius = 96
 script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
 light_energy = 0.6
 shadow_enabled = true
-
-[node name="BasicDirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.589957, -0.762027, 0.266957, 0.116925, 0.407767, 0.905569, -0.798924, -0.503032, 0.329665, 0, 0, 0)
-light_energy = 0.03
-light_volumetric_fog_energy = 0.0
-light_angular_distance = 66.44
+directional_shadow_mode = 1
+directional_shadow_max_distance = 48.0
 
 [node name="Pointer" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true
@@ -69,9 +72,8 @@ surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
 
 [node name="Player" parent="." node_paths=PackedStringArray("world") instance=ExtResource("3_ddlvf")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1024, 48, 1024)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1024, 80, 1024)
 world = NodePath("../MainWorld")
-flying = true
 fly_speed = 128.0
 fly_impulse = 9.0
 
@@ -79,6 +81,7 @@ fly_impulse = 9.0
 environment = ExtResource("4_6ud5x")
 
 [node name="Dithering" type="ColorRect" parent="."]
+visible = false
 material = SubResource("ShaderMaterial_6f7p0")
 anchors_preset = 15
 anchor_right = 1.0

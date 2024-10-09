@@ -14,7 +14,7 @@ sky_material = SubResource("ProceduralSkyMaterial_5nuc0")
 [resource]
 background_mode = 1
 background_color = Color(0.309804, 0.431373, 0.529412, 1)
-background_energy_multiplier = 0.0
+background_energy_multiplier = 0.25
 sky = SubResource("Sky_kpkms")
 ssao_enabled = true
 ssao_light_affect = 0.5
