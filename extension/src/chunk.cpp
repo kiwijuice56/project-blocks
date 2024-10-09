@@ -143,6 +143,8 @@ void Chunk::generate_data(Vector3i chunk_position) {
 
 void Chunk::generate_mesh() {
     if (block_count == 0) {
+        clear_collision();
+        call_deferred("set_visible", false);
         return;
     }
 
@@ -178,7 +180,10 @@ void Chunk::clear_collision() {
 void Chunk::remove_block_at(Vector3i global_position) {
     Vector3i block_position = global_position - Vector3i(get_global_position());
     uint64_t index = position_to_index(block_position);
-    if (blocks[index] > 0) block_count--;
+
+    if (blocks[index] > 0)
+        block_count--;
+
     blocks[index] = 0;
     generate_mesh();
 }
@@ -195,7 +200,8 @@ void Chunk::greedy_mesh_generation() {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
             for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
                 current_greedy_block = get_block_id_at(Vector3i(x, y, z));
-                if (greedy_invalid(Vector3i(x, y, z))) continue;
+                if (greedy_invalid(Vector3i(x, y, z)))
+                    continue;
                 Vector3i start = Vector3i(x, y, z);
                 Vector3i size = greedy_scan(start);
                 add_rectangular_prism(start, size);

@@ -43,12 +43,11 @@ func _physics_process(delta: float):
 		if is_instance_valid(collider):
 			var chunk: Chunk = collider.get_parent()
 			var block_position: Vector3 = %RayCast3D.get_collision_point() - %RayCast3D.get_collision_normal() * 0.25
+			
 			if Input.is_action_just_pressed("main_interact"):
 				chunk.remove_block_at.call_deferred(Vector3i(block_position.floor()))
+			block_position = block_position.floor()
 			block_position -= chunk.global_position
-			block_position.x = int(block_position.x)
-			block_position.y = int(block_position.y)
-			block_position.z = int(block_position.z)
 			
 			%Pointer.global_position = chunk.global_position + block_position + Vector3(0.5, 0.5, 0.5)
 	

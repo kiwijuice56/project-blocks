@@ -62,7 +62,7 @@ script = ExtResource("5_ds8vp")
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
 light_energy = 0.6
 shadow_enabled = true
-directional_shadow_mode = 1
+directional_shadow_blend_splits = true
 directional_shadow_max_distance = 48.0
 
 [node name="Pointer" type="MeshInstance3D" parent="."]
@@ -72,7 +72,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
 
 [node name="Player" parent="." node_paths=PackedStringArray("world") instance=ExtResource("3_ddlvf")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1024, 80, 1024)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1024, 80, 1121)
 world = NodePath("../MainWorld")
 fly_speed = 128.0
 fly_impulse = 9.0
@@ -81,7 +81,6 @@ fly_impulse = 9.0
 environment = ExtResource("4_6ud5x")
 
 [node name="Dithering" type="ColorRect" parent="."]
-visible = false
 material = SubResource("ShaderMaterial_6f7p0")
 anchors_preset = 15
 anchor_right = 1.0
