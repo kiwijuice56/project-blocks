@@ -33,6 +33,8 @@ Chunk::Chunk() {
     uvs2 = PackedVector2Array();
     normals = PackedVector3Array();
 
+    visited = new bool[CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y];
+
     blocks = PackedByteArray();
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 
@@ -48,7 +50,9 @@ Chunk::Chunk() {
     add_child(static_body);
 }
 
-Chunk::~Chunk() { }
+Chunk::~Chunk() {
+    delete [] visited;
+}
 
 Ref<Material> Chunk::get_block_material() const {
     return block_material;
@@ -122,25 +126,22 @@ void Chunk::generate_data(Vector3i chunk_position) {
         }
     }
 
-    completely_filled = block_count == uint64_t(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
+    uniform = block_count == uint64_t(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 }
 
 void Chunk::generate_mesh() {
-    if (block_count == 0) return;
+    if (block_count == 0) {
+        return;
+    }
 
-    // Resize mesh data arrays to upper bounds of their sizes
-    vertices.resize(6 * 6 * block_count);
-    normals.resize(6 * 6 * block_count);
-    uvs.resize(6 * 6 * block_count);
-    uvs2.resize(6 * 6 * block_count);
+    auto start = std::chrono::high_resolution_clock::now();
+
+    vertices.clear();
+    normals.clear();
+    uvs.clear();
+    uvs2.clear();
 
     greedy_mesh_generation();
-
-    // Trim off excess data
-    vertices.resize(6 * face_count);
-    normals.resize(6 * face_count);
-    uvs.resize(6 * face_count);
-    uvs2.resize(6 * face_count);
 
     // Package data into an ArrayMesh
     Array arrays;
@@ -151,11 +152,17 @@ void Chunk::generate_mesh() {
     arrays[ArrayMesh::ARRAY_TEX_UV2] = uvs2;
 
     Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
+
     array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+
     call_deferred("set_mesh", array_mesh);
     call_deferred("set_visible", true);
 
     shape_data->call_deferred("set_faces", vertices);
+
+    auto stop = std::chrono::high_resolution_clock::now();
+
+    //UtilityFunctions::print(std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count());
 }
 
 void Chunk::clear_collision() {
@@ -172,7 +179,6 @@ void Chunk::remove_block_at(Vector3i global_position) {
 
 // Fill vertex, normal, and uv arrays with proper triangles (using the greedy meshing algorithm)
 void Chunk::greedy_mesh_generation() {
-    visited = new bool[CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y];
     for (uint64_t i = 0; i < CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y; i++) {
         visited[i] = false;
     }
@@ -190,8 +196,6 @@ void Chunk::greedy_mesh_generation() {
             }
         }
     }
-
-    delete [] visited;
 }
 
 // Greedily find the size of the largest prism we can add to our mesh
@@ -245,6 +249,11 @@ bool Chunk::greedy_invalid(Vector3i position) {
 
 // Adds vertices, uvs, and normals for a rectangular prism to our mesh
 void Chunk::add_rectangular_prism(Vector3i start, Vector3i size) {
+    vertices.resize(vertices.size() + 36);
+    normals.resize(normals.size() + 36);
+    uvs.resize(uvs.size() + 36);
+    uvs2.resize(uvs2.size() + 36);
+
     // Y, facing up
     vertices[face_count * 6 + 0] = start + Vector3i(0, size.y, size.z);
     vertices[face_count * 6 + 1] = start + Vector3i(0, size.y, 0);

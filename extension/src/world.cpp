@@ -158,8 +158,9 @@ void World::initialize_chunk(uint64_t index) {
 
 void World::update_loaded_region() {
     if (has_task) {
-        if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id))
+        if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id)) {
             return;
+        }
         WorkerThreadPool::get_singleton()->wait_for_group_task_completion(task_id);
         has_task = false;
     }
@@ -207,6 +208,7 @@ void World::update_loaded_region() {
 
                 initiliazation_queue.push_back(new_chunk);
                 initiliazation_queue_positions.push_back(coordinate);
+                is_chunk_loaded[coordinate] = false;
             }
         }
     }
@@ -214,10 +216,6 @@ void World::update_loaded_region() {
     if (initiliazation_queue.size() > 0) {
         has_task = true;
         task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk), initiliazation_queue.size());
-    }
-
-    for (uint64_t i = 0; i < initiliazation_queue_positions.size(); i++) {
-        is_chunk_loaded[initiliazation_queue_positions[i]] = false;
     }
 }
 

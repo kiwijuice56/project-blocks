@@ -1,7 +1,7 @@
 [gd_scene load_steps=18 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="PackedScene" uid="uid://8xdecekdoe2h" path="res://main/player/player.tscn" id="3_ddlvf"]
-[ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/rendering/high_graphics_environment.tres" id="4_12ti1"]
+[ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/rendering/high_graphics_environment.tres" id="4_6ud5x"]
 [ext_resource type="Shader" path="res://main/ui/dithering.gdshader" id="4_25hyt"]
 [ext_resource type="Script" path="res://main/main_world.gd" id="5_ds8vp"]
 [ext_resource type="Script" path="res://main/ui/fps_label.gd" id="5_fc4bx"]
@@ -48,6 +48,7 @@ shader = ExtResource("6_mjg4k")
 block_types = Array[Block]([SubResource("Block_ttxbt")])
 block_material = ExtResource("5_md34j")
 main_noise_texture = SubResource("NoiseTexture2D_ags5r")
+instance_radius = 160
 script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -70,11 +71,12 @@ surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1024, 48, 1024)
 world = NodePath("../MainWorld")
+flying = true
 fly_speed = 128.0
 fly_impulse = 9.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("4_12ti1")
+environment = ExtResource("4_6ud5x")
 
 [node name="Dithering" type="ColorRect" parent="."]
 material = SubResource("ShaderMaterial_6f7p0")
