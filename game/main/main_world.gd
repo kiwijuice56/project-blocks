@@ -1,6 +1,4 @@
-class_name TestWorld extends World
-
-var x = 0
+class_name MainWorld extends World
 
 func _ready() -> void:
 	set_physics_process(false)
@@ -9,4 +7,4 @@ func _ready() -> void:
 	set_physics_process(true)
 
 func _physics_process(_delta: float) -> void:
-	center = %Player.global_position - Vector3(16, 16, 16)
+	set_loaded_region_center(%Player.global_position)

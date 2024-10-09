@@ -1,5 +1,7 @@
 class_name Player extends CharacterBody3D
 
+@export var world: World
+
 @export_group("Toggles")
 @export var flying: bool = false
 @export var sprint_toggle: bool = false
@@ -75,9 +77,14 @@ func _physics_process(delta: float):
 	# Exclude vertical direction from xz lerping
 	velocity.y = temp - gravity * delta
 	
-	move_and_slide()
 	if (flying or is_on_floor()) and Input.is_action_pressed("jump"):
 		velocity.y = fly_impulse if flying else jump_impulse 
+	
+	if not world.is_position_loaded(velocity * delta + global_position):
+		velocity = Vector3()
+	
+	move_and_slide()
+	
 
 func _input(event: InputEvent):
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:

@@ -7,12 +7,13 @@ using namespace godot;
 
 void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("initialize"), &World::initialize);
+    ClassDB::bind_method(D_METHOD("set_loaded_region_center", "new_center"), &World::set_loaded_region_center);
+    ClassDB::bind_method(D_METHOD("is_position_loaded"), &World::is_position_loaded);
 
     ClassDB::bind_method(D_METHOD("get_block_types"), &World::get_block_types);
 	ClassDB::bind_method(D_METHOD("set_block_types", "new_block_types"), &World::set_block_types);
 
-    ClassDB::bind_method(D_METHOD("get_center"), &World::get_center);
-	ClassDB::bind_method(D_METHOD("set_center", "new_center"), &World::set_center);
+
 
     ClassDB::bind_method(D_METHOD("get_block_material"), &World::get_block_material);
 	ClassDB::bind_method(D_METHOD("set_block_material", "new_material"), &World::set_block_material);
@@ -33,13 +34,6 @@ void World::_bind_methods() {
         ),
         "set_block_types",
         "get_block_types"
-    );
-
-    ClassDB::add_property(
-        "World",
-        PropertyInfo(Variant::VECTOR3, "center"),
-        "set_center",
-        "get_center"
     );
 
     ClassDB::add_property(
@@ -110,22 +104,14 @@ int64_t World::get_instance_radius() const {
     return instance_radius;
 }
 
-Vector3 World::get_center() const {
-    return center;
-}
-
-void World::set_center(Vector3 new_center) {
+void World::set_loaded_region_center(Vector3 new_center) {
     Vector3i new_center_chunk = Vector3i();
     new_center_chunk.x = new_center.x - int64_t(new_center.x) % Chunk::CHUNK_SIZE_X;
     new_center_chunk.y = new_center.y - int64_t(new_center.y) % Chunk::CHUNK_SIZE_Y;
     new_center_chunk.z = new_center.z - int64_t(new_center.z) % Chunk::CHUNK_SIZE_Z;
 
-    if (center_chunk != new_center_chunk) {
-        center_chunk = new_center_chunk;
-        update_loaded_region();
-    }
-
-    center = new_center;
+    center_chunk = new_center_chunk;
+    update_loaded_region();
 }
 
 void World::initialize() {
@@ -145,10 +131,10 @@ void World::regenerate_chunks() {
     for (int64_t chunk_y = min_y; chunk_y <= max_y; chunk_y++) {
         for (int64_t chunk_x = min_x; chunk_x <= max_x; chunk_x++) {
             for (int64_t chunk_z = min_z; chunk_z <= max_z; chunk_z++) {
-                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * chunk_x, Chunk::CHUNK_SIZE_Y * chunk_y, Chunk::CHUNK_SIZE_Z * chunk_z);
-                if (!is_chunk_in_radius(coordinate, instance_radius)) {
+                Vector3i coordinate = center_chunk + Vector3i(Chunk::CHUNK_SIZE_X * chunk_x, Chunk::CHUNK_SIZE_Y * chunk_y, Chunk::CHUNK_SIZE_Z * chunk_z);
+                if (!is_chunk_in_radius(coordinate, instance_radius))
                     continue;
-                }
+
 
                 Chunk* new_chunk = memnew(Chunk);
 
@@ -164,31 +150,23 @@ void World::regenerate_chunks() {
     }
 }
 
-void World::initialize_chunk_data(uint64_t index) {
+void World::initialize_chunk(uint64_t index) {
     Object::cast_to<Chunk>(initiliazation_queue[index])->generate_data(initiliazation_queue_positions[index]);
-}
-
-void World::initialize_chunk_mesh(uint64_t index) {
     Object::cast_to<Chunk>(initiliazation_queue[index])->generate_mesh();
+    is_chunk_loaded[initiliazation_queue_positions[index]] = true;
 }
 
 void World::update_loaded_region() {
     if (has_task) {
-        if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id)) return;
-        WorkerThreadPool::get_singleton()->wait_for_group_task_completion(task_id);
-
-        if (is_task_data) {
-            task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk_mesh), initiliazation_queue.size());
-            is_task_data = false;
+        if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id))
             return;
-        }
+        WorkerThreadPool::get_singleton()->wait_for_group_task_completion(task_id);
+        has_task = false;
     }
 
     initiliazation_queue.clear();
     initiliazation_queue_positions.clear();
 
-    // Vector3 does not have a proper hash function for C++, so we need to use Godot's dictionary
-    Dictionary is_chunk_instanced;
     std::vector<Chunk*> available_chunks;
 
     // Loop through chunks to remove any that are outside of instance radius
@@ -196,9 +174,8 @@ void World::update_loaded_region() {
         Chunk* chunk = all_chunks[i];
         Vector3i coordinate = Vector3i(chunk->get_position());
         if (!is_chunk_in_radius(coordinate, instance_radius)) {
+            is_chunk_loaded.erase(coordinate);
             available_chunks.push_back(chunk);
-        } else {
-            is_chunk_instanced[coordinate] = true;
         }
     }
 
@@ -218,7 +195,7 @@ void World::update_loaded_region() {
                     Chunk::CHUNK_SIZE_Y * actual_chunk_y,
                     Chunk::CHUNK_SIZE_Z * actual_chunk_z) + center_chunk;
 
-                if (is_chunk_instanced[coordinate] || !is_chunk_in_radius(coordinate, instance_radius))
+                if (is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, instance_radius))
                     continue;
 
                 Chunk* new_chunk = available_chunks.back();
@@ -227,18 +204,30 @@ void World::update_loaded_region() {
                 new_chunk->set_visible(false);
                 new_chunk->set_position(coordinate);
                 new_chunk->clear_collision();
+
                 initiliazation_queue.push_back(new_chunk);
                 initiliazation_queue_positions.push_back(coordinate);
             }
         }
     }
 
-    has_task = initiliazation_queue.size() > 0;
-
-    if (has_task) {
-        task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk_data), initiliazation_queue.size());
-        is_task_data = true;
+    if (initiliazation_queue.size() > 0) {
+        has_task = true;
+        task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk), initiliazation_queue.size());
     }
+
+    for (uint64_t i = 0; i < initiliazation_queue_positions.size(); i++) {
+        is_chunk_loaded[initiliazation_queue_positions[i]] = false;
+    }
+}
+
+bool World::is_position_loaded(Vector3 position) {
+    Vector3i snapped_position = Vector3i();
+    snapped_position.x = position.x - int64_t(position.x) % Chunk::CHUNK_SIZE_X;
+    snapped_position.y = position.y - int64_t(position.y) % Chunk::CHUNK_SIZE_Y;
+    snapped_position.z = position.z - int64_t(position.z) % Chunk::CHUNK_SIZE_Z;
+
+    return is_chunk_loaded.has(snapped_position) && is_chunk_loaded[snapped_position];
 }
 
 bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {
