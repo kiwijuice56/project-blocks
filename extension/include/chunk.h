@@ -15,8 +15,6 @@ class Chunk : public MeshInstance3D {
 
 private:
     // Resources
-    Ref<Material> block_material;
-    Ref<NoiseTexture2D> main_noise_texture;
     ConcavePolygonShape3D* shape_data;
 
     // Block ID data
@@ -35,6 +33,9 @@ private:
     uint64_t face_count = 0; // Quads, not tris
     uint64_t block_count = 0;
 
+    bool uniform = false; // Used to optimize chunks of one block type
+    bool modified = false;
+
 protected:
 	static void _bind_methods();
 
@@ -52,20 +53,15 @@ public:
     static const int64_t CHUNK_SIZE_Y = 16;
     static const int64_t CHUNK_SIZE_Z = 16;
 
-    bool uniform = false;
-
 	Chunk();
 	~Chunk();
 
-    // Boilerplate setters and getters
-    Ref<Material> get_block_material() const;
-    void set_block_material(Ref<Material> new_material);
-    Ref<NoiseTexture2D> get_main_noise_texture() const;
-    void set_main_noise_texture(Ref<NoiseTexture2D> new_texture);
+    // Resources set by World
+    Ref<NoiseTexture2D> main_noise_texture;
 
     // Generation methods
     void generate_mesh();
-    void generate_data(Vector3i chunk_position);
+    void generate_data(Vector3i chunk_position, bool override);
     void clear_collision();
 
     // Helper methods to interface with internal data structures
@@ -77,6 +73,7 @@ public:
 
     // Modifying methods
     void remove_block_at(Vector3i global_position);
+    void place_block_at(Vector3i global_position, uint64_t block_id);
 };
 
 }

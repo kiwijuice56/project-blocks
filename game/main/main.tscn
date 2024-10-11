@@ -1,5 +1,6 @@
-[gd_scene load_steps=20 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=21 format=3 uid="uid://dtav4pssg0xe2"]
 
+[ext_resource type="Script" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="PackedScene" uid="uid://8xdecekdoe2h" path="res://main/player/player.tscn" id="3_ddlvf"]
 [ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/rendering/high_graphics_environment.tres" id="4_6ud5x"]
 [ext_resource type="Shader" path="res://main/ui/dithering.gdshader" id="4_25hyt"]
@@ -50,6 +51,7 @@ shader_parameter/blur_samples = 15
 shader = ExtResource("6_mjg4k")
 
 [node name="Main" type="Node"]
+script = ExtResource("1_wx0yy")
 
 [node name="MainWorld" type="World" parent="."]
 block_types = Array[Block]([SubResource("Block_ttxbt"), SubResource("Block_qubqs"), SubResource("Block_tdqgg")])

@@ -33,6 +33,9 @@ private:
 	// Stores coordinates (Vector3i) of loaded chunks
 	Dictionary is_chunk_loaded;
 
+	// Stores block data of modified chunks (Vector3i : PackedByteArray)
+	Dictionary chunk_data;
+
 	// Used to access chunks that need to be initialized
 	std::vector<Chunk*> initiliazation_queue;
 	std::vector<Vector3i> initiliazation_queue_positions;

@@ -9,22 +9,7 @@ void Chunk::_bind_methods() {
     ClassDB::bind_method(D_METHOD("generate_data"), &Chunk::generate_data);
     ClassDB::bind_method(D_METHOD("generate_mesh"), &Chunk::generate_mesh);
 
-    ClassDB::bind_method(D_METHOD("get_main_noise_texture"), &Chunk::get_main_noise_texture);
-	ClassDB::bind_method(D_METHOD("set_main_noise_texture", "new_texture"), &Chunk::set_main_noise_texture);
-
     ClassDB::bind_method(D_METHOD("remove_block_at"), &Chunk::remove_block_at);
-
-    ClassDB::add_property(
-        "Chunk",
-        PropertyInfo(
-            Variant::OBJECT,
-            "main_noise_texture",
-            PROPERTY_HINT_RESOURCE_TYPE,
-            "NoiseTexture2D"
-        ),
-        "set_main_noise_texture",
-        "get_main_noise_texture"
-    );
 }
 
 Chunk::Chunk() {
@@ -54,23 +39,6 @@ Chunk::~Chunk() {
     delete [] visited;
 }
 
-Ref<Material> Chunk::get_block_material() const {
-    return block_material;
-}
-
-void Chunk::set_block_material(Ref<Material> new_material) {
-    block_material = new_material;
-    set_material_override(block_material);
-}
-
-Ref<NoiseTexture2D> Chunk::get_main_noise_texture() const {
-    return main_noise_texture;
-}
-
-void Chunk::set_main_noise_texture(Ref<NoiseTexture2D> new_texture) {
-    main_noise_texture = new_texture;
-}
-
 uint64_t Chunk::get_block_id_at(Vector3i position) {
     return blocks[uint64_t(position.x) + uint64_t(position.z) * CHUNK_SIZE_X + uint64_t(position.y) * CHUNK_SIZE_Z * CHUNK_SIZE_X];
 }
@@ -96,49 +64,55 @@ bool Chunk::in_bounds(Vector3i position) {
 }
 
 // Generate the block data for this chunk
-void Chunk::generate_data(Vector3i chunk_position) {
+void Chunk::generate_data(Vector3i chunk_position, bool override) {
     // Basic "mountains" biome for testing
 
-    blocks.fill(0);
-    block_count = 0;
+    if (override) {
+        blocks.fill(0);
 
-    Vector2 chunk_uv = Vector2(
-        Vector2i(chunk_position.x, chunk_position.z)
-        / Vector2i(CHUNK_SIZE_X, CHUNK_SIZE_Z)
-        % Vector2i(32, 32)
-    ) / 32.0;
+        Vector2 chunk_uv = Vector2(
+            Vector2i(chunk_position.x, chunk_position.z)
+            / Vector2i(CHUNK_SIZE_X, CHUNK_SIZE_Z)
+            % Vector2i(32, 32)
+        ) / 32.0;
 
-    if (chunk_uv.x < 0.0) chunk_uv.x = 1.0 + chunk_uv.x;
-    if (chunk_uv.y < 0.0) chunk_uv.y = 1.0 + chunk_uv.y;
+        if (chunk_uv.x < 0.0) chunk_uv.x = 1.0 + chunk_uv.x;
+        if (chunk_uv.y < 0.0) chunk_uv.y = 1.0 + chunk_uv.y;
 
-    for (int64_t z = 0; z < CHUNK_SIZE_Z; z++) {
-        for (int64_t x = 0; x < CHUNK_SIZE_X; x++) {
-            Vector2 uv = chunk_uv + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 32.0;
+        for (int64_t z = 0; z < CHUNK_SIZE_Z; z++) {
+            for (int64_t x = 0; x < CHUNK_SIZE_X; x++) {
+                Vector2 uv = chunk_uv + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 32.0;
 
-            double height = sample_from_noise(main_noise_texture, uv);
-            int64_t block_height = 1 + int(height * 64);
-            for (int64_t y = 0; y < CHUNK_SIZE_Y; y++) {
-                int64_t real_height = y + chunk_position.y;
-                uint64_t block_type = 0;
+                double height = sample_from_noise(main_noise_texture, uv);
+                int64_t block_height = 1 + int(height * 64);
+                for (int64_t y = 0; y < CHUNK_SIZE_Y; y++) {
+                    int64_t real_height = y + chunk_position.y;
+                    uint64_t block_type = 0;
 
-                if (block_height == real_height) {
-                    block_type = 3;
-                } else if (0 < block_height - real_height && block_height - real_height < 5 ) {
-                    block_type = 2;
-                } else if (real_height < block_height) {
-                    block_type = 1;
-                }
+                    if (block_height == real_height) {
+                        block_type = 3;
+                    } else if (0 < block_height - real_height && block_height - real_height < 5 ) {
+                        block_type = 2;
+                    } else if (real_height < block_height) {
+                        block_type = 1;
+                    }
 
-                blocks[position_to_index(Vector3i(x, y, z))] = block_type;
-
-                if (block_type > 0) {
-                    block_count++;
+                    blocks[position_to_index(Vector3i(x, y, z))] = block_type;
                 }
             }
         }
     }
 
-    uniform = block_count == uint64_t(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
+    // Keep track of block count and other state
+    uint8_t main_block_type = blocks[0];
+    uniform = true;
+    block_count = 0;
+    for (uint64_t i = 0; i < blocks.size(); i++) {
+        uniform = blocks[i] == main_block_type;
+        if (blocks[i] > 0) {
+            block_count++;
+        }
+    }
 }
 
 void Chunk::generate_mesh() {
@@ -181,11 +155,18 @@ void Chunk::remove_block_at(Vector3i global_position) {
     Vector3i block_position = global_position - Vector3i(get_global_position());
     uint64_t index = position_to_index(block_position);
 
-    if (blocks[index] > 0)
+    if (blocks[index] > 0) {
         block_count--;
+    }
 
     blocks[index] = 0;
     generate_mesh();
+
+    modified = true;
+}
+
+void Chunk::place_block_at(Vector3i global_position, uint64_t block_id) {
+    modified = true;
 }
 
 // Fill vertex, normal, and uv arrays with proper triangles (using the greedy meshing algorithm)

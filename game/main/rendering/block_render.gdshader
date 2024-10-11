@@ -1,4 +1,5 @@
 shader_type spatial;
+render_mode specular_disabled;
 
 uniform sampler2DArray textures: filter_nearest;
 

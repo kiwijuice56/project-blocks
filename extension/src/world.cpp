@@ -13,8 +13,6 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_block_types"), &World::get_block_types);
 	ClassDB::bind_method(D_METHOD("set_block_types", "new_block_types"), &World::set_block_types);
 
-
-
     ClassDB::bind_method(D_METHOD("get_block_material"), &World::get_block_material);
 	ClassDB::bind_method(D_METHOD("set_block_material", "new_material"), &World::set_block_material);
 
@@ -139,8 +137,8 @@ void World::regenerate_chunks() {
                 Chunk* new_chunk = memnew(Chunk);
 
                 new_chunk->set_position(coordinate);
-                new_chunk->set_main_noise_texture(main_noise_texture);
-                new_chunk->set_block_material(block_material);
+                new_chunk->main_noise_texture = main_noise_texture;
+                new_chunk->set_material_override(block_material);
 
                 add_child(new_chunk);
 
@@ -151,7 +149,7 @@ void World::regenerate_chunks() {
 }
 
 void World::initialize_chunk(uint64_t index) {
-    Object::cast_to<Chunk>(initiliazation_queue[index])->generate_data(initiliazation_queue_positions[index]);
+    Object::cast_to<Chunk>(initiliazation_queue[index])->generate_data(initiliazation_queue_positions[index], true);
     Object::cast_to<Chunk>(initiliazation_queue[index])->generate_mesh();
     is_chunk_loaded[initiliazation_queue_positions[index]] = true;
 }
