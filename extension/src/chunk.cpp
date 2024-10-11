@@ -66,7 +66,6 @@ bool Chunk::in_bounds(Vector3i position) {
 // Generate the block data for this chunk
 void Chunk::generate_data(Vector3i chunk_position, bool override) {
     // Basic "mountains" biome for testing
-
     if (override) {
         blocks.fill(0);
 

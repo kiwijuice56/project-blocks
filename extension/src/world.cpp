@@ -149,9 +149,17 @@ void World::regenerate_chunks() {
 }
 
 void World::initialize_chunk(uint64_t index) {
-    Object::cast_to<Chunk>(initiliazation_queue[index])->generate_data(initiliazation_queue_positions[index], true);
-    Object::cast_to<Chunk>(initiliazation_queue[index])->generate_mesh();
-    is_chunk_loaded[initiliazation_queue_positions[index]] = true;
+    Chunk* chunk = Object::cast_to<Chunk>(initiliazation_queue[index]);
+    Vector3i coordinate = initiliazation_queue_positions[index];
+    if (chunk_data.has(coordinate)) {
+        chunk->blocks = chunk_data[coordinate];
+        chunk->generate_data(initiliazation_queue_positions[index], false);
+    } else {
+        chunk->generate_data(initiliazation_queue_positions[index], true);
+    }
+
+    chunk->generate_mesh();
+    is_chunk_loaded[coordinate] = true;
 }
 
 void World::update_loaded_region() {
@@ -175,6 +183,10 @@ void World::update_loaded_region() {
         if (!is_chunk_in_radius(coordinate, instance_radius)) {
             is_chunk_loaded.erase(coordinate);
             available_chunks.push_back(chunk);
+
+            if (chunk->modified) {
+                chunk_data[coordinate] = chunk->blocks;
+            }
         }
     }
 

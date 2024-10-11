@@ -17,9 +17,6 @@ private:
     // Resources
     ConcavePolygonShape3D* shape_data;
 
-    // Block ID data
-    PackedByteArray blocks;
-
     // Greedy meshing state variables
     bool* visited;
     uint64_t current_greedy_block = 0;
@@ -34,7 +31,6 @@ private:
     uint64_t block_count = 0;
 
     bool uniform = false; // Used to optimize chunks of one block type
-    bool modified = false;
 
 protected:
 	static void _bind_methods();
@@ -53,11 +49,16 @@ public:
     static const int64_t CHUNK_SIZE_Y = 16;
     static const int64_t CHUNK_SIZE_Z = 16;
 
-	Chunk();
-	~Chunk();
+    // Block ID data
+    PackedByteArray blocks;
+
+    bool modified = false; // Whether this chunk has had any blocks placed/removed
 
     // Resources set by World
     Ref<NoiseTexture2D> main_noise_texture;
+
+    Chunk();
+	~Chunk();
 
     // Generation methods
     void generate_mesh();
