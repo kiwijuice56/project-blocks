@@ -42,14 +42,16 @@ func _physics_process(delta: float):
 		var collider: Node = %RayCast3D.get_collider()
 		if is_instance_valid(collider):
 			var chunk: Chunk = collider.get_parent()
-			var block_position: Vector3 = %RayCast3D.get_collision_point() - %RayCast3D.get_collision_normal() * 0.25
+			var block_position: Vector3i = Vector3i((%RayCast3D.get_collision_point() - %RayCast3D.get_collision_normal() * 0.25).floor())
+			%Pointer.global_position = Vector3(block_position) + Vector3(0.5, 0.5, 0.5)
 			
 			if Input.is_action_just_pressed("main_interact"):
-				chunk.remove_block_at.call_deferred(Vector3i(block_position.floor()))
-			block_position = block_position.floor()
-			block_position -= chunk.global_position
-			
-			%Pointer.global_position = chunk.global_position + block_position + Vector3(0.5, 0.5, 0.5)
+				chunk.remove_block_at.call_deferred(block_position)
+			if Input.is_action_just_pressed("secondary_interact"):
+				var place_position: Vector3i = block_position + Vector3i(%RayCast3D.get_collision_normal().floor())
+				if world.is_position_loaded(place_position):
+					world.get_chunk_at(16 * (place_position / 16)).place_block_at(place_position % 16, 2)
+					world.get_chunk_at(16 * (place_position / 16)).generate_mesh()
 	
 	# Movement logic
 	var input: Vector2 = Input.get_vector("left", "right", "up", "down")

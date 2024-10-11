@@ -74,7 +74,7 @@ public:
 
     // Modifying methods
     void remove_block_at(Vector3i global_position);
-    void place_block_at(Vector3i global_position, uint64_t block_id);
+    void place_block_at(Vector3i global_position, uint8_t block_id);
 };
 
 }

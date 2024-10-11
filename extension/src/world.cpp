@@ -9,6 +9,7 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("initialize"), &World::initialize);
     ClassDB::bind_method(D_METHOD("set_loaded_region_center", "new_center"), &World::set_loaded_region_center);
     ClassDB::bind_method(D_METHOD("is_position_loaded"), &World::is_position_loaded);
+    ClassDB::bind_method(D_METHOD("get_chunk_at"), &World::get_chunk_at);
 
     ClassDB::bind_method(D_METHOD("get_block_types"), &World::get_block_types);
 	ClassDB::bind_method(D_METHOD("set_block_types", "new_block_types"), &World::set_block_types);
@@ -181,6 +182,7 @@ void World::update_loaded_region() {
         Chunk* chunk = all_chunks[i];
         Vector3i coordinate = Vector3i(chunk->get_position());
         if (!is_chunk_in_radius(coordinate, instance_radius)) {
+            chunk_map.erase(coordinate);
             is_chunk_loaded.erase(coordinate);
             available_chunks.push_back(chunk);
 
@@ -206,8 +208,9 @@ void World::update_loaded_region() {
                     Chunk::CHUNK_SIZE_Y * actual_chunk_y,
                     Chunk::CHUNK_SIZE_Z * actual_chunk_z) + center_chunk;
 
-                if (is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, instance_radius))
+                if (is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, instance_radius)) {
                     continue;
+                }
 
                 Chunk* new_chunk = available_chunks.back();
                 available_chunks.pop_back();
@@ -219,6 +222,8 @@ void World::update_loaded_region() {
                 initiliazation_queue.push_back(new_chunk);
                 initiliazation_queue_positions.push_back(coordinate);
                 is_chunk_loaded[coordinate] = false;
+
+                chunk_map[coordinate] = new_chunk;
             }
         }
     }
@@ -236,6 +241,11 @@ bool World::is_position_loaded(Vector3 position) {
     snapped_position.z = position.z - int64_t(position.z) % Chunk::CHUNK_SIZE_Z;
 
     return is_chunk_loaded.has(snapped_position) && is_chunk_loaded[snapped_position];
+}
+
+// Assumes the chunk is loaded!
+Chunk* World::get_chunk_at(Vector3i position) {
+    return Object::cast_to<Chunk>(chunk_map[position]);
 }
 
 bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {

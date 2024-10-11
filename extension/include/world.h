@@ -33,6 +33,9 @@ private:
 	// Stores coordinates (Vector3i) of loaded chunks
 	Dictionary is_chunk_loaded;
 
+	// Stores (Vector3i : Chunk) mapping for easy access
+	Dictionary chunk_map;
+
 	// Stores block data of modified chunks (Vector3i : PackedByteArray)
 	Dictionary chunk_data;
 
@@ -66,6 +69,8 @@ public:
 	// Checks whether the given position is in a loaded chunk or not
 	bool is_position_loaded(Vector3 position);
 
+	Chunk* get_chunk_at(Vector3i position);
+
 	// Boilerplate setters and getters
 	void set_instance_radius(int64_t new_radius);
 	int64_t get_instance_radius() const;
@@ -75,7 +80,6 @@ public:
     void set_block_material(Ref<Material> new_material);
 	Ref<NoiseTexture2D> get_main_noise_texture() const;
     void set_main_noise_texture(Ref<NoiseTexture2D> new_texture);
-
 };
 
 }

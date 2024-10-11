@@ -9,7 +9,8 @@ void Chunk::_bind_methods() {
     ClassDB::bind_method(D_METHOD("generate_data"), &Chunk::generate_data);
     ClassDB::bind_method(D_METHOD("generate_mesh"), &Chunk::generate_mesh);
 
-    ClassDB::bind_method(D_METHOD("remove_block_at"), &Chunk::remove_block_at);
+    ClassDB::bind_method(D_METHOD("remove_block_at", "position"), &Chunk::remove_block_at);
+    ClassDB::bind_method(D_METHOD("place_block_at", "position", "block_id"), &Chunk::place_block_at);
 }
 
 Chunk::Chunk() {
@@ -164,8 +165,9 @@ void Chunk::remove_block_at(Vector3i global_position) {
     modified = true;
 }
 
-void Chunk::place_block_at(Vector3i global_position, uint64_t block_id) {
+void Chunk::place_block_at(Vector3i global_position, uint8_t block_id) {
     modified = true;
+    blocks[position_to_index(global_position)] = block_id;
 }
 
 // Fill vertex, normal, and uv arrays with proper triangles (using the greedy meshing algorithm)
