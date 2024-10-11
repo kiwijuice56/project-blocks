@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://main/player/player.gd" id="1_bnl75"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ksgqs"]
-size = Vector3(0.6, 1.6, 0.6)
+size = Vector3(0.7, 1.6, 0.7)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pjvth"]
 
@@ -15,6 +15,10 @@ ground_accel = 56.0
 air_accel = 48.0
 sprint_fov_scale = 1.15
 sprint_fov_animation_speed = 9.0
+
+[node name="FloorRayCast3D" type="RayCast3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true

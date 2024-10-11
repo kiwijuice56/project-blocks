@@ -28,6 +28,7 @@ class_name Player extends CharacterBody3D
 @export var sprint_fov_animation_speed: float = 0.25
 @export var sprint_difference_threshold: float = 0.1
 @export var minimum_sprint_speed: float = 1.0
+@export var floor_place_deadzone: float = 0.7
 
 var is_sprinting_requested: bool = false
 var is_sprinting: bool = false
@@ -95,6 +96,24 @@ func _physics_process(delta: float):
 				if world.is_position_loaded(place_position) and not %BlockCheckArea3D.overlaps_body(self):
 					world.get_chunk_at(16 * (place_position / 16)).place_block_at(place_position % 16, 2)
 					world.get_chunk_at(16 * (place_position / 16)).generate_mesh()
+	elif %FloorRayCast3D.is_colliding():
+		if Input.is_action_just_pressed("secondary_interact") and not %RayCast3D.is_colliding():
+			var floor_position: Vector3i = Vector3i(global_position.floor() - Vector3(0, 0.25, 0))
+			var flat_look_direction: Vector3 = look_direction
+			flat_look_direction.y = 0
+			if abs(flat_look_direction.x) < floor_place_deadzone and abs(flat_look_direction.z) < floor_place_deadzone:
+				return
+				
+			if abs(flat_look_direction.x) < abs(flat_look_direction.z):
+				flat_look_direction = Vector3(0, 0, sign(flat_look_direction.z))
+			else:
+				flat_look_direction = Vector3(sign(flat_look_direction.x), 0, 0)
+			
+			var floor_block_position: Vector3i = floor_position + Vector3i(flat_look_direction)
+			
+			if world.is_position_loaded(floor_block_position):
+				world.get_chunk_at(16 * (floor_block_position / 16)).place_block_at(floor_block_position % 16, 2)
+				world.get_chunk_at(16 * (floor_block_position / 16)).generate_mesh()
 
 func _input(event: InputEvent):
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
