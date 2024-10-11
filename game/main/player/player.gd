@@ -26,7 +26,10 @@ class_name Player extends CharacterBody3D
 @export var fov: float = 86
 @export var sprint_fov_scale: float = 1.1
 @export var sprint_fov_animation_speed: float = 0.25
+@export var sprint_difference_threshold: float = 0.1
+@export var minimum_sprint_speed: float = 1.0
 
+var is_sprinting_requested: bool = false
 var is_sprinting: bool = false
 
 func _ready() -> void:
@@ -36,29 +39,18 @@ func _process(delta: float) -> void:
 	%Camera3D.fov = lerp(%Camera3D.fov, fov * (sprint_fov_scale if is_sprinting else 1.0), sprint_fov_animation_speed * delta)
 
 func _physics_process(delta: float):
-	# Block picking logic
-	%Pointer.visible = %RayCast3D.is_colliding()
-	if %RayCast3D.is_colliding():
-		var collider: Node = %RayCast3D.get_collider()
-		if is_instance_valid(collider):
-			var chunk: Chunk = collider.get_parent()
-			var block_position: Vector3i = Vector3i((%RayCast3D.get_collision_point() - %RayCast3D.get_collision_normal() * 0.25).floor())
-			%Pointer.global_position = Vector3(block_position) + Vector3(0.5, 0.5, 0.5)
-			
-			if Input.is_action_just_pressed("main_interact"):
-				chunk.remove_block_at.call_deferred(block_position)
-			if Input.is_action_just_pressed("secondary_interact"):
-				var place_position: Vector3i = block_position + Vector3i(%RayCast3D.get_collision_normal().floor())
-				if world.is_position_loaded(place_position):
-					world.get_chunk_at(16 * (place_position / 16)).place_block_at(place_position % 16, 2)
-					world.get_chunk_at(16 * (place_position / 16)).generate_mesh()
-	
 	# Movement logic
 	var input: Vector2 = Input.get_vector("left", "right", "up", "down")
 	var movement_dir: Vector3 = transform.basis * Vector3(input.x, 0, input.y)
+	var look_direction: Vector3 = -get_global_transform().basis.z
 	
 	if not sprint_toggle:
-		is_sprinting = Input.is_action_pressed("sprint")
+		is_sprinting_requested = Input.is_action_pressed("sprint")
+	
+	is_sprinting = is_sprinting_requested 
+	
+	if velocity.length() < minimum_sprint_speed or look_direction.normalized().dot(movement_dir.normalized()) < sprint_difference_threshold:
+		is_sprinting = false
 	
 	var target_speed: float = walk_speed
 	var accel: float = ground_accel
@@ -86,6 +78,23 @@ func _physics_process(delta: float):
 	
 	move_and_slide()
 	
+	# Block picking logic
+	%Pointer.visible = %RayCast3D.is_colliding()
+	if %RayCast3D.is_colliding():
+		var collider: Node = %RayCast3D.get_collider()
+		if is_instance_valid(collider):
+			var chunk: Chunk = collider.get_parent()
+			var block_position: Vector3i = Vector3i((%RayCast3D.get_collision_point() - %RayCast3D.get_collision_normal() * 0.25).floor())
+			var place_position: Vector3i = block_position + Vector3i(%RayCast3D.get_collision_normal().floor())
+			%BlockCheckArea3D.global_position = Vector3(place_position) + Vector3(0.5, 0.5, 0.5)
+			%Pointer.global_position = Vector3(block_position) + Vector3(0.5, 0.5, 0.5)
+			
+			if Input.is_action_just_pressed("main_interact"):
+				chunk.remove_block_at.call_deferred(block_position)
+			if Input.is_action_just_pressed("secondary_interact"):
+				if world.is_position_loaded(place_position) and not %BlockCheckArea3D.overlaps_body(self):
+					world.get_chunk_at(16 * (place_position / 16)).place_block_at(place_position % 16, 2)
+					world.get_chunk_at(16 * (place_position / 16)).generate_mesh()
 
 func _input(event: InputEvent):
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
@@ -94,7 +103,7 @@ func _input(event: InputEvent):
 		%Camera3D.rotation.x = clampf($Camera3D.rotation.x, -deg_to_rad(90), deg_to_rad(90))
 	
 	if sprint_toggle and event.is_action_pressed("sprint", false):
-		is_sprinting = not is_sprinting
+		is_sprinting_requested = not is_sprinting_requested
 	
 	if event.is_action_pressed("ui_cancel", false):
 		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:

@@ -1,9 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://8xdecekdoe2h"]
+[gd_scene load_steps=4 format=3 uid="uid://8xdecekdoe2h"]
 
 [ext_resource type="Script" path="res://main/player/player.gd" id="1_bnl75"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ksgqs"]
 size = Vector3(0.6, 1.6, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pjvth"]
 
 [node name="Player" type="CharacterBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
@@ -25,3 +27,15 @@ target_position = Vector3(0, 0, -4.5)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_ksgqs")
+
+[node name="PositionIsolation" type="Node" parent="."]
+
+[node name="BlockCheckArea3D" type="Area3D" parent="PositionIsolation"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PositionIsolation/BlockCheckArea3D"]
+shape = SubResource("BoxShape3D_pjvth")

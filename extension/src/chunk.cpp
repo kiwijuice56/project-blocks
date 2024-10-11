@@ -168,6 +168,7 @@ void Chunk::remove_block_at(Vector3i global_position) {
 void Chunk::place_block_at(Vector3i global_position, uint8_t block_id) {
     modified = true;
     blocks[position_to_index(global_position)] = block_id;
+    block_count++;
 }
 
 // Fill vertex, normal, and uv arrays with proper triangles (using the greedy meshing algorithm)
