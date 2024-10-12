@@ -55,8 +55,7 @@ func _process(delta: float) -> void:
 			world.get_chunk_at(block_position).remove_block_at(block_position)
 		if Input.is_action_just_pressed("secondary_interact"):
 			if world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
-				world.get_chunk_at(place_position).place_block_at(place_position, 2)
-				%Pointer.visible = false
+				world.get_chunk_at(place_position).place_block_at(place_position, 4)
 	elif %FloorRayCast3D.is_colliding():
 		if Input.is_action_just_pressed("secondary_interact") and not %RayCast3D.is_colliding():
 			var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())
@@ -77,16 +76,16 @@ func _process(delta: float) -> void:
 			var floor_block_position: Vector3i = floor_position + Vector3i(flat_look_direction)
 			
 			if world.is_position_loaded(floor_block_position):
-				world.get_chunk_at(16 * (floor_block_position / 16)).place_block_at(floor_block_position, 2)
+				world.get_chunk_at(floor_block_position).place_block_at(floor_block_position, 4)
 	
 	# Update pointer visual
 	%RayCast3D.force_raycast_update()
-	%Pointer.visible = %RayCast3D.is_colliding()
+	%BlockOutline.visible = %RayCast3D.is_colliding()
 	if %RayCast3D.is_colliding():
 		var selected_position: Vector3 = %RayCast3D.get_collision_point() - %RayCast3D.get_collision_normal() * 0.5
 		selected_position = (selected_position - Vector3(1, 1, 1)).ceil()
 		var block_position: Vector3i = Vector3i(selected_position)
-		%Pointer.global_position = Vector3(block_position) + Vector3(0.5, 0.5, 0.5)
+		%BlockOutline.global_position = Vector3(block_position) + Vector3(0.5, 0.5, 0.5)
 
 func _physics_process(delta: float):
 	# Movement logic

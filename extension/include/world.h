@@ -5,8 +5,10 @@
 #include "../include/chunk.h"
 
 #include <godot_cpp/classes/node3d.hpp>
-#include <godot_cpp/classes/material.hpp>
-#include <godot_cpp/classes/noise_texture2d.hpp>
+#include <godot_cpp/classes/shader_material.hpp>
+#include <godot_cpp/classes/image_texture.hpp>
+#include <godot_cpp/classes/image.hpp>
+#include <godot_cpp/classes/texture2d_array.hpp>
 #include <godot_cpp/classes/worker_thread_pool.hpp>
 #include <godot_cpp/classes/thread.hpp>
 #include <godot_cpp/classes/engine.hpp>
@@ -21,7 +23,7 @@ private:
 
 	// Resources
 	TypedArray<Block> block_types;
-	Ref<Material> block_material;
+	Ref<ShaderMaterial> block_material;
 	Ref<NoiseTexture2D> main_noise_texture;
 
 	// The center chunk's position
@@ -53,6 +55,7 @@ protected:
 	void regenerate_chunks();
 	void initialize_chunk(uint64_t index);
 	void update_loaded_region();
+	void create_texture_atlas();
 
 	bool is_chunk_in_radius(Vector3i coordinate, int64_t radius);
 
@@ -62,24 +65,24 @@ public:
 
 	void initialize();
 
-	// Used to set the loaded region of the world;
-	// new_center is usually the player's position
+	// Used to set the loaded region of the world, new_center is usually the player's position
 	void set_loaded_region_center(Vector3 new_center);
 
-	Vector3i snap_to_chunk(Vector3 position);
-
-	// Checks whether the given position is in a loaded chunk or not
+	// Other helpful interfacing methods
 	bool is_position_loaded(Vector3 position);
-
 	Chunk* get_chunk_at(Vector3i position);
+	Vector3i snap_to_chunk(Vector3 position);
 
 	// Boilerplate setters and getters
 	void set_instance_radius(int64_t new_radius);
 	int64_t get_instance_radius() const;
+
 	TypedArray<Block> get_block_types() const;
     void set_block_types(const TypedArray<Block> new_block_types);
-	Ref<Material> get_block_material() const;
-    void set_block_material(Ref<Material> new_material);
+
+	Ref<ShaderMaterial> get_block_material() const;
+    void set_block_material(Ref<ShaderMaterial> new_material);
+
 	Ref<NoiseTexture2D> get_main_noise_texture() const;
     void set_main_noise_texture(Ref<NoiseTexture2D> new_texture);
 };

@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://8xdecekdoe2h"]
+[gd_scene load_steps=5 format=3 uid="uid://8xdecekdoe2h"]
 
 [ext_resource type="Script" path="res://main/player/player.gd" id="1_bnl75"]
+[ext_resource type="PackedScene" uid="uid://cvlj2x7ggstow" path="res://main/rendering/block_outline/block_outline.tscn" id="2_ad83d"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_ccg45"]
 height = 1.6
@@ -35,6 +36,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 shape = SubResource("CylinderShape3D_ccg45")
 
 [node name="PositionIsolation" type="Node" parent="."]
+
+[node name="BlockOutline" parent="PositionIsolation" instance=ExtResource("2_ad83d")]
+unique_name_in_owner = true
 
 [node name="PlacementCheckShapeCast3D" type="ShapeCast3D" parent="PositionIsolation"]
 unique_name_in_owner = true

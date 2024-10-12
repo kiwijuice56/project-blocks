@@ -1,25 +1,19 @@
-[gd_scene load_steps=21 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=19 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_wx0yy"]
+[ext_resource type="Block" uid="uid://hcccrpxat5cg" path="res://main/blocks/air.tres" id="2_fp0mr"]
 [ext_resource type="PackedScene" uid="uid://8xdecekdoe2h" path="res://main/player/player.tscn" id="3_ddlvf"]
+[ext_resource type="Block" uid="uid://ccxay6pbl60o7" path="res://main/blocks/dirt.tres" id="3_l0hnj"]
 [ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/rendering/environments/high_graphics_environment.tres" id="4_6ud5x"]
 [ext_resource type="Shader" path="res://main/ui/dithering.gdshader" id="4_25hyt"]
-[ext_resource type="ArrayMesh" uid="uid://bffmgwni5ctme" path="res://main/rendering/block_outline.obj" id="4_f37l1"]
+[ext_resource type="Block" uid="uid://ckfxfltvmtejt" path="res://main/blocks/grass.tres" id="4_neyo7"]
+[ext_resource type="Block" uid="uid://qc0niwvbym5a" path="res://main/blocks/stone.tres" id="5_12yda"]
 [ext_resource type="Script" path="res://main/main_world.gd" id="5_ds8vp"]
 [ext_resource type="Script" path="res://main/ui/fps_label.gd" id="5_fc4bx"]
-[ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/rendering/block_material.tres" id="5_md34j"]
-[ext_resource type="Shader" path="res://main/ui/vhs.gdshader" id="5_quynp"]
+[ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/rendering/block_mesh/block_mesh_material.tres" id="5_md34j"]
+[ext_resource type="Block" uid="uid://dm2v3snll1pjx" path="res://main/blocks/wood.tres" id="6_acldl"]
 [ext_resource type="Texture2D" uid="uid://dny2s70gsc4cf" path="res://main/ui/crosshair.png" id="6_i0idr"]
 [ext_resource type="Shader" path="res://main/ui/crosshair_inversion.gdshader" id="6_mjg4k"]
-
-[sub_resource type="Block" id="Block_ttxbt"]
-id = 1
-
-[sub_resource type="Block" id="Block_qubqs"]
-id = 2
-
-[sub_resource type="Block" id="Block_tdqgg"]
-id = 2
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_pqdmm"]
 
@@ -27,26 +21,11 @@ id = 2
 seamless = true
 noise = SubResource("FastNoiseLite_pqdmm")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_okdxy"]
-transparency = 1
-shading_mode = 0
-disable_ambient_light = true
-disable_fog = true
-albedo_color = Color(1, 1, 1, 0.0627451)
-disable_receive_shadows = true
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
 shader_parameter/fog_color = Color(1, 1, 1, 1)
 shader_parameter/resolution_downsampling = 1.0
 shader_parameter/bit_depth = 12.0
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ferjh"]
-shader = ExtResource("5_quynp")
-shader_parameter/wiggle = 0.03
-shader_parameter/wiggle_speed = 25.0
-shader_parameter/smear = 1.0
-shader_parameter/blur_samples = 15
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3a5av"]
 shader = ExtResource("6_mjg4k")
@@ -55,7 +34,7 @@ shader = ExtResource("6_mjg4k")
 script = ExtResource("1_wx0yy")
 
 [node name="MainWorld" type="World" parent="."]
-block_types = Array[Block]([SubResource("Block_ttxbt"), SubResource("Block_qubqs"), SubResource("Block_tdqgg")])
+block_types = Array[Block]([ExtResource("2_fp0mr"), ExtResource("5_12yda"), ExtResource("3_l0hnj"), ExtResource("4_neyo7"), ExtResource("6_acldl")])
 block_material = ExtResource("5_md34j")
 main_noise_texture = SubResource("NoiseTexture2D_ags5r")
 instance_radius = 96
@@ -70,17 +49,10 @@ shadow_enabled = true
 directional_shadow_blend_splits = true
 directional_shadow_max_distance = 48.0
 
-[node name="Pointer" type="MeshInstance3D" parent="."]
-unique_name_in_owner = true
-transform = Transform3D(1.001, 0, 0, 0, 1.001, 0, 0, 0, 1.001, 0, 0, 0)
-material_override = SubResource("StandardMaterial3D_okdxy")
-mesh = ExtResource("4_f37l1")
-
 [node name="Player" parent="." node_paths=PackedStringArray("world") instance=ExtResource("3_ddlvf")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1536, 80, 1121)
 world = NodePath("../MainWorld")
-sprint_toggle = true
 fly_speed = 128.0
 fly_impulse = 9.0
 
@@ -88,17 +60,7 @@ fly_impulse = 9.0
 environment = ExtResource("4_6ud5x")
 
 [node name="Dithering" type="ColorRect" parent="."]
-visible = false
 material = SubResource("ShaderMaterial_6f7p0")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VHSCover" type="ColorRect" parent="."]
-visible = false
-material = SubResource("ShaderMaterial_ferjh")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

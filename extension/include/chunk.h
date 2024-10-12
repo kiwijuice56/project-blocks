@@ -4,7 +4,6 @@
 #include <godot_cpp/classes/material.hpp>
 #include <godot_cpp/classes/noise_texture2d.hpp>
 #include <godot_cpp/classes/image.hpp>
-
 #include <godot_cpp/classes/concave_polygon_shape3d.hpp>
 #include <godot_cpp/classes/static_body3d.hpp>
 #include <godot_cpp/classes/collision_shape3d.hpp>
@@ -76,6 +75,5 @@ public:
     void remove_block_at(Vector3i global_position);
     void place_block_at(Vector3i global_position, uint8_t block_id);
 };
-
 }
 

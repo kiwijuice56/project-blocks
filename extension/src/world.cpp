@@ -41,7 +41,7 @@ void World::_bind_methods() {
             Variant::OBJECT,
             "block_material",
             PROPERTY_HINT_RESOURCE_TYPE,
-            "Material"
+            "ShaderMaterial"
         ),
         "set_block_material",
         "get_block_material"
@@ -79,11 +79,11 @@ TypedArray<Block> World::get_block_types() const {
     return block_types;
 }
 
-Ref<Material> World::get_block_material() const {
+Ref<ShaderMaterial> World::get_block_material() const {
     return block_material;
 }
 
-void World::set_block_material(Ref<Material> new_material) {
+void World::set_block_material(Ref<ShaderMaterial> new_material) {
     block_material = new_material;
 }
 
@@ -114,6 +114,8 @@ void World::set_loaded_region_center(Vector3 new_center) {
 }
 
 void World::initialize() {
+    create_texture_atlas();
+
     // Do not create chunk children when only in the editor
     if (!Engine::get_singleton()->is_editor_hint()) {
         regenerate_chunks();
@@ -131,9 +133,9 @@ void World::regenerate_chunks() {
         for (int64_t chunk_x = min_x; chunk_x <= max_x; chunk_x++) {
             for (int64_t chunk_z = min_z; chunk_z <= max_z; chunk_z++) {
                 Vector3i coordinate = center_chunk + Vector3i(Chunk::CHUNK_SIZE_X * chunk_x, Chunk::CHUNK_SIZE_Y * chunk_y, Chunk::CHUNK_SIZE_Z * chunk_z);
-                if (!is_chunk_in_radius(coordinate, instance_radius))
+                if (!is_chunk_in_radius(coordinate, instance_radius)) {
                     continue;
-
+                }
 
                 Chunk* new_chunk = memnew(Chunk);
 
@@ -241,8 +243,7 @@ bool World::is_position_loaded(Vector3 position) {
 
 // Assumes the chunk is loaded!
 Chunk* World::get_chunk_at(Vector3i position) {
-    Vector3i snapped_position = snap_to_chunk(position);
-    return Object::cast_to<Chunk>(chunk_map[snapped_position]);
+    return Object::cast_to<Chunk>(chunk_map[snap_to_chunk(position)]);
 }
 
 Vector3i World::snap_to_chunk(Vector3 position) {
@@ -259,4 +260,21 @@ Vector3i World::snap_to_chunk(Vector3 position) {
 
 bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {
     return (center_chunk - coordinate).length_squared() < radius * radius;
+}
+
+void World::create_texture_atlas() {
+    TypedArray<Image> images;
+    images.resize(6 * block_types.size());
+    for (int64_t i = 0; i < block_types.size(); i++) {
+        Block* block = Object::cast_to<Block>(block_types[i]);
+        Ref<Image> combined_image = block->get_texture()->get_image();
+        for (int64_t j = 0; j < 6; j++) {
+            Ref<Image> side_image = Image::create_empty(16, 16, false, Image::FORMAT_RGBA8);
+            side_image->blit_rect(combined_image, Rect2i(j * 16, 0, 16, 16), Vector2i());
+            images[6 * i + j] = side_image;
+        }
+    }
+    Ref<Texture2DArray> atlas = memnew(Texture2DArray);
+    atlas->create_from_images(images);
+    block_material->set_shader_parameter("textures", atlas);
 }

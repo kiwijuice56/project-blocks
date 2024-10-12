@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://cvlj2x7ggstow"]
+
+[ext_resource type="ArrayMesh" uid="uid://bffmgwni5ctme" path="res://main/rendering/block_outline/block_outline.obj" id="1_nfp3w"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_okdxy"]
+transparency = 1
+shading_mode = 0
+disable_ambient_light = true
+disable_fog = true
+albedo_color = Color(1, 1, 1, 0.0627451)
+disable_receive_shadows = true
+
+[node name="BlockOutline" type="MeshInstance3D"]
+transform = Transform3D(1.001, 0, 0, 0, 1.001, 0, 0, 0, 1.001, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_okdxy")
+mesh = ExtResource("1_nfp3w")
