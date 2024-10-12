@@ -38,7 +38,7 @@ albedo_color = Color(1, 1, 1, 0.0588235)
 shader = ExtResource("4_25hyt")
 shader_parameter/fog_color = Color(1, 1, 1, 1)
 shader_parameter/resolution_downsampling = 1.0
-shader_parameter/bit_depth = 8.0
+shader_parameter/bit_depth = 12.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ferjh"]
 shader = ExtResource("5_quynp")
@@ -62,7 +62,8 @@ script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
-light_energy = 0.6
+light_energy = 0.9
+light_bake_mode = 0
 shadow_enabled = true
 directional_shadow_blend_splits = true
 directional_shadow_max_distance = 48.0

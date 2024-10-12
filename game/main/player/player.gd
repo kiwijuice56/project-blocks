@@ -98,7 +98,7 @@ func _physics_process(delta: float):
 					world.get_chunk_at(16 * (place_position / 16)).generate_mesh()
 	elif %FloorRayCast3D.is_colliding():
 		if Input.is_action_just_pressed("secondary_interact") and not %RayCast3D.is_colliding():
-			var floor_position: Vector3i = Vector3i(global_position.floor() - Vector3(0, 0.25, 0))
+			var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())
 			var flat_look_direction: Vector3 = look_direction
 			flat_look_direction.y = 0
 			if abs(flat_look_direction.x) < floor_place_deadzone and abs(flat_look_direction.z) < floor_place_deadzone:

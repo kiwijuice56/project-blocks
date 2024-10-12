@@ -21,7 +21,7 @@ settings/stdout/verbose_stdout=true
 
 [display]
 
-window/size/viewport_width=384
+window/size/viewport_width=341
 window/size/viewport_height=256
 window/size/window_width_override=768
 window/size/window_height_override=512
@@ -76,6 +76,11 @@ secondary_interact={
 ]
 }
 
+[layer_names]
+
+3d_physics/layer_1="blocks"
+3d_physics/layer_2="player"
+
 [physics]
 
 3d/default_gravity=18.0
@@ -83,7 +88,6 @@ secondary_interact={
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
-textures/lossless_compression/force_png=true
 lights_and_shadows/directional_shadow/size=2048
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality=1
 anti_aliasing/screen_space_roughness_limiter/enabled=false

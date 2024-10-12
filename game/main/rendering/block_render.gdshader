@@ -1,7 +1,6 @@
 shader_type spatial;
-render_mode specular_disabled;
 
-uniform sampler2DArray textures: filter_nearest;
+uniform sampler2DArray textures: filter_nearest, source_color;
 
 void fragment() {
 	// UV2.y carries the texture ID

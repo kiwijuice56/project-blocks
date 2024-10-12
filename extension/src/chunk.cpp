@@ -166,6 +166,9 @@ void Chunk::remove_block_at(Vector3i global_position) {
 }
 
 void Chunk::place_block_at(Vector3i global_position, uint8_t block_id) {
+    if (blocks[position_to_index(global_position)] != 0) {
+        return;
+    }
     modified = true;
     blocks[position_to_index(global_position)] = block_id;
     block_count++;
