@@ -61,7 +61,7 @@ public:
 	~Chunk();
 
     // Generation methods
-    void generate_mesh();
+    void generate_mesh(bool immediate);
     void generate_data(Vector3i chunk_position, bool override);
     void clear_collision();
 

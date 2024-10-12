@@ -4,7 +4,7 @@
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_ccg45"]
 height = 1.6
-radius = 0.4
+radius = 0.25
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pjvth"]
 
@@ -13,6 +13,7 @@ collision_layer = 2
 script = ExtResource("1_bnl75")
 ground_accel = 56.0
 air_accel = 48.0
+jump_impulse = 9.5
 sprint_fov_scale = 1.15
 sprint_fov_animation_speed = 9.0
 

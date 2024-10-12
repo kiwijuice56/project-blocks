@@ -159,7 +159,7 @@ void World::initialize_chunk(uint64_t index) {
         chunk->generate_data(initiliazation_queue_positions[index], true);
     }
 
-    chunk->generate_mesh();
+    chunk->generate_mesh(false);
     is_chunk_loaded[coordinate] = true;
 }
 

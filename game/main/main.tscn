@@ -2,8 +2,9 @@
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="PackedScene" uid="uid://8xdecekdoe2h" path="res://main/player/player.tscn" id="3_ddlvf"]
-[ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/rendering/high_graphics_environment.tres" id="4_6ud5x"]
+[ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/rendering/environments/high_graphics_environment.tres" id="4_6ud5x"]
 [ext_resource type="Shader" path="res://main/ui/dithering.gdshader" id="4_25hyt"]
+[ext_resource type="ArrayMesh" uid="uid://bffmgwni5ctme" path="res://main/rendering/block_outline.obj" id="4_f37l1"]
 [ext_resource type="Script" path="res://main/main_world.gd" id="5_ds8vp"]
 [ext_resource type="Script" path="res://main/ui/fps_label.gd" id="5_fc4bx"]
 [ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/rendering/block_material.tres" id="5_md34j"]
@@ -26,13 +27,13 @@ id = 2
 seamless = true
 noise = SubResource("FastNoiseLite_pqdmm")
 
-[sub_resource type="BoxMesh" id="BoxMesh_us15l"]
-size = Vector3(1.01, 1.01, 1.01)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bpaxa"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_okdxy"]
 transparency = 1
 shading_mode = 0
-albedo_color = Color(1, 1, 1, 0.0588235)
+disable_ambient_light = true
+disable_fog = true
+albedo_color = Color(1, 1, 1, 0.0627451)
+disable_receive_shadows = true
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
@@ -62,7 +63,9 @@ script = ExtResource("5_ds8vp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
-light_energy = 0.9
+light_color = Color(0.98, 0.8624, 0.97216, 1)
+light_energy = 1.25
+light_angular_distance = 0.5
 light_bake_mode = 0
 shadow_enabled = true
 directional_shadow_blend_splits = true
@@ -70,13 +73,15 @@ directional_shadow_max_distance = 48.0
 
 [node name="Pointer" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true
-mesh = SubResource("BoxMesh_us15l")
-surface_material_override/0 = SubResource("StandardMaterial3D_bpaxa")
+transform = Transform3D(1.001, 0, 0, 0, 1.001, 0, 0, 0, 1.001, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_okdxy")
+mesh = ExtResource("4_f37l1")
 
 [node name="Player" parent="." node_paths=PackedStringArray("world") instance=ExtResource("3_ddlvf")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1536, 80, 1121)
 world = NodePath("../MainWorld")
+sprint_toggle = true
 fly_speed = 128.0
 fly_impulse = 9.0
 
@@ -84,6 +89,7 @@ fly_impulse = 9.0
 environment = ExtResource("4_6ud5x")
 
 [node name="Dithering" type="ColorRect" parent="."]
+visible = false
 material = SubResource("ShaderMaterial_6f7p0")
 anchors_preset = 15
 anchor_right = 1.0

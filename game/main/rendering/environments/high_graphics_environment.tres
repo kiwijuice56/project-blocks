@@ -13,7 +13,7 @@ sky_material = SubResource("ProceduralSkyMaterial_5nuc0")
 
 [resource]
 background_mode = 1
-background_color = Color(0.1225, 0.137375, 0.25, 1)
+background_color = Color(0.326937, 0.351052, 0.54472, 1)
 sky = SubResource("Sky_kpkms")
 ssao_enabled = true
 ssao_light_affect = 0.2
@@ -25,3 +25,4 @@ volumetric_fog_enabled = true
 volumetric_fog_emission = Color(0.3234, 0.409477, 0.49, 1)
 volumetric_fog_emission_energy = 0.6
 adjustment_enabled = true
+adjustment_saturation = 1.1

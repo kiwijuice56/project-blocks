@@ -115,7 +115,7 @@ void Chunk::generate_data(Vector3i chunk_position, bool override) {
     }
 }
 
-void Chunk::generate_mesh() {
+void Chunk::generate_mesh(bool immediate) {
     if (block_count == 0) {
         clear_collision();
         call_deferred("set_visible", false);
@@ -144,7 +144,12 @@ void Chunk::generate_mesh() {
     call_deferred("set_mesh", array_mesh);
     call_deferred("set_visible", true);
 
-    shape_data->call_deferred("set_faces", vertices);
+    if (immediate) {
+        shape_data->set_faces(vertices);
+    } else {
+        shape_data->call_deferred("set_faces", vertices);
+    }
+
 }
 
 void Chunk::clear_collision() {
@@ -155,23 +160,30 @@ void Chunk::remove_block_at(Vector3i global_position) {
     Vector3i block_position = global_position - Vector3i(get_global_position());
     uint64_t index = position_to_index(block_position);
 
-    if (blocks[index] > 0) {
-        block_count--;
+    if (blocks[index] == 0) {
+        return;
     }
 
     blocks[index] = 0;
-    generate_mesh();
-
+    block_count--;
     modified = true;
+
+    generate_mesh(true);
 }
 
 void Chunk::place_block_at(Vector3i global_position, uint8_t block_id) {
-    if (blocks[position_to_index(global_position)] != 0) {
+    Vector3i block_position = global_position - Vector3i(get_global_position());
+    uint64_t index = position_to_index(block_position);
+
+    if (blocks[index] != 0) {
         return;
     }
-    modified = true;
-    blocks[position_to_index(global_position)] = block_id;
+
+    blocks[index] = block_id;
     block_count++;
+    modified = true;
+
+    generate_mesh(true);
 }
 
 // Fill vertex, normal, and uv arrays with proper triangles (using the greedy meshing algorithm)
