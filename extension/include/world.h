@@ -66,6 +66,8 @@ public:
 	// new_center is usually the player's position
 	void set_loaded_region_center(Vector3 new_center);
 
+	Vector3i snap_to_chunk(Vector3 position);
+
 	// Checks whether the given position is in a loaded chunk or not
 	bool is_position_loaded(Vector3 position);
 

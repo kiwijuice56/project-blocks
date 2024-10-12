@@ -42,21 +42,20 @@ func _process(delta: float) -> void:
 	
 	# Block picking logic
 	%RayCast3D.force_raycast_update()
-	%Pointer.visible = %RayCast3D.is_colliding()
 	if %RayCast3D.is_colliding():
 		var selected_position: Vector3 = %RayCast3D.get_collision_point() - %RayCast3D.get_collision_normal() * 0.5
 		selected_position = (selected_position - Vector3(1, 1, 1)).ceil()
 		var block_position: Vector3i = Vector3i(selected_position)
 		var place_position: Vector3i = block_position + Vector3i(%RayCast3D.get_collision_normal())
 		
-		%BlockCheckArea3D.global_position = Vector3(place_position) + Vector3(0.5, 0.5, 0.5)
-		%Pointer.global_position = Vector3(block_position) + Vector3(0.5, 0.5, 0.5)
+		%PlacementCheckShapeCast3D.global_position = Vector3(place_position) + Vector3(0.5, 0.5, 0.5)
+		%PlacementCheckShapeCast3D.force_shapecast_update()
 		
-		if Input.is_action_just_pressed("main_interact"):
-			world.get_chunk_at(16 * (block_position / 16)).remove_block_at(block_position)
+		if Input.is_action_just_pressed("main_interact") and world.is_position_loaded(block_position):
+			world.get_chunk_at(block_position).remove_block_at(block_position)
 		if Input.is_action_just_pressed("secondary_interact"):
-			if world.is_position_loaded(place_position) and not %BlockCheckArea3D.overlaps_body(self):
-				world.get_chunk_at(16 * (place_position / 16)).place_block_at(place_position, 2)
+			if world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
+				world.get_chunk_at(place_position).place_block_at(place_position, 2)
 				%Pointer.visible = false
 	elif %FloorRayCast3D.is_colliding():
 		if Input.is_action_just_pressed("secondary_interact") and not %RayCast3D.is_colliding():
@@ -80,7 +79,7 @@ func _process(delta: float) -> void:
 			if world.is_position_loaded(floor_block_position):
 				world.get_chunk_at(16 * (floor_block_position / 16)).place_block_at(floor_block_position, 2)
 	
-	# Update visual again
+	# Update pointer visual
 	%RayCast3D.force_raycast_update()
 	%Pointer.visible = %RayCast3D.is_colliding()
 	if %RayCast3D.is_colliding():

@@ -149,7 +149,6 @@ void Chunk::generate_mesh(bool immediate) {
     } else {
         shape_data->call_deferred("set_faces", vertices);
     }
-
 }
 
 void Chunk::clear_collision() {

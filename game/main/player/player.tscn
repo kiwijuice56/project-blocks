@@ -6,7 +6,7 @@
 height = 1.6
 radius = 0.25
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_pjvth"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_o7rwr"]
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
@@ -36,12 +36,9 @@ shape = SubResource("CylinderShape3D_ccg45")
 
 [node name="PositionIsolation" type="Node" parent="."]
 
-[node name="BlockCheckArea3D" type="Area3D" parent="PositionIsolation"]
+[node name="PlacementCheckShapeCast3D" type="ShapeCast3D" parent="PositionIsolation"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-collision_layer = 0
+shape = SubResource("BoxShape3D_o7rwr")
+exclude_parent = false
+target_position = Vector3(0, 0, 0)
 collision_mask = 2
-monitorable = false
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PositionIsolation/BlockCheckArea3D"]
-shape = SubResource("BoxShape3D_pjvth")
