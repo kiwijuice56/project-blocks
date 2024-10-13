@@ -21,7 +21,7 @@ Chunk::Chunk() {
 
     visited = new bool[CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y];
 
-    blocks = PackedByteArray();
+    blocks = PackedInt32Array();
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 
     // Initialize StaticBody3D data

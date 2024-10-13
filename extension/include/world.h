@@ -38,7 +38,7 @@ private:
 	// Stores (Vector3i : Chunk) mapping for easy access
 	Dictionary chunk_map;
 
-	// Stores block data of modified chunks (Vector3i : PackedByteArray)
+	// Stores block data of modified chunks (Vector3i : PackedInt32Array)
 	Dictionary chunk_data;
 
 	// Used to access chunks that need to be initialized

@@ -49,7 +49,7 @@ public:
     static const int64_t CHUNK_SIZE_Z = 16;
 
     // Block ID data
-    PackedByteArray blocks;
+    PackedInt32Array blocks;
 
     bool modified = false; // Whether this chunk has had any blocks placed/removed
     bool never_initialized = true;

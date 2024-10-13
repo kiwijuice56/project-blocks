@@ -1,0 +1,8 @@
+[gd_resource type="Block" load_steps=2 format=3 uid="uid://c6cj7vvamup7f"]
+
+[ext_resource type="Texture2D" uid="uid://cn8qdmonlafnd" path="res://main/items/blocks/textures/wood.png" id="1_r8w8b"]
+
+[resource]
+id = 4
+display_name = "wood"
+texture = ExtResource("1_r8w8b")

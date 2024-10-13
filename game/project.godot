@@ -32,7 +32,7 @@ window/vsync/vsync_mode=0
 [file_customization]
 
 folder_colors={
-"res://main/world/blocks/": "orange"
+"res://main/items/blocks/": "orange"
 }
 
 [importer_defaults]
@@ -44,8 +44,8 @@ texture={
 "compress/lossy_quality": 0.7,
 "compress/mode": 3,
 "compress/normal_map": 0,
-"detect_3d/compress_to": 1,
-"mipmaps/generate": false,
+"detect_3d/compress_to": 0,
+"mipmaps/generate": true,
 "mipmaps/limit": -1,
 "process/fix_alpha_border": true,
 "process/hdr_as_srgb": false,

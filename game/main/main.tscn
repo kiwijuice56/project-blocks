@@ -1,26 +1,28 @@
 [gd_scene load_steps=20 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_wx0yy"]
-[ext_resource type="Block" uid="uid://hcccrpxat5cg" path="res://main/world/blocks/air.tres" id="2_fp0mr"]
-[ext_resource type="Block" uid="uid://ccxay6pbl60o7" path="res://main/world/blocks/dirt.tres" id="3_l0hnj"]
+[ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/world/rendering/block_mesh/block_mesh_material.tres" id="2_b8uwp"]
+[ext_resource type="Block" uid="uid://dvafel0lfqor7" path="res://main/items/blocks/air.tres" id="2_uoh7y"]
+[ext_resource type="Block" uid="uid://bd4umsf48hbgg" path="res://main/items/blocks/dirt.tres" id="3_26rlm"]
 [ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/world/rendering/environments/high_graphics_environment.tres" id="4_6ud5x"]
+[ext_resource type="Block" uid="uid://mcck1kusgwcq" path="res://main/items/blocks/grass.tres" id="4_7eo3r"]
 [ext_resource type="Shader" path="res://main/ui/dithering.gdshader" id="4_25hyt"]
-[ext_resource type="Block" uid="uid://ckfxfltvmtejt" path="res://main/world/blocks/grass.tres" id="4_neyo7"]
-[ext_resource type="Block" uid="uid://qc0niwvbym5a" path="res://main/world/blocks/stone.tres" id="5_12yda"]
+[ext_resource type="Block" uid="uid://cdvybrvipagwk" path="res://main/items/blocks/stone.tres" id="5_1ye3f"]
 [ext_resource type="Script" path="res://main/world/main_world.gd" id="5_ds8vp"]
 [ext_resource type="Script" path="res://main/ui/fps_label.gd" id="5_fc4bx"]
-[ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/world/rendering/block_mesh/block_mesh_material.tres" id="5_md34j"]
-[ext_resource type="Block" uid="uid://dm2v3snll1pjx" path="res://main/world/blocks/wood.tres" id="6_acldl"]
+[ext_resource type="Block" uid="uid://bmi1nq6o1vmgk" path="res://main/items/blocks/sand.tres" id="6_487hw"]
 [ext_resource type="Texture2D" uid="uid://dny2s70gsc4cf" path="res://main/ui/crosshair.png" id="6_i0idr"]
 [ext_resource type="Shader" path="res://main/ui/crosshair_inversion.gdshader" id="6_mjg4k"]
-[ext_resource type="Block" uid="uid://d3ta8n270vtbs" path="res://main/world/blocks/sand.tres" id="7_27u1r"]
+[ext_resource type="Block" uid="uid://c6cj7vvamup7f" path="res://main/items/blocks/wood.tres" id="7_q710j"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/creature/player/player.tscn" id="10_4clf3"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_pqdmm"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_w0i6m"]
+noise_type = 3
+frequency = 0.015
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ags5r"]
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_jr3tr"]
 seamless = true
-noise = SubResource("FastNoiseLite_pqdmm")
+noise = SubResource("FastNoiseLite_w0i6m")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
@@ -35,9 +37,9 @@ shader = ExtResource("6_mjg4k")
 script = ExtResource("1_wx0yy")
 
 [node name="MainWorld" type="World" parent="."]
-block_types = Array[Block]([ExtResource("2_fp0mr"), ExtResource("5_12yda"), ExtResource("3_l0hnj"), ExtResource("4_neyo7"), ExtResource("6_acldl"), ExtResource("7_27u1r")])
-block_material = ExtResource("5_md34j")
-main_noise_texture = SubResource("NoiseTexture2D_ags5r")
+block_types = Array[Block]([ExtResource("2_uoh7y"), ExtResource("5_1ye3f"), ExtResource("3_26rlm"), ExtResource("4_7eo3r"), ExtResource("7_q710j"), ExtResource("6_487hw")])
+block_material = ExtResource("2_b8uwp")
+main_noise_texture = SubResource("NoiseTexture2D_jr3tr")
 instance_radius = 96
 script = ExtResource("5_ds8vp")
 
@@ -45,7 +47,7 @@ script = ExtResource("5_ds8vp")
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 128, 0)
 world = NodePath("../MainWorld")
-selected_block = ExtResource("5_12yda")
+selected_block = ExtResource("7_q710j")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
