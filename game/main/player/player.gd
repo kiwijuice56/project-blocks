@@ -1,6 +1,7 @@
 class_name Player extends CharacterBody3D
 
 @export var world: World
+@export var selected_block: int
 
 @export_group("Toggles")
 @export var flying: bool = false
@@ -52,10 +53,12 @@ func _process(delta: float) -> void:
 		%PlacementCheckShapeCast3D.force_shapecast_update()
 		
 		if Input.is_action_just_pressed("main_interact") and world.is_position_loaded(block_position):
+			%HandAnimationPlayer.stop()
+			%HandAnimationPlayer.play("snap")
 			world.get_chunk_at(block_position).remove_block_at(block_position)
 		if Input.is_action_just_pressed("secondary_interact"):
 			if world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
-				world.get_chunk_at(place_position).place_block_at(place_position, 4)
+				world.get_chunk_at(place_position).place_block_at(place_position, selected_block)
 	elif %FloorRayCast3D.is_colliding():
 		if Input.is_action_just_pressed("secondary_interact") and not %RayCast3D.is_colliding():
 			var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())
@@ -76,7 +79,7 @@ func _process(delta: float) -> void:
 			var floor_block_position: Vector3i = floor_position + Vector3i(flat_look_direction)
 			
 			if world.is_position_loaded(floor_block_position):
-				world.get_chunk_at(floor_block_position).place_block_at(floor_block_position, 4)
+				world.get_chunk_at(floor_block_position).place_block_at(floor_block_position, selected_block)
 	
 	# Update pointer visual
 	%RayCast3D.force_raycast_update()
