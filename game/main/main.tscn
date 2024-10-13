@@ -43,7 +43,7 @@ script = ExtResource("5_ds8vp")
 
 [node name="Player" parent="." node_paths=PackedStringArray("world") instance=ExtResource("10_4clf3")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1024, 128, 1024)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 128, 0)
 world = NodePath("../MainWorld")
 selected_block = ExtResource("5_12yda")
 

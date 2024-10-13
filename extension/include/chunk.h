@@ -52,6 +52,7 @@ public:
     PackedByteArray blocks;
 
     bool modified = false; // Whether this chunk has had any blocks placed/removed
+    bool never_initialized = true;
 
     // Resources set by World
     Ref<NoiseTexture2D> main_noise_texture;

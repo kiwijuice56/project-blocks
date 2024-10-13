@@ -160,7 +160,7 @@ void World::initialize_chunk(uint64_t index) {
     } else {
         chunk->generate_data(initiliazation_queue_positions[index], true);
     }
-
+    chunk->never_initialized = false;
     chunk->generate_mesh(false);
     is_chunk_loaded[coordinate] = true;
 }
@@ -183,7 +183,7 @@ void World::update_loaded_region() {
     for (uint64_t i = 0; i < all_chunks.size(); i++) {
         Chunk* chunk = all_chunks[i];
         Vector3i coordinate = Vector3i(chunk->get_position());
-        if (!is_chunk_in_radius(coordinate, instance_radius)) {
+        if (chunk->never_initialized || !is_chunk_in_radius(coordinate, instance_radius)) {
             chunk_map.erase(coordinate);
             is_chunk_loaded.erase(coordinate);
             available_chunks.push_back(chunk);

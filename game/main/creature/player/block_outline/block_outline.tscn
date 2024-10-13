@@ -7,7 +7,7 @@ transparency = 1
 shading_mode = 0
 disable_ambient_light = true
 disable_fog = true
-albedo_color = Color(1, 1, 1, 0.0352941)
+albedo_color = Color(1, 1, 1, 0.0156863)
 disable_receive_shadows = true
 
 [node name="BlockOutline" type="MeshInstance3D"]
