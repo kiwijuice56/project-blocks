@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://fi1cbgfj8lb1"
-path="res://.godot/imported/sand.png-907788edffbdb299423d82a798d0a921.ctex"
+uid="uid://c8b1bsmvd0fjp"
+path="res://.godot/imported/stone.png-1d13f11e3532882b690851cc51850554.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://main/blocks/textures/sand.png"
-dest_files=["res://.godot/imported/sand.png-907788edffbdb299423d82a798d0a921.ctex"]
+source_file="res://main/world/blocks/textures/stone.png"
+dest_files=["res://.godot/imported/stone.png-1d13f11e3532882b690851cc51850554.ctex"]
 
 [params]
 
@@ -21,7 +21,7 @@ compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -31,4 +31,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

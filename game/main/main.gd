@@ -1,6 +1,6 @@
 class_name Main extends Node
 
-func _process(delta: float):
+func _process(delta: float) -> void:
 	if delta > 0.08:
 		print("cpu lag spike")
 	pass

@@ -1,6 +1,6 @@
 [gd_resource type="Block" load_steps=2 format=3 uid="uid://qc0niwvbym5a"]
 
-[ext_resource type="Texture2D" uid="uid://c8b1bsmvd0fjp" path="res://main/blocks/textures/stone.png" id="1_5xyx8"]
+[ext_resource type="Texture2D" uid="uid://c8b1bsmvd0fjp" path="res://main/world/blocks/textures/stone.png" id="1_5xyx8"]
 
 [resource]
 id = 1

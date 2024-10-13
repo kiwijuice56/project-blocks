@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://216h2mvevyco"
-path="res://.godot/imported/snap.png-17367740fc9089e98ce314a02a01b17b.ctex"
+uid="uid://dbn6d1ljyjdax"
+path="res://.godot/imported/dirt.png-45abc4727dc195b011c9b72e643e52bb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://main/player/arm/snap.png"
-dest_files=["res://.godot/imported/snap.png-17367740fc9089e98ce314a02a01b17b.ctex"]
+source_file="res://main/world/blocks/textures/dirt.png"
+dest_files=["res://.godot/imported/dirt.png-45abc4727dc195b011c9b72e643e52bb.ctex"]
 
 [params]
 
@@ -21,7 +21,7 @@ compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -31,4 +31,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

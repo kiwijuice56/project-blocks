@@ -1,0 +1,127 @@
+[gd_scene load_steps=10 format=3 uid="uid://ccsm4tlbop58m"]
+
+[ext_resource type="PackedScene" uid="uid://co5xqagmethrd" path="res://main/creature/creature.tscn" id="1_chebf"]
+[ext_resource type="Script" path="res://main/creature/player/player.gd" id="2_4yh36"]
+[ext_resource type="Shape3D" uid="uid://bjwdaet7is1fx" path="res://main/creature/player/player_collision_shape.tres" id="2_v2xor"]
+[ext_resource type="PackedScene" uid="uid://cvlj2x7ggstow" path="res://main/creature/player/block_outline/block_outline.tscn" id="3_gneh7"]
+[ext_resource type="Texture2D" uid="uid://216h2mvevyco" path="res://main/creature/player/hand/snap.png" id="5_qydjy"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_o7rwr"]
+
+[sub_resource type="Animation" id="Animation_e00qc"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_j62jl"]
+resource_name = "snap"
+length = 0.3333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0333333, 0.0666667, 0.1, 0.133333, 0.166667, 0.2, 0.233333, 0.266667, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fw5do"]
+_data = {
+"RESET": SubResource("Animation_e00qc"),
+"snap": SubResource("Animation_j62jl")
+}
+
+[node name="Player" instance=ExtResource("1_chebf")]
+collision_layer = 6
+script = ExtResource("2_4yh36")
+selected_block = null
+flying = false
+sprint_toggle = false
+ground_accel = 56.0
+air_accel = 48.0
+gravity = 32.0
+sprint_speed = 5.2
+jump_speed_multiplier = 1.1
+fly_speed = 16.0
+walk_speed = 3.9
+jump_impulse = 9.0
+fly_impulse = 32.0
+mouse_sensitivity = 0.01
+fov = 86.0
+sprint_fov_scale = 1.15
+sprint_fov_animation_speed = 9.0
+sprint_difference_threshold = 0.1
+minimum_sprint_speed = 1.0
+floor_place_deadzone = 0.6
+floor_place_down_angle = -0.6
+
+[node name="CollisionShape3D" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = ExtResource("2_v2xor")
+
+[node name="FloorRayCast3D" type="RayCast3D" parent="." index="1"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+
+[node name="Camera3D" type="Camera3D" parent="." index="2"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 1.411, 0)
+fov = 80.0
+
+[node name="InteractRayCast3D" type="RayCast3D" parent="Camera3D" index="0"]
+unique_name_in_owner = true
+target_position = Vector3(0, 0, -4.5)
+
+[node name="PositionIsolation" type="Node" parent="." index="3"]
+
+[node name="BlockOutline" parent="PositionIsolation" index="0" instance=ExtResource("3_gneh7")]
+unique_name_in_owner = true
+
+[node name="PlacementCheckShapeCast3D" type="ShapeCast3D" parent="PositionIsolation" index="1"]
+unique_name_in_owner = true
+shape = SubResource("BoxShape3D_o7rwr")
+exclude_parent = false
+target_position = Vector3(0, 0, 0)
+collision_mask = 2
+
+[node name="HandSubViewportContainer" type="SubViewportContainer" parent="." index="4"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="HandSubViewportContainer" index="0"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(341, 256)
+render_target_update_mode = 0
+
+[node name="Hand" type="Sprite2D" parent="HandSubViewportContainer/SubViewport" index="0"]
+texture_filter = 1
+position = Vector2(240, 192)
+scale = Vector2(-1, 1)
+texture = ExtResource("5_qydjy")
+hframes = 10
+
+[node name="HandAnimationPlayer" type="AnimationPlayer" parent="HandSubViewportContainer/SubViewport/Hand" index="0"]
+unique_name_in_owner = true
+libraries = {
+"": SubResource("AnimationLibrary_fw5do")
+}

@@ -1,0 +1,22 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bffmgwni5ctme"
+path="res://.godot/imported/block_outline.obj-c8cda9ebd8f1791e85a86fb4b3bbb429.mesh"
+
+[deps]
+
+files=["res://.godot/imported/block_outline.obj-c8cda9ebd8f1791e85a86fb4b3bbb429.mesh"]
+
+source_file="res://main/creature/player/block_outline/block_outline.obj"
+dest_files=["res://.godot/imported/block_outline.obj-c8cda9ebd8f1791e85a86fb4b3bbb429.mesh", "res://.godot/imported/block_outline.obj-c8cda9ebd8f1791e85a86fb4b3bbb429.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
+force_disable_mesh_compression=false

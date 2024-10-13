@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://co5xqagmethrd"]
+
+[ext_resource type="Script" path="res://main/creature/creature.gd" id="1_hvdlm"]
+
+[node name="Creature" type="CharacterBody3D"]
+collision_layer = 4
+script = ExtResource("1_hvdlm")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]

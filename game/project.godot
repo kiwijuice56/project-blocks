@@ -32,7 +32,7 @@ window/vsync/vsync_mode=0
 [file_customization]
 
 folder_colors={
-"res://main/blocks/": "orange"
+"res://main/world/blocks/": "orange"
 }
 
 [importer_defaults]
@@ -108,6 +108,7 @@ secondary_interact={
 
 3d_physics/layer_1="blocks"
 3d_physics/layer_2="player"
+3d_physics/layer_3="creature"
 
 [physics]
 
