@@ -13,22 +13,19 @@ void Item::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_icon"), &Item::get_icon);
 	ClassDB::bind_method(D_METHOD("set_icon", "new_icon"), &Item::set_icon);
 
-    ClassDB::add_property(
-        "Block",
+    ADD_PROPERTY(
         PropertyInfo(Variant::INT, "id"),
         "set_id",
         "get_id"
     );
 
-    ClassDB::add_property(
-        "Block",
+    ADD_PROPERTY(
         PropertyInfo(Variant::STRING, "display_name"),
         "set_display_name",
         "get_display_name"
     );
 
-    ClassDB::add_property(
-        "Block",
+    ADD_PROPERTY(
         PropertyInfo(
             Variant::OBJECT,
             "icon",

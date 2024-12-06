@@ -3,15 +3,20 @@
 
 #include "item.h"
 
+#include <godot_cpp/classes/resource.hpp>
+#include <godot_cpp/classes/texture2d.hpp>
+#include <godot_cpp/classes/ref_counted.hpp>
+
 namespace godot {
 
 class Block : public Item {
-	GDCLASS(Block, Item)
+	GDCLASS(Block, Item);
 
 private:
-    Ref<Texture2D> texture;
 
 protected:
+    Ref<Texture2D> texture;
+
 	static void _bind_methods();
 
 public:

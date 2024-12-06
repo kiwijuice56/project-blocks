@@ -8,14 +8,15 @@
 namespace godot {
 
 class Item : public Resource {
-	GDCLASS(Item, Resource)
+	GDCLASS(Item, Resource);
 
 private:
+
+protected:
     uint32_t id = 0;
     String display_name;
     Ref<Texture2D> icon;
 
-protected:
 	static void _bind_methods();
 
     void simulate(uint64_t state);

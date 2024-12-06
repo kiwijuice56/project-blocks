@@ -3,6 +3,5 @@
 [ext_resource type="Texture2D" uid="uid://b612rxkl7h1ex" path="res://main/items/blocks/textures/grass.png" id="1_njsu2"]
 
 [resource]
-id = 3
-display_name = "grass"
 texture = ExtResource("1_njsu2")
+id = 3

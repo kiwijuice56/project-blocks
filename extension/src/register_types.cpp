@@ -29,7 +29,6 @@ void uninitialize_gdblocks_module(ModuleInitializationLevel p_level) {
 }
 
 extern "C" {
-// Initialization.
 GDExtensionBool GDE_EXPORT gdblocks_init(GDExtensionInterfaceGetProcAddress p_get_proc_address, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization) {
 	godot::GDExtensionBinding::InitObject init_obj(p_get_proc_address, p_library, r_initialization);
 

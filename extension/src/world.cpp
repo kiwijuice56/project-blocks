@@ -264,14 +264,23 @@ bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {
 
 void World::create_texture_atlas() {
     TypedArray<Image> images;
-    images.resize(6 * block_types.size());
+
+    uint32_t max_id = 0;
+    for (int64_t i = 0; i < block_types.size(); i++) {
+        Block* block = Object::cast_to<Block>(block_types[i]);
+        if (block->get_id() > max_id) {
+            max_id = block->get_id();
+        }
+    }
+
+    images.resize(6 * (max_id + 1));
     for (int64_t i = 0; i < block_types.size(); i++) {
         Block* block = Object::cast_to<Block>(block_types[i]);
         Ref<Image> combined_image = block->get_texture()->get_image();
         for (int64_t j = 0; j < 6; j++) {
             Ref<Image> side_image = Image::create_empty(16, 16, false, Image::FORMAT_RGBA8);
             side_image->blit_rect(combined_image, Rect2i(j * 16, 0, 16, 16), Vector2i());
-            images[6 * i + j] = side_image;
+            images[6 * block->get_id() + j] = side_image;
         }
     }
     Ref<Texture2DArray> atlas = memnew(Texture2DArray);

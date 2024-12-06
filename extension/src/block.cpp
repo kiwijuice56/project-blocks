@@ -6,13 +6,10 @@
 using namespace godot;
 
 void Block::_bind_methods() {
-    Item::_bind_methods();
-
     ClassDB::bind_method(D_METHOD("get_texture"), &Block::get_texture);
 	ClassDB::bind_method(D_METHOD("set_texture", "new_texture"), &Block::set_texture);
 
-    ClassDB::add_property(
-        "Block",
+    ADD_PROPERTY(
         PropertyInfo(
             Variant::OBJECT,
             "texture",
