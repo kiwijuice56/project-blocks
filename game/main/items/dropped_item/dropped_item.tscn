@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://dfjvlhpkb4608"]
+
+[ext_resource type="Script" path="res://main/items/dropped_item/dropped_item.gd" id="1_m5mmq"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_6blph"]
+radius = 0.35
+
+[sub_resource type="BoxMesh" id="BoxMesh_mwfkk"]
+size = Vector3(0.1, 0.1, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2fncv"]
+
+[node name="DroppedItem" type="Area3D"]
+monitoring = false
+script = ExtResource("1_m5mmq")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_6blph")
+
+[node name="Cube" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+mesh = SubResource("BoxMesh_mwfkk")
+surface_material_override/0 = SubResource("StandardMaterial3D_2fncv")

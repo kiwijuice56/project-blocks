@@ -23,6 +23,11 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_instance_radius"), &World::get_instance_radius);
 	ClassDB::bind_method(D_METHOD("set_instance_radius", "new_radius"), &World::set_instance_radius);
 
+	ClassDB::bind_method(D_METHOD("get_block_type_at", "position"), &World::get_block_type_at);
+    ClassDB::bind_method(D_METHOD("break_block_at", "position", "drop_item"), &World::break_block_at);
+    ClassDB::bind_method(D_METHOD("place_block_at", "position", "block_type"), &World::place_block_at);
+
+
     ClassDB::add_property(
         "World",
         PropertyInfo(
@@ -286,4 +291,19 @@ void World::create_texture_atlas() {
     Ref<Texture2DArray> atlas = memnew(Texture2DArray);
     atlas->create_from_images(images);
     block_material->set_shader_parameter("textures", atlas);
+}
+
+Block* World::get_block_type_at(Vector3i position) {
+    Chunk* chunk = get_chunk_at(position);
+    return Object::cast_to<Block>(block_types[chunk->get_block_id_at(position)]);
+}
+
+void World::break_block_at(Vector3i position, bool drop_item) {
+    Chunk* chunk = get_chunk_at(position);
+    chunk->remove_block_at(position);
+}
+
+void World::place_block_at(Vector3i position, uint8_t block_type) {
+    Chunk* chunk = get_chunk_at(position);
+    chunk->place_block_at(position, block_type);
 }

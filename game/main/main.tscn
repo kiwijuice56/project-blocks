@@ -40,7 +40,6 @@ script = ExtResource("1_wx0yy")
 block_types = Array[Block]([ExtResource("2_uoh7y"), ExtResource("5_1ye3f"), ExtResource("3_26rlm"), ExtResource("4_7eo3r"), ExtResource("7_q710j"), ExtResource("6_487hw")])
 block_material = ExtResource("2_b8uwp")
 main_noise_texture = SubResource("NoiseTexture2D_jr3tr")
-instance_radius = 96
 script = ExtResource("5_ds8vp")
 
 [node name="Player" parent="." node_paths=PackedStringArray("world") instance=ExtResource("10_4clf3")]
@@ -48,6 +47,8 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 128, 0)
 world = NodePath("../MainWorld")
 selected_block = ExtResource("7_q710j")
+dropped_item_scene = null
+mouse_sensitivity = 0.02
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)

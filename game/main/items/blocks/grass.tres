@@ -5,3 +5,4 @@
 [resource]
 texture = ExtResource("1_njsu2")
 id = 3
+display_name = "grass"

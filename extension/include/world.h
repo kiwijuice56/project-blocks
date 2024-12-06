@@ -73,6 +73,10 @@ public:
 	Chunk* get_chunk_at(Vector3i position);
 	Vector3i snap_to_chunk(Vector3 position);
 
+	Block* get_block_type_at(Vector3i position);
+	void break_block_at(Vector3i position, bool drop_item);
+	void place_block_at(Vector3i position, uint8_t block_type);
+
 	// Boilerplate setters and getters
 	void set_instance_radius(int64_t new_radius);
 	int64_t get_instance_radius() const;
@@ -85,6 +89,7 @@ public:
 
 	Ref<NoiseTexture2D> get_main_noise_texture() const;
     void set_main_noise_texture(Ref<NoiseTexture2D> new_texture);
+
 };
 
 }

@@ -3,6 +3,8 @@ class_name Player extends Creature
 @export var world: World
 @export var selected_block: Block
 
+@export var dropped_item_scene: PackedScene
+
 @export_group("Toggles")
 @export var flying: bool = false
 @export var sprint_toggle: bool = false
@@ -51,9 +53,9 @@ func _process(delta: float) -> void:
 		%PlacementCheckShapeCast3D.force_shapecast_update()
 		
 		if Input.is_action_just_pressed("main_interact") and world.is_position_loaded(block_position):
-			break_block(block_position, true)
+			world.break_block_at(block_position, true)
 		if Input.is_action_just_pressed("secondary_interact") and world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
-			place_block(place_position, selected_block)
+			world.place_block_at(place_position, selected_block.id)
 	elif %FloorRayCast3D.is_colliding() and Input.is_action_just_pressed("secondary_interact"):
 			var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())
 			var look_direction: Vector3 = -%Camera3D.get_global_transform().basis.z
@@ -73,7 +75,7 @@ func _process(delta: float) -> void:
 			var floor_block_position: Vector3i = floor_position + Vector3i(flat_look_direction)
 			
 			if world.is_position_loaded(floor_block_position):
-				place_block(floor_block_position, selected_block)
+				world.place_block_at(floor_block_position, selected_block.id)
 	
 	# Update pointer visual
 	%InteractRayCast3D.force_raycast_update()
@@ -136,9 +138,3 @@ func _input(event: InputEvent):
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		else:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-
-func break_block(coordinate: Vector3i, drop_item: bool) -> void:
-	world.get_chunk_at(coordinate).remove_block_at(coordinate)
-
-func place_block(coordinate: Vector3i, block_type: Block) -> void:
-	world.get_chunk_at(coordinate).place_block_at(coordinate, selected_block.id)
