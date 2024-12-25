@@ -8,6 +8,10 @@ using namespace godot;
 void Item::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_id"), &Item::get_id);
 	ClassDB::bind_method(D_METHOD("set_id", "new_id"), &Item::set_id);
+    ClassDB::bind_method(D_METHOD("get_count"), &Item::get_count);
+	ClassDB::bind_method(D_METHOD("set_count", "new_count"), &Item::set_count);
+    ClassDB::bind_method(D_METHOD("get_stack_size"), &Item::get_stack_size);
+	ClassDB::bind_method(D_METHOD("set_stack_size", "new_stack_size"), &Item::set_stack_size);
     ClassDB::bind_method(D_METHOD("get_display_name"), &Item::get_display_name);
 	ClassDB::bind_method(D_METHOD("set_display_name", "new_display_name"), &Item::set_display_name);
     ClassDB::bind_method(D_METHOD("get_icon"), &Item::get_icon);
@@ -17,6 +21,18 @@ void Item::_bind_methods() {
         PropertyInfo(Variant::INT, "id"),
         "set_id",
         "get_id"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(Variant::INT, "count"),
+        "set_count",
+        "get_count"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(Variant::INT, "stack_size"),
+        "set_stack_size",
+        "get_stack_size"
     );
 
     ADD_PROPERTY(
@@ -51,6 +67,22 @@ uint32_t Item::get_id() const {
 
 void Item::set_id(uint32_t new_id) {
     id = new_id;
+}
+
+uint32_t Item::get_count() const {
+    return count;
+}
+
+void Item::set_count(uint32_t new_count) {
+    count = new_count;
+}
+
+uint32_t Item::get_stack_size() const {
+    return stack_size;
+}
+
+void Item::set_stack_size(uint32_t new_stack_size) {
+    stack_size = new_stack_size;
 }
 
 String Item::get_display_name() const {

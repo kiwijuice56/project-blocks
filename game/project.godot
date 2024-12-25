@@ -104,6 +104,7 @@ secondary_interact={
 3d_physics/layer_1="blocks"
 3d_physics/layer_2="player"
 3d_physics/layer_3="creature"
+3d_physics/layer_4="dropped_item"
 
 [physics]
 
