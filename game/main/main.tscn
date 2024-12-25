@@ -1,28 +1,27 @@
-[gd_scene load_steps=20 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=19 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_wx0yy"]
-[ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/world/rendering/block_mesh/block_mesh_material.tres" id="2_b8uwp"]
-[ext_resource type="Block" uid="uid://dvafel0lfqor7" path="res://main/items/blocks/air.tres" id="2_uoh7y"]
-[ext_resource type="Block" uid="uid://bd4umsf48hbgg" path="res://main/items/blocks/dirt.tres" id="3_26rlm"]
+[ext_resource type="Block" uid="uid://dvafel0lfqor7" path="res://main/items/blocks/air.tres" id="2_ly1ey"]
+[ext_resource type="Block" uid="uid://mcck1kusgwcq" path="res://main/items/blocks/grass.tres" id="3_7huqy"]
 [ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/world/rendering/environments/high_graphics_environment.tres" id="4_6ud5x"]
-[ext_resource type="Block" uid="uid://mcck1kusgwcq" path="res://main/items/blocks/grass.tres" id="4_7eo3r"]
 [ext_resource type="Shader" path="res://main/ui/dithering.gdshader" id="4_25hyt"]
-[ext_resource type="Block" uid="uid://cdvybrvipagwk" path="res://main/items/blocks/stone.tres" id="5_1ye3f"]
+[ext_resource type="Block" uid="uid://bd4umsf48hbgg" path="res://main/items/blocks/dirt.tres" id="4_pcuap"]
+[ext_resource type="Block" uid="uid://bmi1nq6o1vmgk" path="res://main/items/blocks/sand.tres" id="5_44enk"]
+[ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/world/rendering/block_mesh/block_mesh_material.tres" id="5_ah4j3"]
 [ext_resource type="Script" path="res://main/world/main_world.gd" id="5_ds8vp"]
 [ext_resource type="Script" path="res://main/ui/fps_label.gd" id="5_fc4bx"]
-[ext_resource type="Block" uid="uid://bmi1nq6o1vmgk" path="res://main/items/blocks/sand.tres" id="6_487hw"]
+[ext_resource type="Block" uid="uid://cdvybrvipagwk" path="res://main/items/blocks/stone.tres" id="6_egu44"]
 [ext_resource type="Texture2D" uid="uid://dny2s70gsc4cf" path="res://main/ui/crosshair.png" id="6_i0idr"]
 [ext_resource type="Shader" path="res://main/ui/crosshair_inversion.gdshader" id="6_mjg4k"]
-[ext_resource type="Block" uid="uid://c6cj7vvamup7f" path="res://main/items/blocks/wood.tres" id="7_q710j"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/creature/player/player.tscn" id="10_4clf3"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_w0i6m"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_xbrxv"]
 noise_type = 3
-frequency = 0.015
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_jr3tr"]
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_v17xq"]
+generate_mipmaps = false
 seamless = true
-noise = SubResource("FastNoiseLite_w0i6m")
+noise = SubResource("FastNoiseLite_xbrxv")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
@@ -37,23 +36,22 @@ shader = ExtResource("6_mjg4k")
 script = ExtResource("1_wx0yy")
 
 [node name="MainWorld" type="World" parent="."]
-block_types = Array[Block]([ExtResource("2_uoh7y"), ExtResource("5_1ye3f"), ExtResource("3_26rlm"), ExtResource("4_7eo3r"), ExtResource("7_q710j"), ExtResource("6_487hw")])
-block_material = ExtResource("2_b8uwp")
-main_noise_texture = SubResource("NoiseTexture2D_jr3tr")
+block_types = Array[Block]([ExtResource("2_ly1ey"), ExtResource("6_egu44"), ExtResource("4_pcuap"), ExtResource("3_7huqy"), ExtResource("5_44enk")])
+block_material = ExtResource("5_ah4j3")
+main_noise_texture = SubResource("NoiseTexture2D_v17xq")
 script = ExtResource("5_ds8vp")
 
 [node name="Player" parent="." node_paths=PackedStringArray("world") instance=ExtResource("10_4clf3")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 128, 0)
 world = NodePath("../MainWorld")
-selected_block = ExtResource("7_q710j")
-dropped_item_scene = null
+selected_block = ExtResource("3_7huqy")
 mouse_sensitivity = 0.02
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
 light_color = Color(0.98, 0.8624, 0.97216, 1)
-light_energy = 1.25
+light_energy = 1.5
 light_bake_mode = 0
 shadow_enabled = true
 directional_shadow_blend_splits = true
@@ -65,6 +63,7 @@ environment = ExtResource("4_6ud5x")
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="Dithering" type="ColorRect" parent="UI"]
+visible = false
 material = SubResource("ShaderMaterial_6f7p0")
 anchors_preset = 15
 anchor_right = 1.0

@@ -1,23 +1,98 @@
-[gd_scene load_steps=5 format=3 uid="uid://dfjvlhpkb4608"]
+[gd_scene load_steps=8 format=3 uid="uid://dfjvlhpkb4608"]
 
 [ext_resource type="Script" path="res://main/items/dropped_item/dropped_item.gd" id="1_m5mmq"]
+[ext_resource type="ArrayMesh" uid="uid://bcem1om1xn87j" path="res://main/items/dropped_item/cube_mesh.obj" id="2_jajaa"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_6blph"]
-radius = 0.35
+radius = 0.2
 
-[sub_resource type="BoxMesh" id="BoxMesh_mwfkk"]
-size = Vector3(0.1, 0.1, 0.1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fmwsh"]
+texture_filter = 0
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2fncv"]
+[sub_resource type="Animation" id="Animation_8y7sc"]
+resource_name = "spin"
+loop_mode = 1
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Cube:position:y")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 0.05, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1)
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Cube:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, -6.28319, 0)]
+}
 
-[node name="DroppedItem" type="Area3D"]
-monitoring = false
+[sub_resource type="Animation" id="Animation_do0qv"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Cube:position:y")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Cube:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3h4ph"]
+_data = {
+"RESET": SubResource("Animation_do0qv"),
+"spin": SubResource("Animation_8y7sc")
+}
+
+[node name="DroppedItem" type="CharacterBody3D"]
+collision_layer = 0
 script = ExtResource("1_m5mmq")
+gravity = 32.0
+initial_speed = 9.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_6blph")
 
 [node name="Cube" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true
-mesh = SubResource("BoxMesh_mwfkk")
-surface_material_override/0 = SubResource("StandardMaterial3D_2fncv")
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = ExtResource("2_jajaa")
+surface_material_override/0 = SubResource("StandardMaterial3D_fmwsh")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_3h4ph")
+}
+autoplay = "spin"
+speed_scale = 0.5
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("SphereShape3D_6blph")
+
+[node name="VisibleOnScreenEnabler3D" type="VisibleOnScreenEnabler3D" parent="."]

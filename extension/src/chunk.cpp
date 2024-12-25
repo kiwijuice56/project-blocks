@@ -40,6 +40,7 @@ Chunk::~Chunk() {
     delete [] visited;
 }
 
+// Local position (mostly for internal use)
 uint64_t Chunk::get_block_id_at(Vector3i position) {
     return blocks[uint64_t(position.x) + uint64_t(position.z) * CHUNK_SIZE_X + uint64_t(position.y) * CHUNK_SIZE_Z * CHUNK_SIZE_X];
 }

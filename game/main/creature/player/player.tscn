@@ -110,7 +110,7 @@ stretch = true
 [node name="SubViewport" type="SubViewport" parent="HandSubViewportContainer" index="0"]
 transparent_bg = true
 handle_input_locally = false
-size = Vector2i(341, 256)
+size = Vector2i(300, 256)
 render_target_update_mode = 0
 
 [node name="Hand" type="Sprite2D" parent="HandSubViewportContainer/SubViewport" index="0"]

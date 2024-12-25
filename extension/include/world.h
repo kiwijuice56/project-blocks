@@ -4,14 +4,17 @@
 #include "../include/block.h"
 #include "../include/chunk.h"
 
+#include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/classes/node3d.hpp>
 #include <godot_cpp/classes/shader_material.hpp>
+#include <godot_cpp/classes/packed_scene.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/classes/texture2d_array.hpp>
 #include <godot_cpp/classes/worker_thread_pool.hpp>
 #include <godot_cpp/classes/thread.hpp>
 #include <godot_cpp/classes/engine.hpp>
+#include <godot_cpp/classes/resource_loader.hpp>
 
 namespace godot {
 
@@ -25,6 +28,7 @@ private:
 	TypedArray<Block> block_types;
 	Ref<ShaderMaterial> block_material;
 	Ref<NoiseTexture2D> main_noise_texture;
+	const String dropped_item_scene = "res://main/items/dropped_item/dropped_item.tscn";
 
 	// The center chunk's position
 	Vector3i center_chunk;

@@ -3,8 +3,6 @@ class_name Player extends Creature
 @export var world: World
 @export var selected_block: Block
 
-@export var dropped_item_scene: PackedScene
-
 @export_group("Toggles")
 @export var flying: bool = false
 @export var sprint_toggle: bool = false
@@ -52,7 +50,7 @@ func _process(delta: float) -> void:
 		%PlacementCheckShapeCast3D.global_position = Vector3(place_position) + Vector3(0.5, 0.5, 0.5)
 		%PlacementCheckShapeCast3D.force_shapecast_update()
 		
-		if Input.is_action_just_pressed("main_interact") and world.is_position_loaded(block_position):
+		if Input.is_action_pressed("main_interact") and world.is_position_loaded(block_position):
 			world.break_block_at(block_position, true)
 		if Input.is_action_just_pressed("secondary_interact") and world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
 			world.place_block_at(place_position, selected_block.id)
@@ -124,7 +122,7 @@ func _physics_process(delta: float):
 	
 	move_and_slide()
 
-func _input(event: InputEvent):
+func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sensitivity)
 		%Camera3D.rotate_x(-event.relative.y * mouse_sensitivity)

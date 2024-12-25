@@ -27,7 +27,6 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("break_block_at", "position", "drop_item"), &World::break_block_at);
     ClassDB::bind_method(D_METHOD("place_block_at", "position", "block_type"), &World::place_block_at);
 
-
     ClassDB::add_property(
         "World",
         PropertyInfo(
@@ -295,12 +294,22 @@ void World::create_texture_atlas() {
 
 Block* World::get_block_type_at(Vector3i position) {
     Chunk* chunk = get_chunk_at(position);
-    return Object::cast_to<Block>(block_types[chunk->get_block_id_at(position)]);
+    Vector3i local_position = position - Vector3i(chunk->get_global_position());
+    return Object::cast_to<Block>(block_types[chunk->get_block_id_at(local_position)]);
 }
 
 void World::break_block_at(Vector3i position, bool drop_item) {
     Chunk* chunk = get_chunk_at(position);
+    Block* block_type = get_block_type_at(position);
     chunk->remove_block_at(position);
+
+    if (drop_item) {
+        Ref<PackedScene> item_scene = ResourceLoader::get_singleton()->load(dropped_item_scene);
+        Node* dropped_item = item_scene->instantiate();
+        get_parent()->add_child(dropped_item);
+        dropped_item->set("global_position", position);
+        dropped_item->call("initialize", block_type);
+    }
 }
 
 void World::place_block_at(Vector3i position, uint8_t block_type) {
