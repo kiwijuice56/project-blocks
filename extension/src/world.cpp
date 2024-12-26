@@ -69,6 +69,8 @@ void World::_bind_methods() {
         "set_instance_radius",
         "get_instance_radius"
     );
+
+    ADD_SIGNAL(MethodInfo("block_placed", PropertyInfo(Variant::VECTOR3, "position")));
 }
 
 World::World() { }
@@ -308,6 +310,7 @@ void World::break_block_at(Vector3i position, bool drop_item) {
         Node* dropped_item = item_scene->instantiate();
         get_parent()->add_child(dropped_item);
         dropped_item->set("global_position", position);
+        dropped_item->set("world", this);
         dropped_item->call("initialize", block_type);
     }
 }
@@ -315,4 +318,5 @@ void World::break_block_at(Vector3i position, bool drop_item) {
 void World::place_block_at(Vector3i position, uint8_t block_type) {
     Chunk* chunk = get_chunk_at(position);
     chunk->place_block_at(position, block_type);
+    emit_signal("block_placed", position);
 }

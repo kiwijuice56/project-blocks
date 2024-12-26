@@ -50,7 +50,7 @@ func _process(delta: float) -> void:
 		%PlacementCheckShapeCast3D.global_position = Vector3(place_position) + Vector3(0.5, 0.5, 0.5)
 		%PlacementCheckShapeCast3D.force_shapecast_update()
 		
-		if Input.is_action_pressed("main_interact") and world.is_position_loaded(block_position):
+		if Input.is_action_just_pressed("main_interact") and world.is_position_loaded(block_position):
 			world.break_block_at(block_position, true)
 		if Input.is_action_just_pressed("secondary_interact") and world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
 			world.place_block_at(place_position, selected_block.id)
@@ -82,7 +82,7 @@ func _process(delta: float) -> void:
 		var selected_position: Vector3 = (%InteractRayCast3D.get_collision_point() - %InteractRayCast3D.get_collision_normal() * 0.5 - Vector3(1, 1, 1)).ceil()
 		%BlockOutline.global_position = selected_position + Vector3(0.5, 0.5, 0.5)
 
-func _physics_process(delta: float):
+func _physics_process(delta: float) -> void:
 	# Movement logic
 	var input: Vector2 = Input.get_vector("left", "right", "up", "down")
 	var movement_dir: Vector3 = transform.basis * Vector3(input.x, 0, input.y)
