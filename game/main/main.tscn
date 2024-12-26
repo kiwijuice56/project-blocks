@@ -63,7 +63,6 @@ environment = ExtResource("4_6ud5x")
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="Dithering" type="ColorRect" parent="UI"]
-visible = false
 material = SubResource("ShaderMaterial_6f7p0")
 anchors_preset = 15
 anchor_right = 1.0

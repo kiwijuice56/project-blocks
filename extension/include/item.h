@@ -18,6 +18,7 @@ protected:
     Ref<Texture2D> icon;
     uint32_t stack_size = 64;
     uint32_t count = 1;
+    bool can_drop = true;
 
 	static void _bind_methods();
 
@@ -35,6 +36,9 @@ public:
 
     uint32_t get_stack_size() const;
     void set_stack_size(uint32_t new_stack_size);
+
+    bool get_can_drop() const;
+    void set_can_drop(bool new_val);
 
     String get_display_name() const;
     void set_display_name(String new_display_name);

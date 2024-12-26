@@ -6,11 +6,12 @@ class_name DroppedItem extends CharacterBody3D
 @export var horizontal_dampening: float = 8.0
 @export var merge_time: float = 0.5
 @export var swim_speed: float = 8.0
+@export var awaken_distnace: float = 4.0
 
 var world: World
 var item: Item
 
-enum { MERGE, SWIM, IDLE }
+enum { MERGE, SWIM, IDLE, SLEEPING }
 
 var state: int = IDLE
 
@@ -37,6 +38,16 @@ func _on_area_entered(new_area: Area3D) -> void:
 	
 	absorb.call_deferred(other)
 
+func _on_block_placed(block_position: Vector3) -> void:
+	if (state == IDLE or state == SLEEPING) and block_position.distance_to(global_position) < awaken_distnace:
+		check_swim()
+
+func _on_block_broken(block_position: Vector3) -> void:
+	if state == SLEEPING and block_position.distance_to(global_position) < awaken_distnace:
+		state = IDLE
+		toggle_physics(true)
+		check_swim()
+
 func _physics_process(delta: float) -> void:
 	if not world.is_position_loaded(global_position):
 		return
@@ -56,29 +67,16 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity.y = 0
 		
-		if world.get_block_type_at(global_position.floor()).id != 0:
-			state = SWIM
-			var swim_dir: Vector3 = Vector3.UP
-			var spots: Array[Vector3] = [Vector3.UP, Vector3.LEFT, Vector3.RIGHT, Vector3.FORWARD, Vector3.BACK, Vector3.DOWN]
-			for spot in spots:
-				if not world.is_position_loaded((global_position + spot).floor()):
-					continue
-				if world.get_block_type_at((global_position + spot).floor()).id == 0:
-					swim_dir = spot
-					break
-			velocity = swim_speed * swim_dir
-			toggle_collision(false)
-			print("!")
+		if velocity.is_equal_approx(Vector3()):
+			state = SLEEPING
+			toggle_physics(false)
 	
 	move_and_slide()
-
-func _on_block_placed(_block_position: Vector3) -> void:
-	if state != IDLE:
-		pass
 
 # Called when instantiated 
 func initialize(set_item: Item) -> void:
 	world.block_placed.connect(_on_block_placed)
+	world.block_broken.connect(_on_block_broken)
 	
 	# Movement 
 	gravity += randf_range(-1, 1) * gravity_range
@@ -86,6 +84,8 @@ func initialize(set_item: Item) -> void:
 	velocity = initial_speed * Vector3(randf_range(-1., 1.), 1., randf_range(-1., 1.)).normalized()
 	
 	item = set_item
+	
+	print(item.display_name)
 	
 	# Visuals
 	if item is Block:
@@ -116,7 +116,9 @@ func absorb(other: DroppedItem) -> void:
 		other.queue_free()
 	else:
 		other.state = IDLE
+		other.check_swim()
 	state = IDLE
+	check_swim()
 
 func toggle_collision(enable: bool) -> void:
 	%CollisionShape3D.disabled = not enable
@@ -124,3 +126,19 @@ func toggle_collision(enable: bool) -> void:
 func toggle_physics(enable: bool) -> void:
 	toggle_collision(enable)
 	set_physics_process(enable)
+
+# Checks if this item is inside of a block, and initiate a swim outwards if so
+func check_swim() -> void:
+	if world.get_block_type_at(global_position.floor()).id != 0:
+		state = SWIM
+		var swim_dir: Vector3 = Vector3.UP
+		var spots: Array[Vector3] = [Vector3.UP, Vector3.LEFT, Vector3.RIGHT, Vector3.FORWARD, Vector3.BACK, Vector3.DOWN]
+		for spot in spots:
+			if not world.is_position_loaded((global_position + spot).floor()):
+				continue
+			if world.get_block_type_at((global_position + spot).floor()).id == 0:
+				swim_dir = spot
+				break
+		velocity = swim_speed * swim_dir
+		toggle_physics(true)
+		toggle_collision(false)

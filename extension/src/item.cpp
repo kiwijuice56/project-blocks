@@ -12,6 +12,8 @@ void Item::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_count", "new_count"), &Item::set_count);
     ClassDB::bind_method(D_METHOD("get_stack_size"), &Item::get_stack_size);
 	ClassDB::bind_method(D_METHOD("set_stack_size", "new_stack_size"), &Item::set_stack_size);
+    ClassDB::bind_method(D_METHOD("get_can_drop"), &Item::get_can_drop);
+	ClassDB::bind_method(D_METHOD("set_can_drop", "new_val"), &Item::set_can_drop);
     ClassDB::bind_method(D_METHOD("get_display_name"), &Item::get_display_name);
 	ClassDB::bind_method(D_METHOD("set_display_name", "new_display_name"), &Item::set_display_name);
     ClassDB::bind_method(D_METHOD("get_icon"), &Item::get_icon);
@@ -33,6 +35,12 @@ void Item::_bind_methods() {
         PropertyInfo(Variant::INT, "stack_size"),
         "set_stack_size",
         "get_stack_size"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(Variant::BOOL, "can_drop"),
+        "set_can_drop",
+        "get_can_drop"
     );
 
     ADD_PROPERTY(
@@ -83,6 +91,14 @@ uint32_t Item::get_stack_size() const {
 
 void Item::set_stack_size(uint32_t new_stack_size) {
     stack_size = new_stack_size;
+}
+
+bool Item::get_can_drop() const {
+    return can_drop;
+}
+
+void Item::set_can_drop(bool new_val) {
+    can_drop = new_val;
 }
 
 String Item::get_display_name() const {

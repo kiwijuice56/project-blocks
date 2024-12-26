@@ -71,6 +71,7 @@ void World::_bind_methods() {
     );
 
     ADD_SIGNAL(MethodInfo("block_placed", PropertyInfo(Variant::VECTOR3, "position")));
+    ADD_SIGNAL(MethodInfo("block_broken", PropertyInfo(Variant::VECTOR3, "position")));
 }
 
 World::World() { }
@@ -305,7 +306,7 @@ void World::break_block_at(Vector3i position, bool drop_item) {
     Block* block_type = get_block_type_at(position);
     chunk->remove_block_at(position);
 
-    if (drop_item) {
+    if (drop_item && block_type->get_can_drop()) {
         Ref<PackedScene> item_scene = ResourceLoader::get_singleton()->load(dropped_item_scene);
         Node* dropped_item = item_scene->instantiate();
         get_parent()->add_child(dropped_item);
@@ -313,6 +314,8 @@ void World::break_block_at(Vector3i position, bool drop_item) {
         dropped_item->set("world", this);
         dropped_item->call("initialize", block_type);
     }
+
+    emit_signal("block_broken", position);
 }
 
 void World::place_block_at(Vector3i position, uint8_t block_type) {
