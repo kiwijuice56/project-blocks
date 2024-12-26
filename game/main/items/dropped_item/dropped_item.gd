@@ -85,8 +85,6 @@ func initialize(set_item: Item) -> void:
 	
 	item = set_item
 	
-	print(item.display_name)
-	
 	# Visuals
 	if item is Block:
 		%Cube.visible = true

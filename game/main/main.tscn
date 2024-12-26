@@ -50,7 +50,7 @@ mouse_sensitivity = 0.02
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
-light_color = Color(0.98, 0.8624, 0.97216, 1)
+light_color = Color(0.696281, 0.840554, 0.941561, 1)
 light_energy = 1.5
 light_bake_mode = 0
 shadow_enabled = true

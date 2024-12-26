@@ -3,5 +3,6 @@
 [ext_resource type="Texture2D" uid="uid://byfq27f7wyy4d" path="res://main/items/blocks/textures/air.png" id="1_bwxy4"]
 
 [resource]
-display_name = "air"
 texture = ExtResource("1_bwxy4")
+can_drop = false
+display_name = "air"

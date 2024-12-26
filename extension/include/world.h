@@ -28,7 +28,7 @@ private:
 	TypedArray<Block> block_types;
 	Ref<ShaderMaterial> block_material;
 	Ref<NoiseTexture2D> main_noise_texture;
-	const String dropped_item_scene = "res://main/items/dropped_item/dropped_item.tscn";
+	Ref<PackedScene> dropped_item_scene;
 
 	// The center chunk's position
 	Vector3i center_chunk;

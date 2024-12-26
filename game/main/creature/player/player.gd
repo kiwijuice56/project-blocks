@@ -51,11 +51,7 @@ func _process(delta: float) -> void:
 		%PlacementCheckShapeCast3D.force_shapecast_update()
 		
 		if Input.is_action_pressed("main_interact") and world.is_position_loaded(block_position):
-			for i in range(-5, 6):
-				for j in range(-5, 6):
-					for k in range(-5, 6):
-						if (Vector3i(i, j, k).length_squared() > 5): continue
-						world.break_block_at(block_position + Vector3i(i, k, j), true)
+			world.break_block_at(block_position, true)
 		if Input.is_action_just_pressed("secondary_interact") and world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
 			world.place_block_at(place_position, selected_block.id)
 	elif %FloorRayCast3D.is_colliding() and Input.is_action_just_pressed("secondary_interact"):

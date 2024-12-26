@@ -121,6 +121,7 @@ void World::set_loaded_region_center(Vector3 new_center) {
 }
 
 void World::initialize() {
+    dropped_item_scene = ResourceLoader::get_singleton()->load("res://main/items/dropped_item/dropped_item.tscn");
     create_texture_atlas();
 
     // Do not create chunk children when only in the editor
@@ -307,8 +308,8 @@ void World::break_block_at(Vector3i position, bool drop_item) {
     chunk->remove_block_at(position);
 
     if (drop_item && block_type->get_can_drop()) {
-        Ref<PackedScene> item_scene = ResourceLoader::get_singleton()->load(dropped_item_scene);
-        Node* dropped_item = item_scene->instantiate();
+
+        Node* dropped_item = dropped_item_scene->instantiate();
         get_parent()->add_child(dropped_item);
         dropped_item->set("global_position", position);
         dropped_item->set("world", this);
