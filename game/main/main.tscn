@@ -56,7 +56,6 @@ unique_name_in_owner = true
 transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 0, 128, 0)
 world = NodePath("../MainWorld")
 selected_block = ExtResource("8_kb88p")
-flying = true
 mouse_sensitivity = 0.02
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]

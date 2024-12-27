@@ -263,15 +263,10 @@ void World::update_loaded_region() {
                     Chunk::CHUNK_SIZE_Y * y,
                     Chunk::CHUNK_SIZE_Z * z) + center_chunk;
 
-                Ref<Decoration> local_heap = memnew(Decoration);
-                local_heap->position = coordinate;
-                local_heap->set_blocks(d->get_blocks());
-                local_heap->set_size(d->get_size());
+                if (decoration_generated.has(coordinate)) continue;
 
-                // TODO: add to neighboring chunks as well
-                Array d_array = Array();
-                d_array.append(local_heap);
-                decoration_map[coordinate] = d_array;
+                place_decoration(d, coordinate + Vector3i(0, 0, -1));
+                decoration_generated[coordinate] = true;
             }
         }
     }
@@ -316,6 +311,33 @@ void World::update_loaded_region() {
     if (init_queue.size() > 0) {
         has_task = true;
         task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk), init_queue.size());
+    }
+}
+
+void World::place_decoration(Ref<Decoration> decoration, Vector3i position) {
+    Ref<Decoration> new_decoration = memnew(Decoration);
+    new_decoration->position = position;
+    new_decoration->set_blocks(decoration->get_blocks());
+    new_decoration->set_size(decoration->get_size());
+
+    Dictionary placed_chunks;
+    for (int64_t i = 0; i <= 1; i++) {
+        for (int64_t j = 0; j <= 1; j++) {
+            for (int64_t k = 0; k <= 1; k++) {
+                Vector3i corner = position + new_decoration->get_size() * Vector3i(i, j, k);
+                Vector3i chunk_position = snap_to_chunk(corner);
+
+                if (!decoration_map.has(chunk_position)) {
+                    decoration_map[chunk_position] = Array();
+                }
+
+                if (!placed_chunks.has(chunk_position)) {
+                    Array decoration_list = decoration_map[chunk_position];
+                    decoration_list.append(new_decoration);
+                    placed_chunks[chunk_position] = true;
+                }
+            }
+        }
     }
 }
 

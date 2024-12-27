@@ -50,6 +50,9 @@ private:
 	// Stores (Vector3i : Array[Decoration])
 	Dictionary decoration_map;
 
+	// Stores (Vector3i : bool)
+	Dictionary decoration_generated;
+
 	// Stores block data of modified chunks (Vector3i : PackedInt32Array)
 	Dictionary chunk_data;
 
@@ -66,6 +69,8 @@ protected:
 
 	void regenerate_chunks();
 	void initialize_chunk(uint64_t index);
+	void place_decoration(Ref<Decoration> decoration, Vector3i position);
+
 	void update_loaded_region();
 	void create_texture_atlas();
 
