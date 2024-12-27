@@ -346,12 +346,12 @@ bool Chunk::greedy_invalid(Vector3i position) {
     }
 
     bool fully_covered =
-        in_bounds(Vector3i(+1, 0, 0) + position) && get_block_id_at(Vector3i(+1, 0, 0) + position) != 0 &&
-        in_bounds(Vector3i(-1, 0, 0) + position) && get_block_id_at(Vector3i(-1, 0, 0) + position) != 0 &&
-        in_bounds(Vector3i(0, +1, 0) + position) && get_block_id_at(Vector3i(0, +1, 0) + position) != 0 &&
-        in_bounds(Vector3i(0, -1, 0) + position) && get_block_id_at(Vector3i(0, -1, 0) + position) != 0 &&
-        in_bounds(Vector3i(0, 0, +1) + position) && get_block_id_at(Vector3i(0, 0, +1) + position) != 0 &&
-        in_bounds(Vector3i(0, 0, -1) + position) && get_block_id_at(Vector3i(0, 0, -1) + position) != 0;
+        in_bounds(Vector3i(+1, 0, 0) + position) && !Object::cast_to<Block>(block_types[get_block_id_at(Vector3i(+1, 0, 0) + position)])->get_transparent() &&
+        in_bounds(Vector3i(-1, 0, 0) + position) && !Object::cast_to<Block>(block_types[get_block_id_at(Vector3i(-1, 0, 0) + position)])->get_transparent() &&
+        in_bounds(Vector3i(0, +1, 0) + position) && !Object::cast_to<Block>(block_types[get_block_id_at(Vector3i(0, +1, 0) + position)])->get_transparent() &&
+        in_bounds(Vector3i(0, -1, 0) + position) && !Object::cast_to<Block>(block_types[get_block_id_at(Vector3i(0, -1, 0) + position)])->get_transparent() &&
+        in_bounds(Vector3i(0, 0, +1) + position) && !Object::cast_to<Block>(block_types[get_block_id_at(Vector3i(0, 0, +1) + position)])->get_transparent() &&
+        in_bounds(Vector3i(0, 0, -1) + position) && !Object::cast_to<Block>(block_types[get_block_id_at(Vector3i(0, 0, -1) + position)])->get_transparent();
 
     return !fully_covered;
 }
