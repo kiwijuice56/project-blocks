@@ -13,6 +13,9 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_block_types"), &World::get_block_types);
 	ClassDB::bind_method(D_METHOD("set_block_types", "new_block_types"), &World::set_block_types);
 
+    ClassDB::bind_method(D_METHOD("get_decorations"), &World::get_decorations);
+	ClassDB::bind_method(D_METHOD("set_decorations", "new_block_types"), &World::set_decorations);
+
     ClassDB::bind_method(D_METHOD("get_block_material"), &World::get_block_material);
 	ClassDB::bind_method(D_METHOD("set_block_material", "new_material"), &World::set_block_material);
 
@@ -39,6 +42,15 @@ void World::_bind_methods() {
         ),
         "set_block_types",
         "get_block_types"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(
+            Variant::DICTIONARY,
+            "decorations"
+        ),
+        "set_decorations",
+        "get_decorations"
     );
 
     ClassDB::add_property(
@@ -132,6 +144,14 @@ int64_t World::get_instance_radius() const {
     return instance_radius;
 }
 
+Dictionary World::get_decorations() const {
+    return decorations;
+}
+
+void World::set_decorations(Dictionary new_decorations) {
+    decorations = new_decorations;
+}
+
 void World::set_loaded_region_center(Vector3 new_center) {
     Vector3i new_center_chunk = Vector3i();
     new_center_chunk.x = new_center.x - int64_t(new_center.x) % Chunk::CHUNK_SIZE_X;
@@ -186,13 +206,13 @@ void World::regenerate_chunks() {
 }
 
 void World::initialize_chunk(uint64_t index) {
-    Chunk* chunk = Object::cast_to<Chunk>(initiliazation_queue[index]);
-    Vector3i coordinate = initiliazation_queue_positions[index];
+    Chunk* chunk = Object::cast_to<Chunk>(init_queue[index]);
+    Vector3i coordinate = init_queue_positions[index];
     if (chunk_data.has(coordinate)) {
         chunk->blocks = chunk_data[coordinate];
-        chunk->generate_data(initiliazation_queue_positions[index], false);
+        chunk->generate_data(init_queue_positions[index], false);
     } else {
-        chunk->generate_data(initiliazation_queue_positions[index], true);
+        chunk->generate_data(init_queue_positions[index], true);
     }
     chunk->never_initialized = false;
     chunk->generate_mesh(false);
@@ -209,8 +229,8 @@ void World::update_loaded_region() {
         has_task = false;
     }
 
-    initiliazation_queue.clear();
-    initiliazation_queue_positions.clear();
+    init_queue.clear();
+    init_queue_positions.clear();
 
     std::vector<Chunk*> available_chunks;
 
@@ -225,6 +245,33 @@ void World::update_loaded_region() {
 
             if (chunk->modified) {
                 chunk_data[coordinate] = chunk->blocks;
+            }
+        }
+    }
+
+    int64_t deco_radius_x = 1 + instance_radius / Chunk::CHUNK_SIZE_X;
+    int64_t deco_radius_y = 1 + instance_radius / Chunk::CHUNK_SIZE_Y;
+    int64_t deco_radius_z = 1 + instance_radius / Chunk::CHUNK_SIZE_Z;
+
+    Ref<Decoration> d = Object::cast_to<Decoration>(decorations["heap"]);
+
+    for (int64_t y = -deco_radius_y; y <= deco_radius_y; y++) {
+        for (int64_t x = -deco_radius_x; x <= deco_radius_x; x++) {
+            for (int64_t z = -deco_radius_z; z <= deco_radius_z; z++) {
+                Vector3i coordinate = Vector3i(
+                    Chunk::CHUNK_SIZE_X * x,
+                    Chunk::CHUNK_SIZE_Y * y,
+                    Chunk::CHUNK_SIZE_Z * z) + center_chunk;
+
+                Ref<Decoration> local_heap = memnew(Decoration);
+                local_heap->position = coordinate;
+                local_heap->set_blocks(d->get_blocks());
+                local_heap->set_size(d->get_size());
+
+                // TODO: add to neighboring chunks as well
+                Array d_array = Array();
+                d_array.append(local_heap);
+                decoration_map[coordinate] = d_array;
             }
         }
     }
@@ -252,12 +299,13 @@ void World::update_loaded_region() {
                 Chunk* new_chunk = available_chunks.back();
                 available_chunks.pop_back();
 
+                new_chunk->decorations = decoration_map[coordinate];
                 new_chunk->set_visible(false);
                 new_chunk->set_position(coordinate);
                 new_chunk->clear_collision();
 
-                initiliazation_queue.push_back(new_chunk);
-                initiliazation_queue_positions.push_back(coordinate);
+                init_queue.push_back(new_chunk);
+                init_queue_positions.push_back(coordinate);
                 is_chunk_loaded[coordinate] = false;
 
                 chunk_map[coordinate] = new_chunk;
@@ -265,9 +313,9 @@ void World::update_loaded_region() {
         }
     }
 
-    if (initiliazation_queue.size() > 0) {
+    if (init_queue.size() > 0) {
         has_task = true;
-        task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk), initiliazation_queue.size());
+        task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk), init_queue.size());
     }
 }
 

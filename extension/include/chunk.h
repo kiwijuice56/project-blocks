@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../include/block.h"
+#include "../include/decoration.h"
 
 #include <godot_cpp/classes/mesh_instance3d.hpp>
 #include <godot_cpp/classes/material.hpp>
@@ -55,6 +56,7 @@ public:
 
     // Block ID data
     PackedInt32Array blocks;
+    Array decorations;
 
     bool modified = false; // Whether this chunk has had any blocks placed/removed
     bool never_initialized = true;
@@ -73,7 +75,7 @@ public:
     void generate_data(Vector3i chunk_position, bool override);
     void clear_collision();
 
-    // Internal use methods
+    // Internal interfacing methods
     uint64_t get_block_id_at(Vector3i position);
     uint64_t position_to_index(Vector3i position);
     Vector3i index_to_position(uint64_t index);

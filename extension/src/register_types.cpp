@@ -4,6 +4,7 @@
 #include "../include/world.h"
 #include "../include/block.h"
 #include "../include/item.h"
+#include "../include/decoration.h"
 
 #include <gdextension_interface.h>
 #include <godot_cpp/core/defs.hpp>
@@ -18,6 +19,7 @@ void initialize_gdblocks_module(ModuleInitializationLevel p_level) {
 
 	GDREGISTER_CLASS(Item);
 	GDREGISTER_CLASS(Block);
+	GDREGISTER_CLASS(Decoration);
 	GDREGISTER_CLASS(Chunk);
 	GDREGISTER_CLASS(World);
 }

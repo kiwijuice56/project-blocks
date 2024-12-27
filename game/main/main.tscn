@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=24 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="Block" uid="uid://dvafel0lfqor7" path="res://main/items/blocks/air.tres" id="2_ly1ey"]
@@ -14,9 +14,11 @@
 [ext_resource type="Texture2D" uid="uid://dny2s70gsc4cf" path="res://main/ui/crosshair.png" id="6_i0idr"]
 [ext_resource type="Shader" path="res://main/ui/crosshair_inversion.gdshader" id="6_mjg4k"]
 [ext_resource type="Block" uid="uid://gxs2expu8dk4" path="res://main/items/blocks/glass.tres" id="8_kb88p"]
+[ext_resource type="Decoration" uid="uid://pxkxk2vbvf88" path="res://main/world/decoration/heap.tres" id="9_attqh"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/creature/player/player.tscn" id="10_4clf3"]
 [ext_resource type="Block" uid="uid://d4kufyi4bfmh6" path="res://main/items/blocks/wood.tres" id="10_fo42d"]
 [ext_resource type="Material" uid="uid://dhxh3up0kwnsn" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.tres" id="10_ppf03"]
+[ext_resource type="Theme" uid="uid://d1c7oys07yrf2" path="res://main/ui/theme.tres" id="15_tmhh0"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_xbrxv"]
 noise_type = 3
@@ -40,6 +42,9 @@ script = ExtResource("1_wx0yy")
 
 [node name="MainWorld" type="World" parent="."]
 block_types = Array[Block]([ExtResource("2_ly1ey"), ExtResource("6_egu44"), ExtResource("4_pcuap"), ExtResource("3_7huqy"), ExtResource("5_44enk"), ExtResource("10_fo42d"), ExtResource("8_kb88p")])
+decorations = {
+"heap": ExtResource("9_attqh")
+}
 block_material = ExtResource("5_ah4j3")
 transparent_block_material = ExtResource("10_ppf03")
 main_noise_texture = SubResource("NoiseTexture2D_v17xq")
@@ -51,6 +56,7 @@ unique_name_in_owner = true
 transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 0, 128, 0)
 world = NodePath("../MainWorld")
 selected_block = ExtResource("8_kb88p")
+flying = true
 mouse_sensitivity = 0.02
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -75,13 +81,26 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="FPSLabel" type="Label" parent="UI"]
-visible = false
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="MarginContainer" type="MarginContainer" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="FPSLabel" type="Label" parent="UI/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme = ExtResource("15_tmhh0")
+text = "fps "
 script = ExtResource("5_fc4bx")
 
-[node name="Timer" type="Timer" parent="UI/FPSLabel"]
+[node name="Timer" type="Timer" parent="UI/MarginContainer/FPSLabel"]
 unique_name_in_owner = true
 autostart = true
 

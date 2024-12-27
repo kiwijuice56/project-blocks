@@ -29,7 +29,10 @@ window/stretch/aspect="keep_height"
 [file_customization]
 
 folder_colors={
-"res://main/items/blocks/": "orange"
+"res://main/items/blocks/": "orange",
+"res://main/items/blocks/sounds/": "blue",
+"res://main/items/blocks/textures/": "green",
+"res://main/world/decoration/": "yellow"
 }
 
 [importer_defaults]
@@ -115,6 +118,7 @@ secondary_interact={
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
+textures/vram_compression/import_etc2_astc=true
 lights_and_shadows/directional_shadow/size=2048
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality=1
 anti_aliasing/screen_space_roughness_limiter/enabled=false

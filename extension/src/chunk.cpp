@@ -96,7 +96,7 @@ void Chunk::generate_data(Vector3i chunk_position, bool override) {
                 Vector2 uv = chunk_uv + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 32.0;
 
                 double height = sample_from_noise(main_noise_texture, uv);
-                int64_t block_height = 1 + int(height * 128);
+                int64_t block_height = 1 + int(height * 64);
                 for (int64_t y = 0; y < CHUNK_SIZE_Y; y++) {
                     int64_t real_height = y + chunk_position.y;
                     uint64_t block_type = 0;
@@ -110,6 +110,19 @@ void Chunk::generate_data(Vector3i chunk_position, bool override) {
                     }
 
                     blocks[position_to_index(Vector3i(x, y, z))] = block_type;
+                }
+            }
+        }
+
+        for (int64_t i = 0; i < decorations.size(); i++) {
+            Ref<Decoration> d = Object::cast_to<Decoration>(decorations[i]);
+            for (int64_t y = 0; y < d->get_size().y; y++) {
+                for (int64_t z = 0; z < d->get_size().z; z++) {
+                    for (int64_t x = 0; x < d->get_size().x; x++) {
+                        Vector3i local_position = Vector3i(x, y, z) + d->position - chunk_position;
+                        if (!in_bounds(local_position)) continue;
+                        blocks[position_to_index(local_position)] = d->get_blocks()[x + z * d->get_size().x + y * d->get_size().x * d->get_size().z];
+                    }
                 }
             }
         }
@@ -136,7 +149,7 @@ void Chunk::generate_mesh(bool immediate) {
 
     int material_idx = 0;
 
-    // ** First pass (opaque objects) **
+    // First pass (opaque objects)
     vertices.clear();
     normals.clear();
     uvs.clear();
@@ -173,7 +186,7 @@ void Chunk::generate_mesh(bool immediate) {
         }
     }
 
-    // ** Second pass (transparent objects) **
+    // Second pass (transparent objects)
 
     vertices.clear();
     normals.clear();
@@ -262,8 +275,7 @@ void Chunk::greedy_mesh_generation(bool transparent) {
 
                 bool block_transparent = Object::cast_to<Block>(block_types[current_greedy_block])->get_transparent();
 
-                // Set to air
-                if (block_transparent ^ transparent == 1)  {
+                if (block_transparent != transparent)  {
                     continue;
                 }
 
@@ -272,13 +284,8 @@ void Chunk::greedy_mesh_generation(bool transparent) {
                 }
 
                 Vector3i start = Vector3i(x, y, z);
-                Vector3i size;
+                Vector3i size = transparent ? Vector3i(1, 1, 1) : greedy_scan(start);
 
-                if (!transparent) {
-                    size = greedy_scan(start);
-                } else {
-                    size = Vector3i(1, 1, 1);
-                }
                 add_rectangular_prism(start, size);
             }
         }

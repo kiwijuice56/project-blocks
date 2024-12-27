@@ -3,6 +3,7 @@
 
 #include "../include/block.h"
 #include "../include/chunk.h"
+#include "../include/decoration.h"
 
 #include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/classes/node3d.hpp>
@@ -29,6 +30,7 @@ private:
 	Ref<ShaderMaterial> block_material;
 	Ref<ShaderMaterial> transparent_block_material;
 	Ref<NoiseTexture2D> main_noise_texture;
+	Dictionary decorations;
 
 	Ref<PackedScene> dropped_item_scene;
 	Ref<PackedScene> break_effect_scene;
@@ -45,12 +47,15 @@ private:
 	// Stores (Vector3i : Chunk) mapping for easy access
 	Dictionary chunk_map;
 
+	// Stores (Vector3i : Array[Decoration])
+	Dictionary decoration_map;
+
 	// Stores block data of modified chunks (Vector3i : PackedInt32Array)
 	Dictionary chunk_data;
 
 	// Used to access chunks that need to be initialized
-	std::vector<Chunk*> initiliazation_queue;
-	std::vector<Vector3i> initiliazation_queue_positions;
+	std::vector<Chunk*> init_queue;
+	std::vector<Vector3i> init_queue_positions;
 
 	// Multithreading state
 	uint64_t task_id = 0;
@@ -75,7 +80,7 @@ public:
 	// Used to set the loaded region of the world, new_center is usually the player's position
 	void set_loaded_region_center(Vector3 new_center);
 
-	// Other helpful interfacing methods
+	// Helpful interfacing methods
 	bool is_position_loaded(Vector3 position);
 	Chunk* get_chunk_at(Vector3 position); // Gets the chunk nearest to the given position
 	Vector3i snap_to_chunk(Vector3 position); // Snaps a position to the nearest chunk's position
@@ -86,6 +91,9 @@ public:
 	// Boilerplate setters and getters
 	void set_instance_radius(int64_t new_radius);
 	int64_t get_instance_radius() const;
+
+	Dictionary get_decorations() const;
+	void set_decorations(Dictionary new_decorations);
 
 	TypedArray<Block> get_block_types() const;
     void set_block_types(const TypedArray<Block> new_block_types);
