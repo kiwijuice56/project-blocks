@@ -17,6 +17,8 @@ private:
 protected:
     Ref<Texture2D> texture;
 
+	bool transparent = false;
+
 	static void _bind_methods();
 
 public:
@@ -25,6 +27,9 @@ public:
 
     Ref<Texture2D> get_texture() const;
     void set_texture(Ref<Texture2D> new_texture);
+
+	bool get_transparent() const;
+    void set_transparent(bool new_val);
 };
 
 }

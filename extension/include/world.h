@@ -27,6 +27,7 @@ private:
 	// Resources
 	TypedArray<Block> block_types;
 	Ref<ShaderMaterial> block_material;
+	Ref<ShaderMaterial> transparent_block_material;
 	Ref<NoiseTexture2D> main_noise_texture;
 	Ref<PackedScene> dropped_item_scene;
 
@@ -90,6 +91,9 @@ public:
 
 	Ref<ShaderMaterial> get_block_material() const;
     void set_block_material(Ref<ShaderMaterial> new_material);
+
+	Ref<ShaderMaterial> get_transparent_block_material() const;
+    void set_transparent_block_material(Ref<ShaderMaterial> new_material);
 
 	Ref<NoiseTexture2D> get_main_noise_texture() const;
     void set_main_noise_texture(Ref<NoiseTexture2D> new_texture);

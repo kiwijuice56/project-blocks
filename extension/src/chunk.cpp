@@ -6,11 +6,7 @@
 using namespace godot;
 
 void Chunk::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("generate_data"), &Chunk::generate_data);
-    ClassDB::bind_method(D_METHOD("generate_mesh"), &Chunk::generate_mesh);
 
-    ClassDB::bind_method(D_METHOD("remove_block_at", "position"), &Chunk::remove_block_at);
-    ClassDB::bind_method(D_METHOD("place_block_at", "position", "block_id"), &Chunk::place_block_at);
 }
 
 Chunk::Chunk() {
@@ -25,15 +21,25 @@ Chunk::Chunk() {
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 
     // Initialize StaticBody3D data
-    shape_data = memnew(ConcavePolygonShape3D);
+    shape_data_opaque = memnew(ConcavePolygonShape3D);
 
-    CollisionShape3D* collision_shape = memnew(CollisionShape3D);
-    collision_shape->set_shape(shape_data);
+    CollisionShape3D* collision_shape_opaque = memnew(CollisionShape3D);
+    collision_shape_opaque->set_shape(shape_data_opaque);
 
-    StaticBody3D* static_body = memnew(StaticBody3D);
-    static_body->call_deferred("add_child", collision_shape);
+    StaticBody3D* static_body_opaque = memnew(StaticBody3D);
+    static_body_opaque->call_deferred("add_child", collision_shape_opaque);
 
-    add_child(static_body);
+    add_child(static_body_opaque);
+
+    shape_data_transparent = memnew(ConcavePolygonShape3D);
+
+    CollisionShape3D* collision_shape_transparent = memnew(CollisionShape3D);
+    collision_shape_transparent->set_shape(shape_data_transparent);
+
+    StaticBody3D* static_body_transparent = memnew(StaticBody3D);
+    static_body_transparent->call_deferred("add_child", collision_shape_transparent);
+
+    add_child(static_body_transparent);
 }
 
 Chunk::~Chunk() {
@@ -85,7 +91,7 @@ void Chunk::generate_data(Vector3i chunk_position, bool override) {
                 Vector2 uv = chunk_uv + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 32.0;
 
                 double height = sample_from_noise(main_noise_texture, uv);
-                int64_t block_height = 1 + int(height * 64);
+                int64_t block_height = 1 + int(height * 128);
                 for (int64_t y = 0; y < CHUNK_SIZE_Y; y++) {
                     int64_t real_height = y + chunk_position.y;
                     uint64_t block_type = 0;
@@ -123,12 +129,15 @@ void Chunk::generate_mesh(bool immediate) {
         return;
     }
 
+    int material_idx = 0;
+
+    // ** First pass (opaque objects) **
     vertices.clear();
     normals.clear();
     uvs.clear();
     uvs2.clear();
 
-    greedy_mesh_generation();
+    greedy_mesh_generation(false);
 
     // Package data into an ArrayMesh
     Array arrays;
@@ -140,20 +149,65 @@ void Chunk::generate_mesh(bool immediate) {
 
     Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
 
-    array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+    if (vertices.size() > 0) {
+        array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+
+        if (immediate) {
+            shape_data_opaque->set_faces(vertices);
+        } else {
+            shape_data_opaque->call_deferred("set_faces", vertices);
+        }
+
+        array_mesh->surface_set_material(material_idx, block_material);
+        material_idx += 1;
+    } else {
+        if (immediate) {
+            shape_data_opaque->set_faces(PackedVector3Array());
+        } else {
+            shape_data_opaque->call_deferred("set_faces", PackedVector3Array());
+        }
+    }
+
+    // ** Second pass (transparent objects) **
+
+    vertices.clear();
+    normals.clear();
+    uvs.clear();
+    uvs2.clear();
+
+    greedy_mesh_generation(true);
+
+    arrays[ArrayMesh::ARRAY_VERTEX] = vertices;
+    arrays[ArrayMesh::ARRAY_NORMAL] = normals;
+    arrays[ArrayMesh::ARRAY_TEX_UV] = uvs;
+    arrays[ArrayMesh::ARRAY_TEX_UV2] = uvs2;
+
+    if (vertices.size() > 0) {
+        array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+
+        if (immediate) {
+            shape_data_transparent->set_faces(vertices);
+        } else {
+            shape_data_transparent->call_deferred("set_faces", vertices);
+        }
+
+        array_mesh->surface_set_material(material_idx, transparent_block_material);
+        material_idx += 1;
+    } else {
+        if (immediate) {
+            shape_data_transparent->set_faces(PackedVector3Array());
+        } else {
+            shape_data_transparent->call_deferred("set_faces", PackedVector3Array());
+        }
+    }
 
     call_deferred("set_mesh", array_mesh);
     call_deferred("set_visible", true);
-
-    if (immediate) {
-        shape_data->set_faces(vertices);
-    } else {
-        shape_data->call_deferred("set_faces", vertices);
-    }
 }
 
 void Chunk::clear_collision() {
-    shape_data->call_deferred("set_faces", PackedVector3Array());
+    shape_data_opaque->call_deferred("set_faces", PackedVector3Array());
+    shape_data_transparent->call_deferred("set_faces", PackedVector3Array());
 }
 
 void Chunk::remove_block_at(Vector3i global_position) {
@@ -187,7 +241,7 @@ void Chunk::place_block_at(Vector3i global_position, uint8_t block_id) {
 }
 
 // Fill vertex, normal, and uv arrays with proper triangles (using the greedy meshing algorithm)
-void Chunk::greedy_mesh_generation() {
+void Chunk::greedy_mesh_generation(bool transparent) {
     for (uint64_t i = 0; i < CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y; i++) {
         visited[i] = false;
     }
@@ -198,10 +252,26 @@ void Chunk::greedy_mesh_generation() {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
             for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
                 current_greedy_block = get_block_id_at(Vector3i(x, y, z));
-                if (greedy_invalid(Vector3i(x, y, z)))
+
+                bool block_transparent = Object::cast_to<Block>(block_types[current_greedy_block])->get_transparent();
+
+                // Set to air
+                if (block_transparent ^ transparent == 1)  {
                     continue;
+                }
+
+                if (greedy_invalid(Vector3i(x, y, z))) {
+                    continue;
+                }
+
                 Vector3i start = Vector3i(x, y, z);
-                Vector3i size = greedy_scan(start);
+                Vector3i size;
+
+                if (!transparent) {
+                    size = greedy_scan(start);
+                } else {
+                    size = Vector3i(1, 1, 1);
+                }
                 add_rectangular_prism(start, size);
             }
         }

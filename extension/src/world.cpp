@@ -17,6 +17,9 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_block_material"), &World::get_block_material);
 	ClassDB::bind_method(D_METHOD("set_block_material", "new_material"), &World::set_block_material);
 
+    ClassDB::bind_method(D_METHOD("get_transparent_block_material"), &World::get_transparent_block_material);
+	ClassDB::bind_method(D_METHOD("set_transparent_block_material", "new_material"), &World::set_transparent_block_material);
+
     ClassDB::bind_method(D_METHOD("get_main_noise_texture"), &World::get_main_noise_texture);
 	ClassDB::bind_method(D_METHOD("set_main_noise_texture", "new_texture"), &World::set_main_noise_texture);
 
@@ -49,6 +52,18 @@ void World::_bind_methods() {
         ),
         "set_block_material",
         "get_block_material"
+    );
+
+    ClassDB::add_property(
+        "World",
+        PropertyInfo(
+            Variant::OBJECT,
+            "transparent_block_material",
+            PROPERTY_HINT_RESOURCE_TYPE,
+            "ShaderMaterial"
+        ),
+        "set_transparent_block_material",
+        "get_transparent_block_material"
     );
 
     ClassDB::add_property(
@@ -92,6 +107,14 @@ Ref<ShaderMaterial> World::get_block_material() const {
 
 void World::set_block_material(Ref<ShaderMaterial> new_material) {
     block_material = new_material;
+}
+
+Ref<ShaderMaterial> World::get_transparent_block_material() const {
+    return transparent_block_material;
+}
+
+void World::set_transparent_block_material(Ref<ShaderMaterial> new_material) {
+    transparent_block_material = new_material;
 }
 
 Ref<NoiseTexture2D> World::get_main_noise_texture() const {
@@ -148,8 +171,10 @@ void World::regenerate_chunks() {
                 Chunk* new_chunk = memnew(Chunk);
 
                 new_chunk->set_position(coordinate);
+                new_chunk->block_types = block_types;
                 new_chunk->main_noise_texture = main_noise_texture;
-                new_chunk->set_material_override(block_material);
+                new_chunk->block_material = block_material;
+                new_chunk->transparent_block_material = transparent_block_material;
 
                 add_child(new_chunk);
 
@@ -170,6 +195,7 @@ void World::initialize_chunk(uint64_t index) {
     }
     chunk->never_initialized = false;
     chunk->generate_mesh(false);
+
     is_chunk_loaded[coordinate] = true;
 }
 
@@ -294,6 +320,8 @@ void World::create_texture_atlas() {
     Ref<Texture2DArray> atlas = memnew(Texture2DArray);
     atlas->create_from_images(images);
     block_material->set_shader_parameter("textures", atlas);
+    transparent_block_material->set_shader_parameter("textures", atlas);
+
 }
 
 Block* World::get_block_type_at(Vector3i position) {

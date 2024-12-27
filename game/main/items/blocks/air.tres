@@ -4,5 +4,6 @@
 
 [resource]
 texture = ExtResource("1_bwxy4")
+transparent = true
 can_drop = false
 display_name = "air"

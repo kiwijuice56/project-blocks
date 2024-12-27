@@ -1,7 +1,10 @@
 #pragma once
 
+#include "../include/block.h"
+
 #include <godot_cpp/classes/mesh_instance3d.hpp>
 #include <godot_cpp/classes/material.hpp>
+#include <godot_cpp/classes/shader_material.hpp>
 #include <godot_cpp/classes/noise_texture2d.hpp>
 #include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/classes/concave_polygon_shape3d.hpp>
@@ -13,8 +16,11 @@ class Chunk : public MeshInstance3D {
 	GDCLASS(Chunk, MeshInstance3D)
 
 private:
+
+protected:
     // Resources
-    ConcavePolygonShape3D* shape_data;
+    ConcavePolygonShape3D* shape_data_opaque;
+    ConcavePolygonShape3D* shape_data_transparent;
 
     // Greedy meshing state variables
     bool* visited;
@@ -31,14 +37,13 @@ private:
 
     bool uniform = false; // Used to optimize chunks of one block type
 
-protected:
 	static void _bind_methods();
 
     // Helper methods to generate chunk mesh
     void add_face_uvs(uint64_t id, Vector2i scale);
     void add_face_normals(Vector3i normal);
     void add_rectangular_prism(Vector3i start, Vector3i size);
-    void greedy_mesh_generation();
+    void greedy_mesh_generation(bool transparent);
     Vector3i greedy_scan(Vector3i start);
     bool greedy_invalid(Vector3i position);
 
@@ -56,6 +61,9 @@ public:
 
     // Resources set by World
     Ref<NoiseTexture2D> main_noise_texture;
+    TypedArray<Block> block_types;
+    Ref<ShaderMaterial> block_material;
+	Ref<ShaderMaterial> transparent_block_material;
 
     Chunk();
 	~Chunk();

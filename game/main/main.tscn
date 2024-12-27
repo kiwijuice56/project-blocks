@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=22 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="Block" uid="uid://dvafel0lfqor7" path="res://main/items/blocks/air.tres" id="2_ly1ey"]
@@ -13,7 +13,10 @@
 [ext_resource type="Block" uid="uid://cdvybrvipagwk" path="res://main/items/blocks/stone.tres" id="6_egu44"]
 [ext_resource type="Texture2D" uid="uid://dny2s70gsc4cf" path="res://main/ui/crosshair.png" id="6_i0idr"]
 [ext_resource type="Shader" path="res://main/ui/crosshair_inversion.gdshader" id="6_mjg4k"]
+[ext_resource type="Block" uid="uid://gxs2expu8dk4" path="res://main/items/blocks/glass.tres" id="8_kb88p"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/creature/player/player.tscn" id="10_4clf3"]
+[ext_resource type="Block" uid="uid://d4kufyi4bfmh6" path="res://main/items/blocks/wood.tres" id="10_fo42d"]
+[ext_resource type="Material" uid="uid://dhxh3up0kwnsn" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.tres" id="10_ppf03"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_xbrxv"]
 noise_type = 3
@@ -36,8 +39,9 @@ shader = ExtResource("6_mjg4k")
 script = ExtResource("1_wx0yy")
 
 [node name="MainWorld" type="World" parent="."]
-block_types = Array[Block]([ExtResource("2_ly1ey"), ExtResource("6_egu44"), ExtResource("4_pcuap"), ExtResource("3_7huqy"), ExtResource("5_44enk")])
+block_types = Array[Block]([ExtResource("2_ly1ey"), ExtResource("6_egu44"), ExtResource("4_pcuap"), ExtResource("3_7huqy"), ExtResource("5_44enk"), ExtResource("10_fo42d"), ExtResource("8_kb88p")])
 block_material = ExtResource("5_ah4j3")
+transparent_block_material = ExtResource("10_ppf03")
 main_noise_texture = SubResource("NoiseTexture2D_v17xq")
 script = ExtResource("5_ds8vp")
 
@@ -45,12 +49,12 @@ script = ExtResource("5_ds8vp")
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 128, 0)
 world = NodePath("../MainWorld")
-selected_block = ExtResource("3_7huqy")
+selected_block = ExtResource("8_kb88p")
 mouse_sensitivity = 0.02
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
-light_color = Color(0.696281, 0.840554, 0.941561, 1)
+light_color = Color(0.877268, 0.80327, 0.741058, 1)
 light_energy = 1.5
 light_bake_mode = 0
 shadow_enabled = true

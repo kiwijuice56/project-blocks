@@ -26,5 +26,6 @@ fog_density = 0.06
 volumetric_fog_enabled = true
 volumetric_fog_emission = Color(0.3234, 0.409477, 0.49, 1)
 volumetric_fog_emission_energy = 0.6
+volumetric_fog_anisotropy = 0.45
 adjustment_enabled = true
 adjustment_saturation = 1.1

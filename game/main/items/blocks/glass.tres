@@ -1,0 +1,10 @@
+[gd_resource type="Block" load_steps=2 format=3 uid="uid://gxs2expu8dk4"]
+
+[ext_resource type="Texture2D" uid="uid://cv0du38ucw4qi" path="res://main/items/blocks/textures/glass.png" id="1_gx4iy"]
+
+[resource]
+texture = ExtResource("1_gx4iy")
+transparent = true
+id = 6
+can_drop = false
+display_name = "glass"

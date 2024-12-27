@@ -6,6 +6,9 @@
 [sub_resource type="SphereShape3D" id="SphereShape3D_nod4t"]
 radius = 0.3
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_6blph"]
+radius = 0.7
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fmwsh"]
 texture_filter = 0
 
@@ -68,9 +71,6 @@ _data = {
 "spin": SubResource("Animation_8y7sc")
 }
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_6blph"]
-radius = 0.7
-
 [node name="DroppedItem" type="CharacterBody3D"]
 collision_layer = 8
 script = ExtResource("1_m5mmq")
@@ -83,6 +83,17 @@ swim_speed = 5.0
 unique_name_in_owner = true
 shape = SubResource("SphereShape3D_nod4t")
 
+[node name="DetectionArea3D" type="Area3D" parent="."]
+unique_name_in_owner = true
+collision_layer = 9
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DetectionArea3D"]
+shape = SubResource("SphereShape3D_6blph")
+
+[node name="VisibleOnScreenEnabler3D" type="VisibleOnScreenEnabler3D" parent="."]
+aabb = AABB(-0.5, -0.5, -0.5, 1, 1, 1)
+
 [node name="Cube" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
@@ -94,15 +105,4 @@ libraries = {
 "": SubResource("AnimationLibrary_3h4ph")
 }
 autoplay = "spin"
-speed_scale = 0.5
-
-[node name="DetectionArea3D" type="Area3D" parent="."]
-unique_name_in_owner = true
-collision_layer = 9
-collision_mask = 8
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="DetectionArea3D"]
-shape = SubResource("SphereShape3D_6blph")
-
-[node name="VisibleOnScreenEnabler3D" type="VisibleOnScreenEnabler3D" parent="."]
-aabb = AABB(-0.2, -0.2, -0.2, 0.4, 0.4, 0.4)
+speed_scale = 0.35
