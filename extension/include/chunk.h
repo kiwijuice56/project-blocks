@@ -73,16 +73,17 @@ public:
     void generate_data(Vector3i chunk_position, bool override);
     void clear_collision();
 
-    // Helper methods to interface with internal data structures
+    // Internal use methods
     uint64_t get_block_id_at(Vector3i position);
     uint64_t position_to_index(Vector3i position);
     Vector3i index_to_position(uint64_t index);
     double sample_from_noise(Ref<NoiseTexture2D> texture, Vector2 uv);
     bool in_bounds(Vector3i position);
 
-    // Modifying methods
+    // External interfacing methods
     void remove_block_at(Vector3i global_position);
     void place_block_at(Vector3i global_position, uint8_t block_id);
+    uint64_t get_block_id_at_global(Vector3i global_position);
 };
 }
 

@@ -9,7 +9,6 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("initialize"), &World::initialize);
     ClassDB::bind_method(D_METHOD("set_loaded_region_center", "new_center"), &World::set_loaded_region_center);
     ClassDB::bind_method(D_METHOD("is_position_loaded"), &World::is_position_loaded);
-    ClassDB::bind_method(D_METHOD("get_chunk_at"), &World::get_chunk_at);
 
     ClassDB::bind_method(D_METHOD("get_block_types"), &World::get_block_types);
 	ClassDB::bind_method(D_METHOD("set_block_types", "new_block_types"), &World::set_block_types);
@@ -273,25 +272,33 @@ void World::update_loaded_region() {
 }
 
 bool World::is_position_loaded(Vector3 position) {
+    position = position.floor();
+
     Vector3i snapped_position = snap_to_chunk(position);
     return is_chunk_loaded.has(snapped_position) && is_chunk_loaded[snapped_position];
 }
 
-// Assumes the chunk is loaded!
-Chunk* World::get_chunk_at(Vector3i position) {
+// Assumes the chunk is loaded
+Chunk* World::get_chunk_at(Vector3 position) {
+    position = position.floor();
+
     return Object::cast_to<Chunk>(chunk_map[snap_to_chunk(position)]);
 }
 
 Vector3i World::snap_to_chunk(Vector3 position) {
-    int64_t rx = int64_t(position.x) % Chunk::CHUNK_SIZE_X;
-    int64_t ry = int64_t(position.y) % Chunk::CHUNK_SIZE_Y;
-    int64_t rz = int64_t(position.z) % Chunk::CHUNK_SIZE_Z;
+    position = position.floor();
+
+    Vector3i p = Vector3i(position);
+
+    int64_t rx = int64_t(p.x) % Chunk::CHUNK_SIZE_X;
+    int64_t ry = int64_t(p.y) % Chunk::CHUNK_SIZE_Y;
+    int64_t rz = int64_t(p.z) % Chunk::CHUNK_SIZE_Z;
 
     if (rx < 0) rx += Chunk::CHUNK_SIZE_X;
     if (ry < 0) ry += Chunk::CHUNK_SIZE_Y;
     if (rz < 0) rz += Chunk::CHUNK_SIZE_Z;
 
-    return position - Vector3i(rx, ry, rz);
+    return p - Vector3i(rx, ry, rz);
 }
 
 bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {
@@ -326,37 +333,42 @@ void World::create_texture_atlas() {
 
 }
 
-Block* World::get_block_type_at(Vector3i position) {
+Ref<Block> World::get_block_type_at(Vector3 position) {
+    position = position.floor();
+
     Chunk* chunk = get_chunk_at(position);
-    Vector3i local_position = position - Vector3i(chunk->get_global_position());
-    return Object::cast_to<Block>(block_types[chunk->get_block_id_at(local_position)]);
+    return block_types[chunk->get_block_id_at_global(Vector3i(position))];
 }
 
-void World::break_block_at(Vector3i position, bool drop_item, bool play_sound) {
+void World::break_block_at(Vector3 position, bool drop_item, bool play_effect) {
+    position = position.floor();
+
     Chunk* chunk = get_chunk_at(position);
-    Block* block_type = get_block_type_at(position);
-    chunk->remove_block_at(position);
+    Ref<Block> block_type = get_block_type_at(position);
+    chunk->remove_block_at(Vector3i(position));
 
     if (drop_item && block_type->get_can_drop()) {
         Node* dropped_item = dropped_item_scene->instantiate();
         get_parent()->add_child(dropped_item);
-        dropped_item->set("global_position", position);
+        dropped_item->set("global_position", Vector3i(position));
         dropped_item->set("world", this);
-        dropped_item->call("initialize", block_type);
+        dropped_item->call("initialize", block_type->get_drop_item() != nullptr ? block_type->get_drop_item() : block_type);
     }
 
-    if (play_sound) {
+    if (play_effect) {
         Node* break_effect = break_effect_scene->instantiate();
         get_parent()->add_child(break_effect);
-        break_effect->set("global_position", position);
+        break_effect->set("global_position", Vector3i(position));
         break_effect->call("initialize", block_type);
     }
 
     emit_signal("block_broken", position);
 }
 
-void World::place_block_at(Vector3i position, uint8_t block_type) {
+void World::place_block_at(Vector3 position, uint8_t block_type) {
+    position = position.floor();
+
     Chunk* chunk = get_chunk_at(position);
-    chunk->place_block_at(position, block_type);
-    emit_signal("block_placed", position);
+    chunk->place_block_at(Vector3i(position), block_type);
+    emit_signal("block_placed", Vector3i(position));
 }

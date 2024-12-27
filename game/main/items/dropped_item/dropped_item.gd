@@ -53,7 +53,7 @@ func _physics_process(delta: float) -> void:
 		return
 	
 	if state == SWIM:
-		if world.get_block_type_at(global_position.floor()).id == 0:
+		if world.get_block_type_at(global_position).id == 0:
 			state = IDLE
 			toggle_collision(true)
 			velocity = Vector3()
@@ -127,14 +127,14 @@ func toggle_physics(enable: bool) -> void:
 
 # Checks if this item is inside of a block, and initiate a swim outwards if so
 func check_swim() -> void:
-	if world.get_block_type_at(global_position.floor()).id != 0:
+	if world.get_block_type_at(global_position).id != 0:
 		state = SWIM
 		var swim_dir: Vector3 = Vector3.UP
 		var spots: Array[Vector3] = [Vector3.UP, Vector3.LEFT, Vector3.RIGHT, Vector3.FORWARD, Vector3.BACK, Vector3.DOWN]
 		for spot in spots:
-			if not world.is_position_loaded((global_position + spot).floor()):
+			if not world.is_position_loaded(global_position + spot):
 				continue
-			if world.get_block_type_at((global_position + spot).floor()).id == 0:
+			if world.get_block_type_at(global_position + spot).id == 0:
 				swim_dir = spot
 				break
 		velocity = swim_speed * swim_dir

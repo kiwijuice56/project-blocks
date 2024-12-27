@@ -77,12 +77,11 @@ public:
 
 	// Other helpful interfacing methods
 	bool is_position_loaded(Vector3 position);
-	Chunk* get_chunk_at(Vector3i position);
-	Vector3i snap_to_chunk(Vector3 position);
-
-	Block* get_block_type_at(Vector3i position);
-	void break_block_at(Vector3i position, bool drop_item, bool play_sound);
-	void place_block_at(Vector3i position, uint8_t block_type);
+	Chunk* get_chunk_at(Vector3 position); // Gets the chunk nearest to the given position
+	Vector3i snap_to_chunk(Vector3 position); // Snaps a position to the nearest chunk's position
+	Ref<Block> get_block_type_at(Vector3 position);
+	void break_block_at(Vector3 position, bool drop_item, bool play_effect);
+	void place_block_at(Vector3 position, uint8_t block_type);
 
 	// Boilerplate setters and getters
 	void set_instance_radius(int64_t new_radius);
@@ -99,7 +98,6 @@ public:
 
 	Ref<NoiseTexture2D> get_main_noise_texture() const;
     void set_main_noise_texture(Ref<NoiseTexture2D> new_texture);
-
 };
 
 }

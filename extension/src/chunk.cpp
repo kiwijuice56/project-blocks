@@ -46,9 +46,14 @@ Chunk::~Chunk() {
     delete [] visited;
 }
 
-// Local position (mostly for internal use)
+// Uses local position
 uint64_t Chunk::get_block_id_at(Vector3i position) {
     return blocks[uint64_t(position.x) + uint64_t(position.z) * CHUNK_SIZE_X + uint64_t(position.y) * CHUNK_SIZE_Z * CHUNK_SIZE_X];
+}
+
+uint64_t Chunk::get_block_id_at_global(Vector3i g_position) {
+    g_position -= Vector3i(get_global_position());
+    return blocks[uint64_t(g_position.x) + uint64_t(g_position.z) * CHUNK_SIZE_X + uint64_t(g_position.y) * CHUNK_SIZE_Z * CHUNK_SIZE_X];
 }
 
 uint64_t Chunk::position_to_index(Vector3i position) {
@@ -210,6 +215,7 @@ void Chunk::clear_collision() {
     shape_data_transparent->call_deferred("set_faces", PackedVector3Array());
 }
 
+// Uses global position
 void Chunk::remove_block_at(Vector3i global_position) {
     Vector3i block_position = global_position - Vector3i(get_global_position());
     uint64_t index = position_to_index(block_position);
@@ -225,6 +231,7 @@ void Chunk::remove_block_at(Vector3i global_position) {
     generate_mesh(true);
 }
 
+// Uses global position
 void Chunk::place_block_at(Vector3i global_position, uint8_t block_id) {
     Vector3i block_position = global_position - Vector3i(get_global_position());
     uint64_t index = position_to_index(block_position);

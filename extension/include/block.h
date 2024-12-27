@@ -19,6 +19,7 @@ protected:
     Ref<Texture2D> texture;
 	Ref<AudioStream> break_sound;
 	Ref<AudioStream> step_sound;
+	Ref<Item> drop_item;
 
 	bool transparent = false;
 
@@ -36,6 +37,9 @@ public:
 
 	Ref<AudioStream> get_step_sound() const;
     void set_step_sound(Ref<AudioStream> new_sound);
+
+	Ref<Item> get_drop_item() const;
+    void set_drop_item(Ref<Item> new_item);
 
 	bool get_transparent() const;
     void set_transparent(bool new_val);

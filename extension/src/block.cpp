@@ -14,6 +14,8 @@ void Block::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_break_sound", "new_sound"), &Block::set_break_sound);
     ClassDB::bind_method(D_METHOD("get_step_sound"), &Block::get_step_sound);
 	ClassDB::bind_method(D_METHOD("set_step_sound", "new_sound"), &Block::set_step_sound);
+    ClassDB::bind_method(D_METHOD("get_drop_item"), &Block::get_drop_item);
+	ClassDB::bind_method(D_METHOD("set_drop_item", "new_item"), &Block::set_drop_item);
 
     ADD_PROPERTY(
         PropertyInfo(
@@ -47,6 +49,18 @@ void Block::_bind_methods() {
         "set_step_sound",
         "get_step_sound"
     );
+
+    ADD_PROPERTY(
+        PropertyInfo(
+            Variant::OBJECT,
+            "drop_item",
+            PROPERTY_HINT_RESOURCE_TYPE,
+            "Item"
+        ),
+        "set_drop_item",
+        "get_drop_item"
+    );
+
 
     ADD_PROPERTY(
         PropertyInfo(Variant::BOOL, "transparent"),
@@ -85,6 +99,14 @@ Ref<AudioStream> Block::get_step_sound() const {
 
 void Block::set_step_sound(Ref<AudioStream> new_sound) {
     step_sound = new_sound;
+}
+
+Ref<Item> Block::get_drop_item() const {
+    return drop_item;
+}
+
+void Block::set_drop_item(Ref<Item> new_item) {
+    drop_item = new_item;
 }
 
 bool Block::get_transparent() const {
