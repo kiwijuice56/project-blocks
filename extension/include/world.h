@@ -29,7 +29,9 @@ private:
 	Ref<ShaderMaterial> block_material;
 	Ref<ShaderMaterial> transparent_block_material;
 	Ref<NoiseTexture2D> main_noise_texture;
+
 	Ref<PackedScene> dropped_item_scene;
+	Ref<PackedScene> break_stream_player_scene;
 
 	// The center chunk's position
 	Vector3i center_chunk;
@@ -79,7 +81,7 @@ public:
 	Vector3i snap_to_chunk(Vector3 position);
 
 	Block* get_block_type_at(Vector3i position);
-	void break_block_at(Vector3i position, bool drop_item);
+	void break_block_at(Vector3i position, bool drop_item, bool play_sound);
 	void place_block_at(Vector3i position, uint8_t block_type);
 
 	// Boilerplate setters and getters

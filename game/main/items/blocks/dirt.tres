@@ -1,8 +1,20 @@
-[gd_resource type="Block" load_steps=2 format=3 uid="uid://bd4umsf48hbgg"]
+[gd_resource type="Block" load_steps=6 format=3 uid="uid://bd4umsf48hbgg"]
 
+[ext_resource type="AudioStream" uid="uid://oy07xj217al2" path="res://main/items/blocks/sounds/dirt_1.wav" id="1_fahyn"]
 [ext_resource type="Texture2D" uid="uid://dbn6d1ljyjdax" path="res://main/items/blocks/textures/dirt.png" id="1_js20h"]
+[ext_resource type="AudioStream" uid="uid://ccg7wuptky1co" path="res://main/items/blocks/sounds/dirt_2.wav" id="2_et4vk"]
+[ext_resource type="AudioStream" uid="uid://c0fesiqypx72p" path="res://main/items/blocks/sounds/dirt_3.wav" id="3_kxjlr"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_kr2cv"]
+random_pitch = 1.2
+random_volume_offset_db = 1.2
+streams_count = 3
+stream_0/stream = ExtResource("1_fahyn")
+stream_1/stream = ExtResource("2_et4vk")
+stream_2/stream = ExtResource("3_kxjlr")
 
 [resource]
+texture = ExtResource("1_js20h")
+break_sound = SubResource("AudioStreamRandomizer_kr2cv")
 id = 2
 display_name = "dirt"
-texture = ExtResource("1_js20h")

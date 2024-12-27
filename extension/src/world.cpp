@@ -145,6 +145,8 @@ void World::set_loaded_region_center(Vector3 new_center) {
 
 void World::initialize() {
     dropped_item_scene = ResourceLoader::get_singleton()->load("res://main/items/dropped_item/dropped_item.tscn");
+    break_stream_player_scene = ResourceLoader::get_singleton()->load("res://main/items/blocks/sounds/break_stream_player.tscn");
+
     create_texture_atlas();
 
     // Do not create chunk children when only in the editor
@@ -330,18 +332,25 @@ Block* World::get_block_type_at(Vector3i position) {
     return Object::cast_to<Block>(block_types[chunk->get_block_id_at(local_position)]);
 }
 
-void World::break_block_at(Vector3i position, bool drop_item) {
+void World::break_block_at(Vector3i position, bool drop_item, bool play_sound) {
     Chunk* chunk = get_chunk_at(position);
     Block* block_type = get_block_type_at(position);
     chunk->remove_block_at(position);
 
     if (drop_item && block_type->get_can_drop()) {
-
         Node* dropped_item = dropped_item_scene->instantiate();
         get_parent()->add_child(dropped_item);
         dropped_item->set("global_position", position);
         dropped_item->set("world", this);
         dropped_item->call("initialize", block_type);
+    }
+
+    if (play_sound) {
+        Node* stream_player = break_stream_player_scene->instantiate();
+        get_parent()->add_child(stream_player);
+        stream_player->set("global_position", position);
+        stream_player->set("stream", block_type->get_break_sound());
+        stream_player->set("playing", true);
     }
 
     emit_signal("block_broken", position);

@@ -1,8 +1,20 @@
-[gd_resource type="Block" load_steps=2 format=3 uid="uid://mcck1kusgwcq"]
+[gd_resource type="Block" load_steps=6 format=3 uid="uid://mcck1kusgwcq"]
 
+[ext_resource type="AudioStream" uid="uid://oy07xj217al2" path="res://main/items/blocks/sounds/dirt_1.wav" id="1_mv7hq"]
 [ext_resource type="Texture2D" uid="uid://b612rxkl7h1ex" path="res://main/items/blocks/textures/grass.png" id="1_njsu2"]
+[ext_resource type="AudioStream" uid="uid://ccg7wuptky1co" path="res://main/items/blocks/sounds/dirt_2.wav" id="2_fdg5t"]
+[ext_resource type="AudioStream" uid="uid://c0fesiqypx72p" path="res://main/items/blocks/sounds/dirt_3.wav" id="3_yi48l"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_2d0px"]
+random_pitch = 1.2
+random_volume_offset_db = 1.2
+streams_count = 3
+stream_0/stream = ExtResource("1_mv7hq")
+stream_1/stream = ExtResource("2_fdg5t")
+stream_2/stream = ExtResource("3_yi48l")
 
 [resource]
 texture = ExtResource("1_njsu2")
+break_sound = SubResource("AudioStreamRandomizer_2d0px")
 id = 3
 display_name = "grass"

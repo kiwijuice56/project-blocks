@@ -10,6 +10,10 @@ void Block::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_texture", "new_texture"), &Block::set_texture);
     ClassDB::bind_method(D_METHOD("get_transparent"), &Block::get_transparent);
 	ClassDB::bind_method(D_METHOD("set_transparent", "new_val"), &Block::set_transparent);
+    ClassDB::bind_method(D_METHOD("get_break_sound"), &Block::get_break_sound);
+	ClassDB::bind_method(D_METHOD("set_break_sound", "new_sound"), &Block::set_break_sound);
+    ClassDB::bind_method(D_METHOD("get_step_sound"), &Block::get_step_sound);
+	ClassDB::bind_method(D_METHOD("set_step_sound", "new_sound"), &Block::set_step_sound);
 
     ADD_PROPERTY(
         PropertyInfo(
@@ -20,6 +24,28 @@ void Block::_bind_methods() {
         ),
         "set_texture",
         "get_texture"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(
+            Variant::OBJECT,
+            "break_sound",
+            PROPERTY_HINT_RESOURCE_TYPE,
+            "AudioStream"
+        ),
+        "set_break_sound",
+        "get_break_sound"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(
+            Variant::OBJECT,
+            "step_sound",
+            PROPERTY_HINT_RESOURCE_TYPE,
+            "AudioStream"
+        ),
+        "set_step_sound",
+        "get_step_sound"
     );
 
     ADD_PROPERTY(
@@ -43,6 +69,22 @@ Ref<Texture2D> Block::get_texture() const {
 
 void Block::set_texture(Ref<Texture2D> new_texture) {
     texture = new_texture;
+}
+
+Ref<AudioStream> Block::get_break_sound() const {
+    return break_sound;
+}
+
+void Block::set_break_sound(Ref<AudioStream> new_sound) {
+    break_sound = new_sound;
+}
+
+Ref<AudioStream> Block::get_step_sound() const {
+    return step_sound;
+}
+
+void Block::set_step_sound(Ref<AudioStream> new_sound) {
+    step_sound = new_sound;
 }
 
 bool Block::get_transparent() const {
