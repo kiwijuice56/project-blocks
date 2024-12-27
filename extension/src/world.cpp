@@ -145,7 +145,7 @@ void World::set_loaded_region_center(Vector3 new_center) {
 
 void World::initialize() {
     dropped_item_scene = ResourceLoader::get_singleton()->load("res://main/items/dropped_item/dropped_item.tscn");
-    break_stream_player_scene = ResourceLoader::get_singleton()->load("res://main/items/blocks/sounds/break_stream_player.tscn");
+    break_effect_scene = ResourceLoader::get_singleton()->load("res://main/items/blocks/break_effect/break_effect.tscn");
 
     create_texture_atlas();
 
@@ -346,11 +346,10 @@ void World::break_block_at(Vector3i position, bool drop_item, bool play_sound) {
     }
 
     if (play_sound) {
-        Node* stream_player = break_stream_player_scene->instantiate();
-        get_parent()->add_child(stream_player);
-        stream_player->set("global_position", position);
-        stream_player->set("stream", block_type->get_break_sound());
-        stream_player->set("playing", true);
+        Node* break_effect = break_effect_scene->instantiate();
+        get_parent()->add_child(break_effect);
+        break_effect->set("global_position", position);
+        break_effect->call("initialize", block_type);
     }
 
     emit_signal("block_broken", position);

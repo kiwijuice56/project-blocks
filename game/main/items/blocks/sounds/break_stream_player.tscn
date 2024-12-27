@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://d2pjit4l8qvhx"]
-
-[node name="BreakStreamPlayer" type="AudioStreamPlayer3D"]
-volume_db = -12.0
-unit_size = 5.0
-max_db = -4.0
-bus = &"SFX"
-attenuation_filter_cutoff_hz = 20500.0

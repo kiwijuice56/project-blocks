@@ -31,7 +31,7 @@ private:
 	Ref<NoiseTexture2D> main_noise_texture;
 
 	Ref<PackedScene> dropped_item_scene;
-	Ref<PackedScene> break_stream_player_scene;
+	Ref<PackedScene> break_effect_scene;
 
 	// The center chunk's position
 	Vector3i center_chunk;

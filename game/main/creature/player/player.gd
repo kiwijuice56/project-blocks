@@ -50,7 +50,7 @@ func _process(delta: float) -> void:
 		%PlacementCheckShapeCast3D.global_position = Vector3(place_position) + Vector3(0.5, 0.5, 0.5)
 		%PlacementCheckShapeCast3D.force_shapecast_update()
 		
-		if Input.is_action_pressed("main_interact") and world.is_position_loaded(block_position):
+		if Input.is_action_just_pressed("main_interact") and world.is_position_loaded(block_position):
 			world.break_block_at(block_position, true, true)
 			
 		if Input.is_action_just_pressed("secondary_interact") and world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
