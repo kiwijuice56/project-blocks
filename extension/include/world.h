@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../include/block.h"
+#include "../include/generator.h"
 #include "../include/chunk.h"
 #include "../include/decoration.h"
 
@@ -29,8 +30,6 @@ private:
 	TypedArray<Block> block_types;
 	Ref<ShaderMaterial> block_material;
 	Ref<ShaderMaterial> transparent_block_material;
-	Ref<NoiseTexture2D> main_noise_texture;
-	Dictionary decorations;
 
 	Ref<PackedScene> dropped_item_scene;
 	Ref<PackedScene> break_effect_scene;
@@ -47,11 +46,11 @@ private:
 	// Stores (Vector3i : Chunk) mapping for easy access
 	Dictionary chunk_map;
 
-	// Stores (Vector3i : Array[Decoration])
-	Dictionary decoration_map;
-
 	// Stores (Vector3i : bool)
 	Dictionary decoration_generated;
+
+	// World generation node
+	Ref<Generator> generator;
 
 	// Stores block data of modified chunks (Vector3i : PackedInt32Array)
 	Dictionary chunk_data;
@@ -69,7 +68,7 @@ protected:
 
 	void regenerate_chunks();
 	void initialize_chunk(uint64_t index);
-	void place_decoration(Ref<Decoration> decoration, Vector3i position);
+
 
 	void update_loaded_region();
 	void create_texture_atlas();
@@ -77,6 +76,11 @@ protected:
 	bool is_chunk_in_radius(Vector3i coordinate, int64_t radius);
 
 public:
+	// Stores (Vector3i : Array[Decoration])
+	Dictionary decoration_map;
+	Dictionary decorations;
+	void place_decoration(Ref<Decoration> decoration, Vector3i position);
+
 	World();
 	~World();
 
@@ -109,8 +113,8 @@ public:
 	Ref<ShaderMaterial> get_transparent_block_material() const;
     void set_transparent_block_material(Ref<ShaderMaterial> new_material);
 
-	Ref<NoiseTexture2D> get_main_noise_texture() const;
-    void set_main_noise_texture(Ref<NoiseTexture2D> new_texture);
+	Ref<Generator> get_generator() const;
+    void set_generator(Ref<Generator> new_generator);
 };
 
 }

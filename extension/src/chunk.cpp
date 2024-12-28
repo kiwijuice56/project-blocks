@@ -64,11 +64,6 @@ Vector3i Chunk::index_to_position(uint64_t index) {
     return Vector3i(index % CHUNK_SIZE_X, index / (CHUNK_SIZE_X * CHUNK_SIZE_Z), (index / CHUNK_SIZE_X) % CHUNK_SIZE_Z);
 }
 
-double Chunk::sample_from_noise(Ref<NoiseTexture2D> texture, Vector2 uv) {
-    Ref<Image> img = texture->get_image();
-    return img->get_pixel(uint64_t(uv.x * (img->get_width() - 1)), uint64_t(uv.y * (img->get_height() - 1))).r;
-}
-
 bool Chunk::in_bounds(Vector3i position) {
     return
     0 <= position.x && position.x < CHUNK_SIZE_X &&
@@ -76,59 +71,8 @@ bool Chunk::in_bounds(Vector3i position) {
     0 <= position.z && position.z < CHUNK_SIZE_Z;
 }
 
-// Generate the block data for this chunk
-void Chunk::generate_data(Vector3i chunk_position, bool override) {
-    // Basic "mountains" biome for testing
-    if (override) {
-        blocks.fill(0);
-
-        Vector2 chunk_uv = Vector2(
-            Vector2i(chunk_position.x, chunk_position.z)
-            / Vector2i(CHUNK_SIZE_X, CHUNK_SIZE_Z)
-            % Vector2i(32, 32)
-        ) / 32.0;
-
-        if (chunk_uv.x < 0.0) chunk_uv.x = 1.0 + chunk_uv.x;
-        if (chunk_uv.y < 0.0) chunk_uv.y = 1.0 + chunk_uv.y;
-
-        for (int64_t z = 0; z < CHUNK_SIZE_Z; z++) {
-            for (int64_t x = 0; x < CHUNK_SIZE_X; x++) {
-                Vector2 uv = chunk_uv + Vector2(x, z) / Vector2(CHUNK_SIZE_X, CHUNK_SIZE_Z) / 32.0;
-
-                double height = sample_from_noise(main_noise_texture, uv);
-                int64_t block_height = 1 + int(height * 64);
-                for (int64_t y = 0; y < CHUNK_SIZE_Y; y++) {
-                    int64_t real_height = y + chunk_position.y;
-                    uint64_t block_type = 0;
-
-                    if (block_height == real_height) {
-                        block_type = 3;
-                    } else if (0 < block_height - real_height && block_height - real_height < 5 ) {
-                        block_type = 2;
-                    } else if (real_height < block_height) {
-                        block_type = 1;
-                    }
-
-                    blocks[position_to_index(Vector3i(x, y, z))] = block_type;
-                }
-            }
-        }
-
-        for (int64_t i = 0; i < decorations.size(); i++) {
-            Ref<Decoration> d = Object::cast_to<Decoration>(decorations[i]);
-            for (int64_t y = 0; y < d->get_size().y; y++) {
-                for (int64_t z = 0; z < d->get_size().z; z++) {
-                    for (int64_t x = 0; x < d->get_size().x; x++) {
-                        Vector3i local_position = Vector3i(x, y, z) + d->position - chunk_position;
-                        if (!in_bounds(local_position)) continue;
-                        blocks[position_to_index(local_position)] = d->get_blocks()[x + z * d->get_size().x + y * d->get_size().x * d->get_size().z];
-                    }
-                }
-            }
-        }
-    }
-
-    // Keep track of block count and other state
+// Keep track of block count and other state
+void Chunk::calculate_block_statistics() {
     uint8_t main_block_type = blocks[0];
     uniform = true;
     block_count = 0;

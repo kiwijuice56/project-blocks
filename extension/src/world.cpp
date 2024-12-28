@@ -22,11 +22,11 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_transparent_block_material"), &World::get_transparent_block_material);
 	ClassDB::bind_method(D_METHOD("set_transparent_block_material", "new_material"), &World::set_transparent_block_material);
 
-    ClassDB::bind_method(D_METHOD("get_main_noise_texture"), &World::get_main_noise_texture);
-	ClassDB::bind_method(D_METHOD("set_main_noise_texture", "new_texture"), &World::set_main_noise_texture);
-
     ClassDB::bind_method(D_METHOD("get_instance_radius"), &World::get_instance_radius);
 	ClassDB::bind_method(D_METHOD("set_instance_radius", "new_radius"), &World::set_instance_radius);
+
+    ClassDB::bind_method(D_METHOD("get_generator"), &World::get_generator);
+	ClassDB::bind_method(D_METHOD("set_generator", "new_generator"), &World::set_generator);
 
 	ClassDB::bind_method(D_METHOD("get_block_type_at", "position"), &World::get_block_type_at);
     ClassDB::bind_method(D_METHOD("break_block_at", "position", "drop_item"), &World::break_block_at);
@@ -53,6 +53,17 @@ void World::_bind_methods() {
         "get_decorations"
     );
 
+    ADD_PROPERTY(
+        PropertyInfo(
+            Variant::OBJECT,
+            "generator",
+            PROPERTY_HINT_RESOURCE_TYPE,
+            "Generator"
+        ),
+        "set_generator",
+        "get_generator"
+    );
+
     ClassDB::add_property(
         "World",
         PropertyInfo(
@@ -77,17 +88,6 @@ void World::_bind_methods() {
         "get_transparent_block_material"
     );
 
-    ClassDB::add_property(
-        "World",
-        PropertyInfo(
-            Variant::OBJECT,
-            "main_noise_texture",
-            PROPERTY_HINT_RESOURCE_TYPE,
-            "NoiseTexture2D"
-        ),
-        "set_main_noise_texture",
-        "get_main_noise_texture"
-    );
 
     ClassDB::add_property(
         "World",
@@ -128,14 +128,6 @@ void World::set_transparent_block_material(Ref<ShaderMaterial> new_material) {
     transparent_block_material = new_material;
 }
 
-Ref<NoiseTexture2D> World::get_main_noise_texture() const {
-    return main_noise_texture;
-}
-
-void World::set_main_noise_texture(Ref<NoiseTexture2D> new_texture) {
-    main_noise_texture = new_texture;
-}
-
 void World::set_instance_radius(int64_t new_radius) {
     instance_radius = new_radius;
 }
@@ -150,6 +142,14 @@ Dictionary World::get_decorations() const {
 
 void World::set_decorations(Dictionary new_decorations) {
     decorations = new_decorations;
+}
+
+Ref<Generator> World::get_generator() const {
+    return generator;
+}
+
+void World::set_generator(Ref<Generator> new_generator) {
+    generator = new_generator;
 }
 
 void World::set_loaded_region_center(Vector3 new_center) {
@@ -192,8 +192,8 @@ void World::regenerate_chunks() {
                 Chunk* new_chunk = memnew(Chunk);
 
                 new_chunk->set_position(coordinate);
+
                 new_chunk->block_types = block_types;
-                new_chunk->main_noise_texture = main_noise_texture;
                 new_chunk->block_material = block_material;
                 new_chunk->transparent_block_material = transparent_block_material;
 
@@ -208,12 +208,14 @@ void World::regenerate_chunks() {
 void World::initialize_chunk(uint64_t index) {
     Chunk* chunk = Object::cast_to<Chunk>(init_queue[index]);
     Vector3i coordinate = init_queue_positions[index];
+
     if (chunk_data.has(coordinate)) {
         chunk->blocks = chunk_data[coordinate];
-        chunk->generate_data(init_queue_positions[index], false);
     } else {
-        chunk->generate_data(init_queue_positions[index], true);
+        generator->generate_blocks(chunk, decoration_map[coordinate], coordinate);
     }
+
+    chunk->calculate_block_statistics();
     chunk->never_initialized = false;
     chunk->generate_mesh(false);
 
@@ -253,8 +255,6 @@ void World::update_loaded_region() {
     int64_t deco_radius_y = 1 + instance_radius / Chunk::CHUNK_SIZE_Y;
     int64_t deco_radius_z = 1 + instance_radius / Chunk::CHUNK_SIZE_Z;
 
-    Ref<Decoration> d = Object::cast_to<Decoration>(decorations["heap"]);
-
     for (int64_t y = -deco_radius_y; y <= deco_radius_y; y++) {
         for (int64_t x = -deco_radius_x; x <= deco_radius_x; x++) {
             for (int64_t z = -deco_radius_z; z <= deco_radius_z; z++) {
@@ -265,7 +265,8 @@ void World::update_loaded_region() {
 
                 if (decoration_generated.has(coordinate)) continue;
 
-                place_decoration(d, coordinate + Vector3i(0, 0, -1));
+                generator->generate_decorations(this, coordinate);
+
                 decoration_generated[coordinate] = true;
             }
         }
@@ -294,7 +295,6 @@ void World::update_loaded_region() {
                 Chunk* new_chunk = available_chunks.back();
                 available_chunks.pop_back();
 
-                new_chunk->decorations = decoration_map[coordinate];
                 new_chunk->set_visible(false);
                 new_chunk->set_position(coordinate);
                 new_chunk->clear_collision();

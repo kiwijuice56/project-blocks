@@ -6,8 +6,6 @@
 #include <godot_cpp/classes/mesh_instance3d.hpp>
 #include <godot_cpp/classes/material.hpp>
 #include <godot_cpp/classes/shader_material.hpp>
-#include <godot_cpp/classes/noise_texture2d.hpp>
-#include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/classes/concave_polygon_shape3d.hpp>
 #include <godot_cpp/classes/static_body3d.hpp>
 #include <godot_cpp/classes/collision_shape3d.hpp>
@@ -56,13 +54,11 @@ public:
 
     // Block ID data
     PackedInt32Array blocks;
-    Array decorations;
 
     bool modified = false; // Whether this chunk has had any blocks placed/removed
     bool never_initialized = true;
 
     // Resources set by World
-    Ref<NoiseTexture2D> main_noise_texture;
     TypedArray<Block> block_types;
     Ref<ShaderMaterial> block_material;
 	Ref<ShaderMaterial> transparent_block_material;
@@ -72,15 +68,14 @@ public:
 
     // Generation methods
     void generate_mesh(bool immediate);
-    void generate_data(Vector3i chunk_position, bool override);
+    void calculate_block_statistics();
     void clear_collision();
 
     // Internal interfacing methods
     uint64_t get_block_id_at(Vector3i position);
-    uint64_t position_to_index(Vector3i position);
+    static uint64_t position_to_index(Vector3i position);
     Vector3i index_to_position(uint64_t index);
-    double sample_from_noise(Ref<NoiseTexture2D> texture, Vector2 uv);
-    bool in_bounds(Vector3i position);
+    static bool in_bounds(Vector3i position);
 
     // External interfacing methods
     void remove_block_at(Vector3i global_position);

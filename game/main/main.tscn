@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=25 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="Block" uid="uid://dvafel0lfqor7" path="res://main/items/blocks/air.tres" id="2_ly1ey"]
@@ -20,13 +20,15 @@
 [ext_resource type="Material" uid="uid://dhxh3up0kwnsn" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.tres" id="10_ppf03"]
 [ext_resource type="Theme" uid="uid://d1c7oys07yrf2" path="res://main/ui/theme.tres" id="15_tmhh0"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_xbrxv"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ihq11"]
 noise_type = 3
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_v17xq"]
-generate_mipmaps = false
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ucdyo"]
 seamless = true
-noise = SubResource("FastNoiseLite_xbrxv")
+noise = SubResource("FastNoiseLite_ihq11")
+
+[sub_resource type="Generator" id="Generator_w50cm"]
+main_noise_texture = SubResource("NoiseTexture2D_ucdyo")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
@@ -45,9 +47,9 @@ block_types = Array[Block]([ExtResource("2_ly1ey"), ExtResource("6_egu44"), ExtR
 decorations = {
 "heap": ExtResource("9_attqh")
 }
+generator = SubResource("Generator_w50cm")
 block_material = ExtResource("5_ah4j3")
 transparent_block_material = ExtResource("10_ppf03")
-main_noise_texture = SubResource("NoiseTexture2D_v17xq")
 instance_radius = 100
 script = ExtResource("5_ds8vp")
 
