@@ -6,6 +6,8 @@
 #include "../include/item.h"
 #include "../include/decoration.h"
 #include "../include/generator.h"
+#include "../include/debug_generator.h"
+#include "../include/default_generator.h"
 
 #include <gdextension_interface.h>
 #include <godot_cpp/core/defs.hpp>
@@ -23,6 +25,8 @@ void initialize_gdblocks_module(ModuleInitializationLevel p_level) {
 	GDREGISTER_CLASS(Decoration);
 	GDREGISTER_CLASS(Chunk);
 	GDREGISTER_CLASS(Generator);
+	GDREGISTER_CLASS(DebugGenerator);
+	GDREGISTER_CLASS(DefaultGenerator);
 	GDREGISTER_CLASS(World);
 }
 

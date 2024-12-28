@@ -78,8 +78,9 @@ protected:
 public:
 	// Stores (Vector3i : Array[Decoration])
 	Dictionary decoration_map;
+
+	// Stores all available decorations (String : Decoration)
 	Dictionary decorations;
-	void place_decoration(Ref<Decoration> decoration, Vector3i position);
 
 	World();
 	~World();
@@ -96,6 +97,8 @@ public:
 	Ref<Block> get_block_type_at(Vector3 position);
 	void break_block_at(Vector3 position, bool drop_item, bool play_effect);
 	void place_block_at(Vector3 position, uint8_t block_type);
+	void place_decoration(Ref<Decoration> decoration, Vector3i position);
+
 
 	// Boilerplate setters and getters
 	void set_instance_radius(int64_t new_radius);

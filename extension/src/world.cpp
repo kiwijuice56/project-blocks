@@ -32,8 +32,7 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("break_block_at", "position", "drop_item"), &World::break_block_at);
     ClassDB::bind_method(D_METHOD("place_block_at", "position", "block_type"), &World::place_block_at);
 
-    ClassDB::add_property(
-        "World",
+    ADD_PROPERTY(
         PropertyInfo(
             Variant::ARRAY,
             "block_types",
@@ -64,8 +63,7 @@ void World::_bind_methods() {
         "get_generator"
     );
 
-    ClassDB::add_property(
-        "World",
+    ADD_PROPERTY(
         PropertyInfo(
             Variant::OBJECT,
             "block_material",
@@ -76,8 +74,7 @@ void World::_bind_methods() {
         "get_block_material"
     );
 
-    ClassDB::add_property(
-        "World",
+    ADD_PROPERTY(
         PropertyInfo(
             Variant::OBJECT,
             "transparent_block_material",
@@ -89,8 +86,7 @@ void World::_bind_methods() {
     );
 
 
-    ClassDB::add_property(
-        "World",
+    ADD_PROPERTY(
         PropertyInfo(Variant::INT, "instance_radius"),
         "set_instance_radius",
         "get_instance_radius"
@@ -251,10 +247,10 @@ void World::update_loaded_region() {
         }
     }
 
+    // Generate decorations in a spherical region around the center (one chunk farther than rendered chunks)
     int64_t deco_radius_x = 1 + instance_radius / Chunk::CHUNK_SIZE_X;
     int64_t deco_radius_y = 1 + instance_radius / Chunk::CHUNK_SIZE_Y;
     int64_t deco_radius_z = 1 + instance_radius / Chunk::CHUNK_SIZE_Z;
-
     for (int64_t y = -deco_radius_y; y <= deco_radius_y; y++) {
         for (int64_t x = -deco_radius_x; x <= deco_radius_x; x++) {
             for (int64_t z = -deco_radius_z; z <= deco_radius_z; z++) {

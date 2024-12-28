@@ -1,0 +1,11 @@
+[gd_resource type="DefaultGenerator" load_steps=3 format=3 uid="uid://diqcbn3451p2b"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ffi1b"]
+noise_type = 3
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_sw528"]
+seamless = true
+noise = SubResource("FastNoiseLite_ffi1b")
+
+[resource]
+main_noise_texture = SubResource("NoiseTexture2D_sw528")
