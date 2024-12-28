@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://bypaqncoue8cf"]
+
+[ext_resource type="Script" path="res://main/items/blocks/icons/block_icon_generator.gd" id="1_paxe8"]
+[ext_resource type="ArrayMesh" uid="uid://bcem1om1xn87j" path="res://main/items/dropped_item/cube_mesh.obj" id="2_jpxdj"]
+[ext_resource type="Texture2D" uid="uid://b612rxkl7h1ex" path="res://main/items/blocks/textures/grass.png" id="3_wfkuj"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6cvqi"]
+transparency = 1
+specular_mode = 2
+albedo_texture = ExtResource("3_wfkuj")
+texture_filter = 0
+
+[node name="BlockIconGenerator" type="SubViewportContainer"]
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 20.0
+offset_bottom = 20.0
+script = ExtResource("1_paxe8")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+unique_name_in_owner = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(19, 19)
+render_target_update_mode = 4
+
+[node name="Camera3D" type="Camera3D" parent="SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
+projection = 1
+current = true
+size = 3.3
+
+[node name="Block" type="MeshInstance3D" parent="SubViewport"]
+unique_name_in_owner = true
+transform = Transform3D(0.387565, -0.164512, 0.907044, 0.390731, 0.920505, 0, -0.834938, 0.35441, 0.421036, 0, 0, 0)
+layers = 2
+mesh = ExtResource("2_jpxdj")
+surface_material_override/0 = SubResource("StandardMaterial3D_6cvqi")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewport"]
+transform = Transform3D(0.917034, 0.27638, -0.287511, -0.146397, 0.903884, 0.401948, 0.370967, -0.326509, 0.869353, 0, 2.26387, 0)
+light_cull_mask = 4293918722

@@ -30,6 +30,7 @@ window/stretch/aspect="keep_height"
 
 folder_colors={
 "res://main/items/blocks/": "orange",
+"res://main/items/blocks/icons/": "teal",
 "res://main/items/blocks/sounds/": "blue",
 "res://main/items/blocks/textures/": "green",
 "res://main/ui/": "red",
@@ -49,7 +50,7 @@ texture={
 "detect_3d/compress_to": 0,
 "mipmaps/generate": true,
 "mipmaps/limit": -1,
-"process/fix_alpha_border": true,
+"process/fix_alpha_border": false,
 "process/hdr_as_srgb": false,
 "process/hdr_clamp_exposure": false,
 "process/normal_map_invert_y": false,

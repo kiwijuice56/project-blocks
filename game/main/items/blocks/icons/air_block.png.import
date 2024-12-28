@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cv0du38ucw4qi"
-path="res://.godot/imported/glass.png-4853eca42f85ac6d87bcdfcfd9d05005.ctex"
+uid="uid://bijeoqdyxls4e"
+path="res://.godot/imported/air_block.png-13ba2d1b4593a0d6165f72bf2a1ec260.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://main/items/blocks/textures/glass.png"
-dest_files=["res://.godot/imported/glass.png-4853eca42f85ac6d87bcdfcfd9d05005.ctex"]
+source_file="res://main/items/blocks/icons/air_block.png"
+dest_files=["res://.godot/imported/air_block.png-13ba2d1b4593a0d6165f72bf2a1ec260.ctex"]
 
 [params]
 
@@ -21,11 +21,11 @@ compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
-process/fix_alpha_border=false
+process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false

@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=28 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="Block" uid="uid://dvafel0lfqor7" path="res://main/items/blocks/air.tres" id="2_ly1ey"]
@@ -23,6 +23,8 @@
 [ext_resource type="Decoration" uid="uid://cfpar2tsjnn8h" path="res://main/world/decorations/tree.tres" id="12_tyvfj"]
 [ext_resource type="DefaultGenerator" uid="uid://diqcbn3451p2b" path="res://main/world/generators/main_generator.tres" id="13_dyeg8"]
 [ext_resource type="Theme" uid="uid://d1c7oys07yrf2" path="res://main/ui/theme.tres" id="15_tmhh0"]
+[ext_resource type="PackedScene" uid="uid://bypaqncoue8cf" path="res://main/items/blocks/icons/block_icon_generator.tscn" id="19_psjrf"]
+[ext_resource type="PackedScene" uid="uid://blba3olqnbk0h" path="res://main/ui/inventory/inventory_slot/inventory_slot.tscn" id="22_xkbwg"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
@@ -35,6 +37,9 @@ shader = ExtResource("6_mjg4k")
 
 [node name="Main" type="Node"]
 script = ExtResource("1_wx0yy")
+
+[node name="BlockIconGenerator" parent="." instance=ExtResource("19_psjrf")]
+visible = false
 
 [node name="MainWorld" type="World" parent="."]
 block_types = Array[Block]([ExtResource("2_ly1ey"), ExtResource("10_q2dle"), ExtResource("4_b12mt"), ExtResource("6_egu44"), ExtResource("4_pcuap"), ExtResource("3_7huqy"), ExtResource("5_44enk"), ExtResource("10_fo42d"), ExtResource("8_kb88p"), ExtResource("9_yktqp")])
@@ -53,11 +58,12 @@ selected_block = ExtResource("8_kb88p")
 fly_impulse = 9.0
 mouse_sensitivity = 0.02
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="SunLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
 light_color = Color(0.877268, 0.80327, 0.741058, 1)
 light_energy = 1.5
 light_bake_mode = 0
+light_cull_mask = 4294967293
 shadow_enabled = true
 directional_shadow_blend_splits = true
 directional_shadow_max_distance = 48.0
@@ -75,7 +81,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="UI"]
+[node name="UIContainer" type="MarginContainer" parent="UI"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -86,7 +92,7 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="FPSLabel" type="Label" parent="UI/MarginContainer"]
+[node name="FPSLabel" type="Label" parent="UI/UIContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
@@ -94,9 +100,135 @@ theme = ExtResource("15_tmhh0")
 text = "fps "
 script = ExtResource("5_fc4bx")
 
-[node name="Timer" type="Timer" parent="UI/MarginContainer/FPSLabel"]
+[node name="Timer" type="Timer" parent="UI/UIContainer/FPSLabel"]
 unique_name_in_owner = true
 autostart = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIContainer"]
+layout_mode = 2
+
+[node name="Inventory" type="GridContainer" parent="UI/UIContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 10
+theme_override_constants/h_separation = 1
+theme_override_constants/v_separation = 1
+columns = 9
+
+[node name="InventorySlot" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot2" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot3" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot4" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot5" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot6" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot7" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot8" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot9" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot10" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot11" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot12" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot13" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot14" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot15" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot16" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot17" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot18" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot19" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot20" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot21" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot22" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot23" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot24" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot25" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot26" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot28" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="Hotbar" type="HBoxContainer" parent="UI/UIContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 10
+theme_override_constants/separation = 1
+
+[node name="InventorySlot27" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot28" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot29" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot30" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot31" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot32" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot33" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot34" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
+
+[node name="InventorySlot35" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+layout_mode = 2
 
 [node name="Crosshair" type="TextureRect" parent="UI"]
 modulate = Color(1, 1, 1, 0.4)

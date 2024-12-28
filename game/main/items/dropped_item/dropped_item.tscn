@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://dfjvlhpkb4608"]
+[gd_scene load_steps=10 format=3 uid="uid://dfjvlhpkb4608"]
 
 [ext_resource type="Script" path="res://main/items/dropped_item/dropped_item.gd" id="1_m5mmq"]
 [ext_resource type="ArrayMesh" uid="uid://bcem1om1xn87j" path="res://main/items/dropped_item/cube_mesh.obj" id="2_jajaa"]
+[ext_resource type="Texture2D" uid="uid://cv0du38ucw4qi" path="res://main/items/blocks/textures/glass.png" id="3_6e4bb"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_nod4t"]
 radius = 0.3
@@ -10,6 +11,8 @@ radius = 0.3
 radius = 0.7
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fmwsh"]
+transparency = 4
+albedo_texture = ExtResource("3_6e4bb")
 texture_filter = 0
 
 [sub_resource type="Animation" id="Animation_do0qv"]
@@ -96,6 +99,12 @@ unique_name_in_owner = true
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
 mesh = ExtResource("2_jajaa")
 surface_material_override/0 = SubResource("StandardMaterial3D_fmwsh")
+
+[node name="ShadowCaster" type="MeshInstance3D" parent="Cube"]
+unique_name_in_owner = true
+cast_shadow = 3
+mesh = ExtResource("2_jajaa")
+skeleton = NodePath("../..")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

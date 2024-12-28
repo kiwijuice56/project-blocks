@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://blba3olqnbk0h"]
+
+[ext_resource type="Texture2D" uid="uid://boxnfbxd48wx5" path="res://main/ui/inventory/box.png" id="1_l83y2"]
+[ext_resource type="Texture2D" uid="uid://cbb4dup3dlss0" path="res://main/items/blocks/icons/stone_block.png" id="2_xk0ex"]
+
+[node name="InventorySlot" type="TextureRect"]
+texture = ExtResource("1_l83y2")
+
+[node name="ItemTexture" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 20.0
+offset_bottom = 20.0
+texture = ExtResource("2_xk0ex")
