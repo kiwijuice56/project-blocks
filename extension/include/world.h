@@ -68,7 +68,7 @@ protected:
 
 	void regenerate_chunks();
 	void initialize_chunk(uint64_t index);
-
+	void World::initialize_chunk_decorations(uint64_t index);
 
 	void update_loaded_region();
 	void create_texture_atlas();
@@ -76,8 +76,15 @@ protected:
 	bool is_chunk_in_radius(Vector3i coordinate, int64_t radius);
 
 public:
+	static const int64_t MAX_DECORATIONS = 16;
+
+	std::mutex decoration_lock;
+
 	// Stores (Vector3i : Array[Decoration])
 	Dictionary decoration_map;
+
+	// Stores (Vector3i : int) [size of above arrays]
+	Dictionary decoration_count;
 
 	// Stores (int : int)
 	Dictionary block_id_to_index_map;

@@ -63,8 +63,8 @@ void DefaultGenerator::generate_terrain_blocks(World* world, Chunk* chunk, Array
 }
 
 void DefaultGenerator::generate_decorations(World* world, Vector3i chunk_position) {
-    Ref<Decoration> d = Object::cast_to<Decoration>(world->decoration_name_map["tree"]);
-    world->place_decoration(d, chunk_position + Vector3i(0, 0, -1));
+    Ref<Decoration> tree = Object::cast_to<Decoration>(world->decoration_name_map["tree"]);
+    world->place_decoration(tree, chunk_position + Vector3i(0, 0, -1));
 }
 
 Ref<NoiseTexture2D> DefaultGenerator::get_main_noise_texture() const {

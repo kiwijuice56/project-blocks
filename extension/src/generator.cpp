@@ -23,7 +23,8 @@ void Generator::generate_decorations(World* world, Vector3i chunk_position) {
 }
 
 void Generator::generate_decoration_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
-    for (int64_t i = 0; i < decorations.size(); i++) {
+    int64_t decoration_count = world->decoration_count[chunk_position];
+    for (int64_t i = 0; i < decoration_count; i++) {
         Ref<Decoration> d = Object::cast_to<Decoration>(decorations[i]);
         for (int64_t y = 0; y < d->get_size().y; y++) {
             for (int64_t z = 0; z < d->get_size().z; z++) {

@@ -233,6 +233,13 @@ void World::initialize_chunk(uint64_t index) {
     is_chunk_loaded[coordinate] = true;
 }
 
+void World::initialize_chunk_decorations(uint64_t index) {
+    Vector3i coordinate = init_queue_positions[index];
+    generator->generate_decorations(this, coordinate);
+
+    decoration_generated[coordinate] = true;
+}
+
 void World::update_loaded_region() {
     if (has_task) {
         if (!WorkerThreadPool::get_singleton()->is_group_task_completed(task_id)) {
@@ -245,27 +252,14 @@ void World::update_loaded_region() {
     init_queue.clear();
     init_queue_positions.clear();
 
-    std::vector<Chunk*> available_chunks;
-
-    // Loop through chunks to remove any that are outside of instance radius
-    for (uint64_t i = 0; i < all_chunks.size(); i++) {
-        Chunk* chunk = all_chunks[i];
-        Vector3i coordinate = Vector3i(chunk->get_position());
-        if (chunk->never_initialized || !is_chunk_in_radius(coordinate, instance_radius)) {
-            chunk_map.erase(coordinate);
-            is_chunk_loaded.erase(coordinate);
-            available_chunks.push_back(chunk);
-
-            if (chunk->modified) {
-                chunk_data[coordinate] = chunk->blocks;
-            }
-        }
-    }
+    bool all_decorations_generated = true;
 
     // Generate decorations in a spherical region around the center (one chunk farther than rendered chunks)
-    int64_t deco_radius_x = 1 + instance_radius / Chunk::CHUNK_SIZE_X;
-    int64_t deco_radius_y = 1 + instance_radius / Chunk::CHUNK_SIZE_Y;
-    int64_t deco_radius_z = 1 + instance_radius / Chunk::CHUNK_SIZE_Z;
+
+    // But first initialize dictionary spots
+    int64_t deco_radius_x = 2 + instance_radius / Chunk::CHUNK_SIZE_X;
+    int64_t deco_radius_y = 2 + instance_radius / Chunk::CHUNK_SIZE_Y;
+    int64_t deco_radius_z = 2 + instance_radius / Chunk::CHUNK_SIZE_Z;
     for (int64_t y = -deco_radius_y; y <= deco_radius_y; y++) {
         for (int64_t x = -deco_radius_x; x <= deco_radius_x; x++) {
             for (int64_t z = -deco_radius_z; z <= deco_radius_z; z++) {
@@ -274,54 +268,101 @@ void World::update_loaded_region() {
                     Chunk::CHUNK_SIZE_Y * y,
                     Chunk::CHUNK_SIZE_Z * z) + center_chunk;
 
-                if (decoration_generated.has(coordinate)) continue;
-
-                generator->generate_decorations(this, coordinate);
-
-                decoration_generated[coordinate] = true;
+                if (!decoration_map.has(coordinate)) {
+                    Array decoration_array;
+                    decoration_array.resize(MAX_DECORATIONS);
+                    decoration_map[coordinate] = decoration_array;
+                    decoration_count[coordinate] = 0;
+                }
             }
         }
     }
 
-    // Loop through the spherical region around the center and generate chunks
-    // Use a different ordering to generate closer chunks first -- helps reduce jarring loading barriers
-    for (int64_t chunk_y = 0; chunk_y <= 2 * instance_radius / Chunk::CHUNK_SIZE_Y; chunk_y++) {
-        int64_t actual_chunk_y = (chunk_y % 2 == 0) ? -chunk_y / 2 : (chunk_y + 1) / 2;
-
-        for (int64_t chunk_x = 0; chunk_x <= 2 * instance_radius / Chunk::CHUNK_SIZE_X; chunk_x++) {
-            int64_t actual_chunk_x = (chunk_x % 2 == 0) ? -chunk_x / 2 : (chunk_x + 1) / 2;
-
-            for (int64_t chunk_z = 0; chunk_z <= 2 * instance_radius / Chunk::CHUNK_SIZE_Z; chunk_z++) {
-                int64_t actual_chunk_z = (chunk_z % 2 == 0) ? -chunk_z / 2 : (chunk_z + 1) / 2;
-
+    deco_radius_x = 1 + instance_radius / Chunk::CHUNK_SIZE_X;
+    deco_radius_y = 1 + instance_radius / Chunk::CHUNK_SIZE_Y;
+    deco_radius_z = 1 + instance_radius / Chunk::CHUNK_SIZE_Z;
+    for (int64_t y = -deco_radius_y; y <= deco_radius_y; y++) {
+        for (int64_t x = -deco_radius_x; x <= deco_radius_x; x++) {
+            for (int64_t z = -deco_radius_z; z <= deco_radius_z; z++) {
                 Vector3i coordinate = Vector3i(
-                    Chunk::CHUNK_SIZE_X * actual_chunk_x,
-                    Chunk::CHUNK_SIZE_Y * actual_chunk_y,
-                    Chunk::CHUNK_SIZE_Z * actual_chunk_z) + center_chunk;
+                    Chunk::CHUNK_SIZE_X * x,
+                    Chunk::CHUNK_SIZE_Y * y,
+                    Chunk::CHUNK_SIZE_Z * z) + center_chunk;
 
-                if (is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, instance_radius)) {
+                if (decoration_generated.has(coordinate)) {
                     continue;
                 }
 
-                Chunk* new_chunk = available_chunks.back();
-                available_chunks.pop_back();
-
-                new_chunk->set_visible(false);
-                new_chunk->set_position(coordinate);
-                new_chunk->clear_collision();
-
-                init_queue.push_back(new_chunk);
+                decoration_generated[coordinate] = false;
+                all_decorations_generated = false;
                 init_queue_positions.push_back(coordinate);
-                is_chunk_loaded[coordinate] = false;
-
-                chunk_map[coordinate] = new_chunk;
             }
         }
     }
 
-    if (init_queue.size() > 0) {
-        has_task = true;
-        task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk), init_queue.size());
+    if (all_decorations_generated) {
+        std::vector<Chunk*> available_chunks;
+
+        // Loop through chunks to remove any that are outside of instance radius
+        for (uint64_t i = 0; i < all_chunks.size(); i++) {
+            Chunk* chunk = all_chunks[i];
+            Vector3i coordinate = Vector3i(chunk->get_position());
+            if (chunk->never_initialized || !is_chunk_in_radius(coordinate, instance_radius)) {
+                chunk_map.erase(coordinate);
+                is_chunk_loaded.erase(coordinate);
+                available_chunks.push_back(chunk);
+
+                if (chunk->modified) {
+                    chunk_data[coordinate] = chunk->blocks;
+                }
+            }
+        }
+
+        // Loop through the spherical region around the center and generate chunks
+        // Use a different ordering to generate closer chunks first -- helps reduce jarring loading barriers
+        for (int64_t chunk_y = 0; chunk_y <= 2 * instance_radius / Chunk::CHUNK_SIZE_Y; chunk_y++) {
+            int64_t actual_chunk_y = (chunk_y % 2 == 0) ? -chunk_y / 2 : (chunk_y + 1) / 2;
+
+            for (int64_t chunk_x = 0; chunk_x <= 2 * instance_radius / Chunk::CHUNK_SIZE_X; chunk_x++) {
+                int64_t actual_chunk_x = (chunk_x % 2 == 0) ? -chunk_x / 2 : (chunk_x + 1) / 2;
+
+                for (int64_t chunk_z = 0; chunk_z <= 2 * instance_radius / Chunk::CHUNK_SIZE_Z; chunk_z++) {
+                    int64_t actual_chunk_z = (chunk_z % 2 == 0) ? -chunk_z / 2 : (chunk_z + 1) / 2;
+
+                    Vector3i coordinate = Vector3i(
+                        Chunk::CHUNK_SIZE_X * actual_chunk_x,
+                        Chunk::CHUNK_SIZE_Y * actual_chunk_y,
+                        Chunk::CHUNK_SIZE_Z * actual_chunk_z) + center_chunk;
+
+                    if (is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, instance_radius)) {
+                        continue;
+                    }
+
+                    Chunk* new_chunk = available_chunks.back();
+                    available_chunks.pop_back();
+
+                    new_chunk->set_visible(false);
+                    new_chunk->set_position(coordinate);
+                    new_chunk->clear_collision();
+
+                    init_queue.push_back(new_chunk);
+                    init_queue_positions.push_back(coordinate);
+                    is_chunk_loaded[coordinate] = false;
+
+                    chunk_map[coordinate] = new_chunk;
+                }
+            }
+        }
+
+        if (init_queue.size() > 0) {
+            has_task = true;
+            task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk), init_queue.size());
+        }
+    } else {
+        if (init_queue_positions.size() > 0) {
+            has_task = true;
+            task_id = WorkerThreadPool::get_singleton()->add_group_task(callable_mp(this, &World::initialize_chunk_decorations), init_queue_positions.size());
+        }
     }
 }
 
@@ -338,13 +379,22 @@ void World::place_decoration(Ref<Decoration> decoration, Vector3i position) {
                 Vector3i corner = position + new_decoration->get_size() * Vector3i(i, j, k);
                 Vector3i chunk_position = snap_to_chunk(corner);
 
-                if (!decoration_map.has(chunk_position)) {
-                    decoration_map[chunk_position] = Array();
-                }
-
                 if (!placed_chunks.has(chunk_position)) {
+                    decoration_lock.lock();
+
+                    int64_t count = decoration_count[chunk_position];
+
+                    if (count >= MAX_DECORATIONS) {
+                        decoration_lock.unlock();
+                        continue;
+                    }
+
                     Array decoration_list = decoration_map[chunk_position];
-                    decoration_list.append(new_decoration);
+                    decoration_list[count] = new_decoration;
+                    decoration_count[chunk_position] = count + 1;
+
+                    decoration_lock.unlock();
+
                     placed_chunks[chunk_position] = true;
                 }
             }
