@@ -79,6 +79,9 @@ public:
 	// Stores (Vector3i : Array[Decoration])
 	Dictionary decoration_map;
 
+	// Stores (int : int)
+	Dictionary block_id_to_index_map;
+
 	// Stores all available decorations (String : Decoration)
 	Dictionary decorations;
 
@@ -96,7 +99,7 @@ public:
 	Vector3i snap_to_chunk(Vector3 position); // Snaps a position to the nearest chunk's position
 	Ref<Block> get_block_type_at(Vector3 position);
 	void break_block_at(Vector3 position, bool drop_item, bool play_effect);
-	void place_block_at(Vector3 position, uint8_t block_type);
+	void place_block_at(Vector3 position, uint32_t block_id);
 	void place_decoration(Ref<Decoration> decoration, Vector3i position);
 
 

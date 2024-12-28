@@ -162,6 +162,12 @@ void World::initialize() {
     dropped_item_scene = ResourceLoader::get_singleton()->load("res://main/items/dropped_item/dropped_item.tscn");
     break_effect_scene = ResourceLoader::get_singleton()->load("res://main/items/blocks/break_effect/break_effect.tscn");
 
+    for (int64_t i = 0; i < block_types.size(); i++) {
+        Block* block = Object::cast_to<Block>(block_types[i]);
+        block->index = i;
+        block_id_to_index_map[block->get_id()] = i;
+    }
+
     create_texture_atlas();
 
     // Do not create chunk children when only in the editor
@@ -208,7 +214,7 @@ void World::initialize_chunk(uint64_t index) {
     if (chunk_data.has(coordinate)) {
         chunk->blocks = chunk_data[coordinate];
     } else {
-        generator->generate_blocks(chunk, decoration_map[coordinate], coordinate);
+        generator->generate_blocks(this, chunk, decoration_map[coordinate], coordinate);
     }
 
     chunk->calculate_block_statistics();
@@ -374,24 +380,17 @@ bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {
 void World::create_texture_atlas() {
     TypedArray<Image> images;
 
-    uint32_t max_id = 0;
-    for (int64_t i = 0; i < block_types.size(); i++) {
-        Block* block = Object::cast_to<Block>(block_types[i]);
-        if (block->get_id() > max_id) {
-            max_id = block->get_id();
-        }
-    }
-
-    images.resize(6 * (max_id + 1));
+    images.resize(6 * block_types.size());
     for (int64_t i = 0; i < block_types.size(); i++) {
         Block* block = Object::cast_to<Block>(block_types[i]);
         Ref<Image> combined_image = block->get_texture()->get_image();
         for (int64_t j = 0; j < 6; j++) {
             Ref<Image> side_image = Image::create_empty(16, 16, false, Image::FORMAT_RGBA8);
             side_image->blit_rect(combined_image, Rect2i(j * 16, 0, 16, 16), Vector2i());
-            images[6 * block->get_id() + j] = side_image;
+            images[6 * i + j] = side_image;
         }
     }
+
     Ref<Texture2DArray> atlas = memnew(Texture2DArray);
     atlas->create_from_images(images);
     block_material->set_shader_parameter("textures", atlas);
@@ -403,7 +402,7 @@ Ref<Block> World::get_block_type_at(Vector3 position) {
     position = position.floor();
 
     Chunk* chunk = get_chunk_at(position);
-    return block_types[chunk->get_block_id_at_global(Vector3i(position))];
+    return block_types[chunk->get_block_index_at_global(Vector3i(position))];
 }
 
 void World::break_block_at(Vector3 position, bool drop_item, bool play_effect) {
@@ -431,10 +430,10 @@ void World::break_block_at(Vector3 position, bool drop_item, bool play_effect) {
     emit_signal("block_broken", position);
 }
 
-void World::place_block_at(Vector3 position, uint8_t block_type) {
+void World::place_block_at(Vector3 position, uint32_t block_id) {
     position = position.floor();
 
     Chunk* chunk = get_chunk_at(position);
-    chunk->place_block_at(Vector3i(position), block_type);
+    chunk->place_block_at(Vector3i(position), block_id_to_index_map[block_id]);
     emit_signal("block_placed", Vector3i(position));
 }

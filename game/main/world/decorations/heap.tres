@@ -1,5 +1,0 @@
-[gd_resource type="Decoration" format=3 uid="uid://pxkxk2vbvf88"]
-
-[resource]
-blocks = PackedInt32Array(2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 5, 6, 5, 6, 5, 6, 5, 3)
-size = Vector3i(3, 3, 3)

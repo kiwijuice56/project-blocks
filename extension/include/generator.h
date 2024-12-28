@@ -27,7 +27,7 @@ public:
 	virtual void generate_decorations(World* world, Vector3i chunk_position);
 
 	// Given a chunk's position and decorations, fill in all blocks
-	virtual void generate_blocks(Chunk* chunk, Array decorations, Vector3i chunk_position);
+	virtual void generate_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position);
 
 	double sample_from_noise(Ref<NoiseTexture2D> texture, Vector2 uv);
 };

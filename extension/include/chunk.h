@@ -52,7 +52,7 @@ public:
     static const int64_t CHUNK_SIZE_Y = 16;
     static const int64_t CHUNK_SIZE_Z = 16;
 
-    // Block ID data
+    // Block index data
     PackedInt32Array blocks;
 
     bool modified = false; // Whether this chunk has had any blocks placed/removed
@@ -72,15 +72,15 @@ public:
     void clear_collision();
 
     // Internal interfacing methods
-    uint64_t get_block_id_at(Vector3i position);
+    uint64_t get_block_index_at(Vector3i position);
     static uint64_t position_to_index(Vector3i position);
     Vector3i index_to_position(uint64_t index);
     static bool in_bounds(Vector3i position);
 
     // External interfacing methods
     void remove_block_at(Vector3i global_position);
-    void place_block_at(Vector3i global_position, uint8_t block_id);
-    uint64_t get_block_id_at_global(Vector3i global_position);
+    void place_block_at(Vector3i global_position, uint32_t block_index);
+    uint64_t get_block_index_at_global(Vector3i global_position);
 };
 }
 

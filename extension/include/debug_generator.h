@@ -18,6 +18,6 @@ public:
 	~DebugGenerator();
 
 	void generate_decorations(World* world, Vector3i chunk_position);
-	void generate_blocks(Chunk* chunk, Array decorations, Vector3i chunk_position);
+	void generate_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position);
 };
 }

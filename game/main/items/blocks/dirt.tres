@@ -16,5 +16,5 @@ stream_2/stream = ExtResource("3_kxjlr")
 [resource]
 texture = ExtResource("1_js20h")
 break_sound = SubResource("AudioStreamRandomizer_kr2cv")
-id = 2
+id = 324041069
 display_name = "dirt"

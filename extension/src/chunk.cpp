@@ -47,11 +47,11 @@ Chunk::~Chunk() {
 }
 
 // Uses local position
-uint64_t Chunk::get_block_id_at(Vector3i position) {
+uint64_t Chunk::get_block_index_at(Vector3i position) {
     return blocks[uint64_t(position.x) + uint64_t(position.z) * CHUNK_SIZE_X + uint64_t(position.y) * CHUNK_SIZE_Z * CHUNK_SIZE_X];
 }
 
-uint64_t Chunk::get_block_id_at_global(Vector3i g_position) {
+uint64_t Chunk::get_block_index_at_global(Vector3i g_position) {
     g_position -= Vector3i(get_global_position());
     return blocks[uint64_t(g_position.x) + uint64_t(g_position.z) * CHUNK_SIZE_X + uint64_t(g_position.y) * CHUNK_SIZE_Z * CHUNK_SIZE_X];
 }
@@ -189,7 +189,7 @@ void Chunk::remove_block_at(Vector3i global_position) {
 }
 
 // Uses global position
-void Chunk::place_block_at(Vector3i global_position, uint8_t block_id) {
+void Chunk::place_block_at(Vector3i global_position, uint32_t block_index) {
     Vector3i block_position = global_position - Vector3i(get_global_position());
     uint64_t index = position_to_index(block_position);
 
@@ -197,7 +197,7 @@ void Chunk::place_block_at(Vector3i global_position, uint8_t block_id) {
         return;
     }
 
-    blocks[index] = block_id;
+    blocks[index] = block_index;
     block_count++;
     modified = true;
 
@@ -215,7 +215,7 @@ void Chunk::greedy_mesh_generation(bool transparent) {
     for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
             for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
-                current_greedy_block = get_block_id_at(Vector3i(x, y, z));
+                current_greedy_block = get_block_index_at(Vector3i(x, y, z));
 
                 bool block_transparent = Object::cast_to<Block>(block_types[current_greedy_block])->get_transparent();
 
@@ -286,7 +286,7 @@ bool Chunk::greedy_invalid(Vector3i position) {
         return true;
     }
 
-    uint64_t block_id = get_block_id_at(position);
+    uint64_t block_id = get_block_index_at(position);
 
     if (block_id == 0) {
         return true;
@@ -297,12 +297,12 @@ bool Chunk::greedy_invalid(Vector3i position) {
     }
 
     bool fully_covered =
-        in_bounds(Vector3i(+1, 0, 0) + position) && !Object::cast_to<Block>(block_types[get_block_id_at(Vector3i(+1, 0, 0) + position)])->get_transparent() &&
-        in_bounds(Vector3i(-1, 0, 0) + position) && !Object::cast_to<Block>(block_types[get_block_id_at(Vector3i(-1, 0, 0) + position)])->get_transparent() &&
-        in_bounds(Vector3i(0, +1, 0) + position) && !Object::cast_to<Block>(block_types[get_block_id_at(Vector3i(0, +1, 0) + position)])->get_transparent() &&
-        in_bounds(Vector3i(0, -1, 0) + position) && !Object::cast_to<Block>(block_types[get_block_id_at(Vector3i(0, -1, 0) + position)])->get_transparent() &&
-        in_bounds(Vector3i(0, 0, +1) + position) && !Object::cast_to<Block>(block_types[get_block_id_at(Vector3i(0, 0, +1) + position)])->get_transparent() &&
-        in_bounds(Vector3i(0, 0, -1) + position) && !Object::cast_to<Block>(block_types[get_block_id_at(Vector3i(0, 0, -1) + position)])->get_transparent();
+        in_bounds(Vector3i(+1, 0, 0) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(+1, 0, 0) + position)])->get_transparent() &&
+        in_bounds(Vector3i(-1, 0, 0) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(-1, 0, 0) + position)])->get_transparent() &&
+        in_bounds(Vector3i(0, +1, 0) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(0, +1, 0) + position)])->get_transparent() &&
+        in_bounds(Vector3i(0, -1, 0) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(0, -1, 0) + position)])->get_transparent() &&
+        in_bounds(Vector3i(0, 0, +1) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(0, 0, +1) + position)])->get_transparent() &&
+        in_bounds(Vector3i(0, 0, -1) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(0, 0, -1) + position)])->get_transparent();
 
     return !fully_covered;
 }

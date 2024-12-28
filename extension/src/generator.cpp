@@ -1,4 +1,5 @@
 #include "../include/chunk.h"
+#include "../include/world.h"
 #include "../include/generator.h"
 
 #include <godot_cpp/core/class_db.hpp>
@@ -13,7 +14,7 @@ Generator::Generator() { }
 
 Generator::~Generator() { }
 
-void Generator::generate_blocks(Chunk* chunk, Array decorations, Vector3i chunk_position) {
+void Generator::generate_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
     chunk->blocks.fill(0);
 }
 

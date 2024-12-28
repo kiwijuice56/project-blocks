@@ -1,0 +1,9 @@
+[gd_resource type="Block" load_steps=2 format=3 uid="uid://ciypj7qy2lyx8"]
+
+[ext_resource type="Texture2D" uid="uid://cd1ji3s578op5" path="res://main/items/blocks/textures/void.png" id="1_y6wyr"]
+
+[resource]
+texture = ExtResource("1_y6wyr")
+transparent = true
+id = 1
+display_name = "void"

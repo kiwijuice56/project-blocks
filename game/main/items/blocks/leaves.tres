@@ -1,0 +1,10 @@
+[gd_resource type="Block" load_steps=2 format=3 uid="uid://p17prpekq02x"]
+
+[ext_resource type="Texture2D" uid="uid://rg5mu2i3ewq5" path="res://main/items/blocks/textures/leaves.png" id="1_vlejj"]
+
+[resource]
+texture = ExtResource("1_vlejj")
+transparent = true
+can_drop = false
+id = 1442318884
+display_name = "leaves"

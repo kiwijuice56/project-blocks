@@ -1,10 +1,11 @@
-[gd_scene load_steps=23 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=26 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="Block" uid="uid://dvafel0lfqor7" path="res://main/items/blocks/air.tres" id="2_ly1ey"]
 [ext_resource type="Block" uid="uid://mcck1kusgwcq" path="res://main/items/blocks/grass.tres" id="3_7huqy"]
 [ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/world/rendering/environments/high_graphics_environment.tres" id="4_6ud5x"]
 [ext_resource type="Shader" path="res://main/ui/dithering.gdshader" id="4_25hyt"]
+[ext_resource type="Block" uid="uid://dlj05o1xwr5wf" path="res://main/items/blocks/debug.tres" id="4_b12mt"]
 [ext_resource type="Block" uid="uid://bd4umsf48hbgg" path="res://main/items/blocks/dirt.tres" id="4_pcuap"]
 [ext_resource type="Block" uid="uid://bmi1nq6o1vmgk" path="res://main/items/blocks/sand.tres" id="5_44enk"]
 [ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/world/rendering/block_mesh/block_mesh_material.tres" id="5_ah4j3"]
@@ -14,13 +15,14 @@
 [ext_resource type="Texture2D" uid="uid://dny2s70gsc4cf" path="res://main/ui/crosshair.png" id="6_i0idr"]
 [ext_resource type="Shader" path="res://main/ui/crosshair_inversion.gdshader" id="6_mjg4k"]
 [ext_resource type="Block" uid="uid://gxs2expu8dk4" path="res://main/items/blocks/glass.tres" id="8_kb88p"]
-[ext_resource type="Decoration" uid="uid://pxkxk2vbvf88" path="res://main/world/decorations/heap.tres" id="9_attqh"]
+[ext_resource type="Block" uid="uid://p17prpekq02x" path="res://main/items/blocks/leaves.tres" id="9_yktqp"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/creature/player/player.tscn" id="10_4clf3"]
 [ext_resource type="Block" uid="uid://d4kufyi4bfmh6" path="res://main/items/blocks/wood.tres" id="10_fo42d"]
 [ext_resource type="Material" uid="uid://dhxh3up0kwnsn" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.tres" id="10_ppf03"]
+[ext_resource type="Block" uid="uid://ciypj7qy2lyx8" path="res://main/items/blocks/void.tres" id="10_q2dle"]
+[ext_resource type="Decoration" uid="uid://cfpar2tsjnn8h" path="res://main/world/decorations/tree1.tres" id="12_tyvfj"]
+[ext_resource type="DefaultGenerator" uid="uid://diqcbn3451p2b" path="res://main/world/generators/main_generator.tres" id="13_v4d7x"]
 [ext_resource type="Theme" uid="uid://d1c7oys07yrf2" path="res://main/ui/theme.tres" id="15_tmhh0"]
-
-[sub_resource type="DebugGenerator" id="DebugGenerator_k4h2r"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
@@ -35,13 +37,14 @@ shader = ExtResource("6_mjg4k")
 script = ExtResource("1_wx0yy")
 
 [node name="MainWorld" type="World" parent="."]
-block_types = Array[Block]([ExtResource("2_ly1ey"), ExtResource("6_egu44"), ExtResource("4_pcuap"), ExtResource("3_7huqy"), ExtResource("5_44enk"), ExtResource("10_fo42d"), ExtResource("8_kb88p")])
+block_types = Array[Block]([ExtResource("2_ly1ey"), ExtResource("10_q2dle"), ExtResource("4_b12mt"), ExtResource("6_egu44"), ExtResource("4_pcuap"), ExtResource("3_7huqy"), ExtResource("5_44enk"), ExtResource("10_fo42d"), ExtResource("8_kb88p"), ExtResource("9_yktqp")])
 decorations = {
-"heap": ExtResource("9_attqh")
+"heap": ExtResource("12_tyvfj")
 }
-generator = SubResource("DebugGenerator_k4h2r")
+generator = ExtResource("13_v4d7x")
 block_material = ExtResource("5_ah4j3")
 transparent_block_material = ExtResource("10_ppf03")
+instance_radius = 112
 script = ExtResource("5_ds8vp")
 
 [node name="Player" parent="." node_paths=PackedStringArray("world") instance=ExtResource("10_4clf3")]
@@ -49,6 +52,9 @@ unique_name_in_owner = true
 transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 8, 64, 8)
 world = NodePath("../MainWorld")
 selected_block = ExtResource("8_kb88p")
+flying = true
+fly_speed = 5.0
+fly_impulse = 9.0
 mouse_sensitivity = 0.02
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]

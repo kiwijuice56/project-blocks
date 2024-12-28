@@ -22,10 +22,13 @@ protected:
 	Ref<Item> drop_item;
 
 	bool transparent = false;
+	bool can_drop = true;
 
 	static void _bind_methods();
 
 public:
+	uint32_t index = 0;
+
 	Block();
 	~Block();
 
@@ -40,6 +43,9 @@ public:
 
 	Ref<Item> get_drop_item() const;
     void set_drop_item(Ref<Item> new_item);
+
+	bool get_can_drop() const;
+    void set_can_drop(bool new_val);
 
 	bool get_transparent() const;
     void set_transparent(bool new_val);

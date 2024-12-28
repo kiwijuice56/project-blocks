@@ -10,12 +10,15 @@ void Block::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_texture", "new_texture"), &Block::set_texture);
     ClassDB::bind_method(D_METHOD("get_transparent"), &Block::get_transparent);
 	ClassDB::bind_method(D_METHOD("set_transparent", "new_val"), &Block::set_transparent);
+    ClassDB::bind_method(D_METHOD("get_can_drop"), &Block::get_can_drop);
+	ClassDB::bind_method(D_METHOD("set_can_drop", "new_val"), &Block::set_can_drop);
     ClassDB::bind_method(D_METHOD("get_break_sound"), &Block::get_break_sound);
 	ClassDB::bind_method(D_METHOD("set_break_sound", "new_sound"), &Block::set_break_sound);
     ClassDB::bind_method(D_METHOD("get_step_sound"), &Block::get_step_sound);
 	ClassDB::bind_method(D_METHOD("set_step_sound", "new_sound"), &Block::set_step_sound);
     ClassDB::bind_method(D_METHOD("get_drop_item"), &Block::get_drop_item);
 	ClassDB::bind_method(D_METHOD("set_drop_item", "new_item"), &Block::set_drop_item);
+
 
     ADD_PROPERTY(
         PropertyInfo(
@@ -61,11 +64,16 @@ void Block::_bind_methods() {
         "get_drop_item"
     );
 
-
     ADD_PROPERTY(
         PropertyInfo(Variant::BOOL, "transparent"),
         "set_transparent",
         "get_transparent"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(Variant::BOOL, "can_drop"),
+        "set_can_drop",
+        "get_can_drop"
     );
 }
 
@@ -115,5 +123,13 @@ bool Block::get_transparent() const {
 
 void Block::set_transparent(bool new_val) {
     transparent = new_val;
+}
+
+bool Block::get_can_drop() const {
+    return can_drop;
+}
+
+void Block::set_can_drop(bool new_val) {
+    can_drop = new_val;
 }
 

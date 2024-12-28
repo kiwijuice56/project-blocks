@@ -27,7 +27,7 @@ DefaultGenerator::DefaultGenerator() { }
 DefaultGenerator::~DefaultGenerator() { }
 
 
-void DefaultGenerator::generate_blocks(Chunk* chunk, Array decorations, Vector3i chunk_position) {
+void DefaultGenerator::generate_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
     Vector2 chunk_uv = Vector2(
         Vector2i(chunk_position.x, chunk_position.z)
         / Vector2i(Chunk::CHUNK_SIZE_X, Chunk::CHUNK_SIZE_Z)
@@ -48,14 +48,14 @@ void DefaultGenerator::generate_blocks(Chunk* chunk, Array decorations, Vector3i
                 uint64_t block_type = 0;
 
                 if (block_height == real_height) {
-                    block_type = 3;
+                    block_type = 128455936;
                 } else if (0 < block_height - real_height && block_height - real_height < 5 ) {
-                    block_type = 2;
+                    block_type = 324041069;
                 } else if (real_height < block_height) {
-                    block_type = 1;
+                    block_type = 210957605;
                 }
 
-                chunk->blocks[Chunk::position_to_index(Vector3i(x, y, z))] = block_type;
+                chunk->blocks[Chunk::position_to_index(Vector3i(x, y, z))] = world->block_id_to_index_map[block_type];
             }
         }
     }
@@ -67,7 +67,16 @@ void DefaultGenerator::generate_blocks(Chunk* chunk, Array decorations, Vector3i
                 for (int64_t x = 0; x < d->get_size().x; x++) {
                     Vector3i local_position = Vector3i(x, y, z) + d->position - chunk_position;
                     if (!Chunk::in_bounds(local_position)) continue;
-                    chunk->blocks[Chunk::position_to_index(local_position)] = d->get_blocks()[x + z * d->get_size().x + y * d->get_size().x * d->get_size().z];
+                    int32_t block_id = d->get_blocks()[x + z * d->get_size().x + y * d->get_size().x * d->get_size().z];
+
+                    // Don't override with air blocks
+                    if (block_id == 0) continue;
+
+                    // But replace void blocks with air (that does override)
+                    if (block_id == 1) block_id = 0;
+
+                    int32_t index = world->block_id_to_index_map[block_id];
+                    chunk->blocks[Chunk::position_to_index(local_position)] = index;
                 }
             }
         }
