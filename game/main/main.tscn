@@ -14,7 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://dny2s70gsc4cf" path="res://main/ui/crosshair.png" id="6_i0idr"]
 [ext_resource type="Shader" path="res://main/ui/crosshair_inversion.gdshader" id="6_mjg4k"]
 [ext_resource type="Block" uid="uid://gxs2expu8dk4" path="res://main/items/blocks/glass.tres" id="8_kb88p"]
-[ext_resource type="Decoration" uid="uid://pxkxk2vbvf88" path="res://main/world/decoration/heap.tres" id="9_attqh"]
+[ext_resource type="Decoration" uid="uid://pxkxk2vbvf88" path="res://main/world/decorations/heap.tres" id="9_attqh"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/creature/player/player.tscn" id="10_4clf3"]
 [ext_resource type="Block" uid="uid://d4kufyi4bfmh6" path="res://main/items/blocks/wood.tres" id="10_fo42d"]
 [ext_resource type="Material" uid="uid://dhxh3up0kwnsn" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.tres" id="10_ppf03"]
