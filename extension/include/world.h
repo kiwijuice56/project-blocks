@@ -83,9 +83,12 @@ public:
 	Dictionary block_id_to_index_map;
 
 	// Stores all available decorations (String : Decoration)
-	Dictionary decorations;
+	TypedArray<Decoration> decorations;
 
-	// Stores (String : int)
+	// Stores (String : Resource) name to Decoration pairs
+	Dictionary decoration_name_map;
+
+	// Stores (String : int) name to index pairs
 	Dictionary block_name_map;
 
 	World();
@@ -109,8 +112,8 @@ public:
 	void set_instance_radius(int64_t new_radius);
 	int64_t get_instance_radius() const;
 
-	Dictionary get_decorations() const;
-	void set_decorations(Dictionary new_decorations);
+	TypedArray<Decoration> get_decorations() const;
+	void set_decorations(TypedArray<Decoration> new_decorations);
 
 	TypedArray<Block> get_block_types() const;
     void set_block_types(const TypedArray<Block> new_block_types);

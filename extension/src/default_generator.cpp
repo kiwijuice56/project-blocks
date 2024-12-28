@@ -63,7 +63,7 @@ void DefaultGenerator::generate_terrain_blocks(World* world, Chunk* chunk, Array
 }
 
 void DefaultGenerator::generate_decorations(World* world, Vector3i chunk_position) {
-    Ref<Decoration> d = Object::cast_to<Decoration>(world->decorations["heap"]);
+    Ref<Decoration> d = Object::cast_to<Decoration>(world->decoration_name_map["tree"]);
     world->place_decoration(d, chunk_position + Vector3i(0, 0, -1));
 }
 

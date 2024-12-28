@@ -45,8 +45,10 @@ void World::_bind_methods() {
 
     ADD_PROPERTY(
         PropertyInfo(
-            Variant::DICTIONARY,
-            "decorations"
+            Variant::ARRAY,
+            "decorations",
+            PROPERTY_HINT_TYPE_STRING,
+            String::num(Variant::OBJECT) + "/" + String::num(PROPERTY_HINT_RESOURCE_TYPE) + ":Decoration"
         ),
         "set_decorations",
         "get_decorations"
@@ -132,11 +134,11 @@ int64_t World::get_instance_radius() const {
     return instance_radius;
 }
 
-Dictionary World::get_decorations() const {
+TypedArray<Decoration> World::get_decorations() const {
     return decorations;
 }
 
-void World::set_decorations(Dictionary new_decorations) {
+void World::set_decorations(TypedArray<Decoration> new_decorations) {
     decorations = new_decorations;
 }
 
@@ -167,6 +169,11 @@ void World::initialize() {
         block->index = i;
         block_id_to_index_map[block->get_id()] = i;
         block_name_map[block->get_internal_name()] = i;
+    }
+
+    for (int64_t i = 0; i < decorations.size(); i++) {
+        Ref<Decoration> d = Object::cast_to<Decoration>(decorations[i]);
+        decoration_name_map[d->get_internal_name()] = d;
     }
 
     create_texture_atlas();
