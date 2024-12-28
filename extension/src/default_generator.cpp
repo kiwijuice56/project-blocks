@@ -26,8 +26,7 @@ DefaultGenerator::DefaultGenerator() { }
 
 DefaultGenerator::~DefaultGenerator() { }
 
-
-void DefaultGenerator::generate_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
+void DefaultGenerator::generate_terrain_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
     Vector2 chunk_uv = Vector2(
         Vector2i(chunk_position.x, chunk_position.z)
         / Vector2i(Chunk::CHUNK_SIZE_X, Chunk::CHUNK_SIZE_Z)
@@ -48,39 +47,19 @@ void DefaultGenerator::generate_blocks(World* world, Chunk* chunk, Array decorat
                 uint64_t block_type = 0;
 
                 if (block_height == real_height) {
-                    block_type = 128455936;
+                    block_type = world->block_name_map["grass"];
                 } else if (0 < block_height - real_height && block_height - real_height < 5 ) {
-                    block_type = 324041069;
+                    block_type = world->block_name_map["dirt"];
                 } else if (real_height < block_height) {
-                    block_type = 210957605;
+                    block_type = world->block_name_map["stone"];
                 }
 
-                chunk->blocks[Chunk::position_to_index(Vector3i(x, y, z))] = world->block_id_to_index_map[block_type];
+                chunk->blocks[Chunk::position_to_index(Vector3i(x, y, z))] = block_type;
             }
         }
     }
 
-    for (int64_t i = 0; i < decorations.size(); i++) {
-        Ref<Decoration> d = Object::cast_to<Decoration>(decorations[i]);
-        for (int64_t y = 0; y < d->get_size().y; y++) {
-            for (int64_t z = 0; z < d->get_size().z; z++) {
-                for (int64_t x = 0; x < d->get_size().x; x++) {
-                    Vector3i local_position = Vector3i(x, y, z) + d->position - chunk_position;
-                    if (!Chunk::in_bounds(local_position)) continue;
-                    int32_t block_id = d->get_blocks()[x + z * d->get_size().x + y * d->get_size().x * d->get_size().z];
-
-                    // Don't override with air blocks
-                    if (block_id == 0) continue;
-
-                    // But replace void blocks with air (that does override)
-                    if (block_id == 1) block_id = 0;
-
-                    int32_t index = world->block_id_to_index_map[block_id];
-                    chunk->blocks[Chunk::position_to_index(local_position)] = index;
-                }
-            }
-        }
-    }
+    generate_decoration_blocks(world, chunk, decorations, chunk_position);
 }
 
 void DefaultGenerator::generate_decorations(World* world, Vector3i chunk_position) {

@@ -6,4 +6,5 @@
 texture = ExtResource("1_y6wyr")
 transparent = true
 id = 1
-display_name = "void"
+display_name = "void block"
+internal_name = "void"

@@ -19,4 +19,5 @@ break_sound = SubResource("AudioStreamRandomizer_vjkx2")
 transparent = true
 can_drop = false
 id = 164199506
-display_name = "glass"
+display_name = "glass block"
+internal_name = "glass"

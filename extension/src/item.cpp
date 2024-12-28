@@ -14,6 +14,8 @@ void Item::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_stack_size", "new_stack_size"), &Item::set_stack_size);
     ClassDB::bind_method(D_METHOD("get_display_name"), &Item::get_display_name);
 	ClassDB::bind_method(D_METHOD("set_display_name", "new_display_name"), &Item::set_display_name);
+    ClassDB::bind_method(D_METHOD("get_internal_name"), &Item::get_internal_name);
+	ClassDB::bind_method(D_METHOD("set_internal_name", "new_internal_name"), &Item::set_internal_name);
     ClassDB::bind_method(D_METHOD("get_icon"), &Item::get_icon);
 	ClassDB::bind_method(D_METHOD("set_icon", "new_icon"), &Item::set_icon);
 
@@ -39,6 +41,12 @@ void Item::_bind_methods() {
         PropertyInfo(Variant::STRING, "display_name"),
         "set_display_name",
         "get_display_name"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(Variant::STRING, "internal_name"),
+        "set_internal_name",
+        "get_internal_name"
     );
 
     ADD_PROPERTY(
@@ -91,6 +99,14 @@ String Item::get_display_name() const {
 
 void Item::set_display_name(String new_display_name) {
     display_name = new_display_name;
+}
+
+String Item::get_internal_name() const {
+    return internal_name;
+}
+
+void Item::set_internal_name(String new_internal_name) {
+    internal_name = new_internal_name;
 }
 
 Ref<Texture2D> Item::get_icon() const {

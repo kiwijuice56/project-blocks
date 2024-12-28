@@ -7,4 +7,5 @@ texture = ExtResource("1_vlejj")
 transparent = true
 can_drop = false
 id = 1442318884
-display_name = "leaves"
+display_name = "leaf block"
+internal_name = "leaves"

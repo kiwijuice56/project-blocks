@@ -14,6 +14,7 @@ private:
 
 protected:
     uint32_t id = 0;
+    String internal_name;
     String display_name;
     Ref<Texture2D> icon;
     uint32_t stack_size = 64;
@@ -38,6 +39,9 @@ public:
 
     String get_display_name() const;
     void set_display_name(String new_display_name);
+
+    String get_internal_name() const;
+    void set_internal_name(String new_internal_name);
 
     Ref<Texture2D> get_icon() const;
     void set_icon(Ref<Texture2D> new_texture);

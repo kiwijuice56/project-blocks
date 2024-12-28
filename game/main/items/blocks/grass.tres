@@ -19,4 +19,5 @@ texture = ExtResource("1_njsu2")
 break_sound = SubResource("AudioStreamRandomizer_2d0px")
 drop_item = ExtResource("4_lra7p")
 id = 128455936
-display_name = "grass"
+display_name = "grass block"
+internal_name = "grass"

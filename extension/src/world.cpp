@@ -166,6 +166,7 @@ void World::initialize() {
         Block* block = Object::cast_to<Block>(block_types[i]);
         block->index = i;
         block_id_to_index_map[block->get_id()] = i;
+        block_name_map[block->get_internal_name()] = i;
     }
 
     create_texture_atlas();
@@ -214,7 +215,8 @@ void World::initialize_chunk(uint64_t index) {
     if (chunk_data.has(coordinate)) {
         chunk->blocks = chunk_data[coordinate];
     } else {
-        generator->generate_blocks(this, chunk, decoration_map[coordinate], coordinate);
+        generator->generate_terrain_blocks(this, chunk, decoration_map[coordinate], coordinate);
+        generator->generate_decoration_blocks(this, chunk, decoration_map[coordinate], coordinate);
     }
 
     chunk->calculate_block_statistics();

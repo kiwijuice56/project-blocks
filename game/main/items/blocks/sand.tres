@@ -5,4 +5,5 @@
 [resource]
 texture = ExtResource("1_jdic1")
 id = 296519338
-display_name = "sand"
+display_name = "sand block"
+internal_name = "sand"

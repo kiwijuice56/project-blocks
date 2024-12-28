@@ -21,4 +21,5 @@ stream_4/stream = ExtResource("5_ivjvr")
 texture = ExtResource("6_ixogl")
 break_sound = SubResource("AudioStreamRandomizer_8jmjc")
 id = 2
-display_name = "debug"
+display_name = "debug block"
+internal_name = "debug"

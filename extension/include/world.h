@@ -85,6 +85,9 @@ public:
 	// Stores all available decorations (String : Decoration)
 	Dictionary decorations;
 
+	// Stores (String : int)
+	Dictionary block_name_map;
+
 	World();
 	~World();
 
@@ -101,7 +104,6 @@ public:
 	void break_block_at(Vector3 position, bool drop_item, bool play_effect);
 	void place_block_at(Vector3 position, uint32_t block_id);
 	void place_decoration(Ref<Decoration> decoration, Vector3i position);
-
 
 	// Boilerplate setters and getters
 	void set_instance_radius(int64_t new_radius);

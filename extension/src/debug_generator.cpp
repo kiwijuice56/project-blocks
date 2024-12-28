@@ -14,7 +14,7 @@ DebugGenerator::DebugGenerator() { }
 
 DebugGenerator::~DebugGenerator() { }
 
-void DebugGenerator::generate_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
+void DebugGenerator::generate_terrain_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
     chunk->blocks.fill(0);
 
     if (chunk_position.length() > 0) return;
