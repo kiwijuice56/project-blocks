@@ -1,11 +1,13 @@
 class_name BlockIconGenerator extends SubViewportContainer
 
+@export var enabled: bool = false
 @export var icon_path: String = "res://main/items/blocks/icons/"
 @export var block_path: String = "res://main/items/blocks/"
 
 func _ready() -> void:
-	visible = true
-	await generate_icons(true)
+	if enabled:
+		visible = true
+		await generate_icons(true)
 	queue_free()
 
 # Saving images is not really necessary;
@@ -28,4 +30,5 @@ func generate_icons(save_images: bool) -> void:
 				
 				if save_images:
 					capture.save_png(icon_path + "/" + block.display_name.to_snake_case() + ".png")
+					ResourceSaver.save(block, block_path + "/" + file_name)
 		file_name = dir.get_next()

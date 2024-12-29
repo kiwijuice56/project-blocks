@@ -7,6 +7,7 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6cvqi"]
 transparency = 1
 specular_mode = 2
+disable_fog = true
 albedo_texture = ExtResource("3_wfkuj")
 texture_filter = 0
 
@@ -25,14 +26,14 @@ size = Vector2i(19, 19)
 render_target_update_mode = 4
 
 [node name="Camera3D" type="Camera3D" parent="SubViewport"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.8)
 projection = 1
 current = true
 size = 3.3
 
 [node name="Block" type="MeshInstance3D" parent="SubViewport"]
 unique_name_in_owner = true
-transform = Transform3D(0.387565, -0.164512, 0.907044, 0.390731, 0.920505, 0, -0.834938, 0.35441, 0.421036, 0, 0, 0)
+transform = Transform3D(0.730379, -0.006236, 0.683013, 0.25, 0.933013, -0.258819, -0.635645, 0.359789, 0.683013, 0, 0, 0)
 layers = 2
 mesh = ExtResource("2_jpxdj")
 surface_material_override/0 = SubResource("StandardMaterial3D_6cvqi")
