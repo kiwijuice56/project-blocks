@@ -30,7 +30,6 @@ texture = ExtResource("1_gx4iy")
 break_sound = SubResource("AudioStreamRandomizer_vjkx2")
 transparent = true
 id = 164199506
-count = 12
 display_name = "glass block"
 internal_name = "glass"
 icon = SubResource("ImageTexture_hvgd3")

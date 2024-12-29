@@ -84,7 +84,6 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="InventoryWidget1" parent="UI/UIContainer/ScreenContainer" instance=ExtResource("6_e5vqn")]
-visible = false
 layout_mode = 2
 
 [node name="InventoryWidget2" parent="UI/UIContainer/ScreenContainer" instance=ExtResource("6_e5vqn")]
@@ -246,6 +245,11 @@ texture = ExtResource("6_i0idr")
 stretch_mode = 2
 
 [node name="Inventories" type="Node" parent="."]
+
+[node name="PlayerInventory" type="Node" parent="Inventories" node_paths=PackedStringArray("inventory_widget")]
+script = ExtResource("26_e541b")
+capacity = 36
+inventory_widget = NodePath("../../UI/UIContainer/ScreenContainer/InventoryWidget1")
 
 [node name="PlayerHotbar" type="Node" parent="Inventories" node_paths=PackedStringArray("inventory_widget")]
 script = ExtResource("26_e541b")

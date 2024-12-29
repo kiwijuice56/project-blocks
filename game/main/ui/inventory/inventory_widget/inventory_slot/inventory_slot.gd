@@ -14,6 +14,7 @@ enum { IDLE, HOLDING_ITEM, }
 static var state: int = IDLE
 static var source_slot: InventorySlot
 static var held_item: ItemWidget
+static var any_hover: bool = false
 
 static func pick_up(slot: InventorySlot) -> void:
 	if state != IDLE:
@@ -35,12 +36,30 @@ static func pick_up(slot: InventorySlot) -> void:
 	held_item.follow_mouse = true
 
 static func drop(slot: InventorySlot) -> void:
-	var target_slot: InventorySlot = source_slot if slot.item != null else slot
-	target_slot.initialize(held_item.item)
-	target_slot.item_changed.emit(slot)
+	# Cancel or mismatched items
+	if not is_instance_valid(slot) or (slot.item != null and slot.item.id != held_item.item.id):
+		source_slot.initialize(held_item.item)
+		source_slot.item_changed.emit(source_slot)
+	# Complete transfer
+	elif slot.item == null:
+		slot.initialize(held_item.item)
+		slot.item_changed.emit(slot)
+	# Share transfer
+	elif slot.item.id == held_item.item.id:
+		var total_count: int = held_item.item.count + slot.item.count
+		slot.item.count = min(total_count, slot.item.stack_size)
+		held_item.item.count = total_count - slot.item.count
+		
+		slot.initialize(slot.item)
+		slot.item_changed.emit(slot)
+		if held_item.item.count > 0:
+			source_slot.initialize(held_item.item)
+			source_slot.item_changed.emit(source_slot)
+		else:
+			source_slot.initialize(null)
+			source_slot.item_changed.emit(source_slot)
 	
 	held_item.queue_free()
-	
 	state = IDLE
 
 var hovered_over: bool = false
@@ -50,9 +69,11 @@ func _ready() -> void:
 	mouse_exited.connect(_on_mouse_exited)
 
 func _on_mouse_entered() -> void:
+	any_hover = true
 	hovered_over = true
 
 func _on_mouse_exited() -> void:
+	any_hover = false
 	hovered_over = false
 
 func _input(event: InputEvent) -> void:
@@ -60,6 +81,8 @@ func _input(event: InputEvent) -> void:
 		pick_up(self)
 	if event.is_action_released("select", false) and hovered_over and state == HOLDING_ITEM:
 		drop(self)
+	if event.is_action_released("select", false) and not any_hover and state == HOLDING_ITEM:
+		drop(null)
 
 func initialize(new_item: Item, new_index: int = -1) -> void:
 	item = new_item

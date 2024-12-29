@@ -17,7 +17,6 @@ image = SubResource("Image_ejd84")
 [resource]
 texture = ExtResource("1_hqjoo")
 id = 379348930
-count = 5
 display_name = "wood block"
 internal_name = "wood"
 icon = SubResource("ImageTexture_5v57t")
