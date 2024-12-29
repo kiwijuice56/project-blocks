@@ -50,7 +50,6 @@ decorations = Array[Decoration]([ExtResource("12_tyvfj")])
 generator = ExtResource("13_dyeg8")
 block_material = ExtResource("5_ah4j3")
 transparent_block_material = ExtResource("10_ppf03")
-instance_radius = 80
 script = ExtResource("5_ds8vp")
 
 [node name="Player" parent="." node_paths=PackedStringArray("world") instance=ExtResource("10_4clf3")]

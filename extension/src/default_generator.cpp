@@ -64,7 +64,32 @@ void DefaultGenerator::generate_terrain_blocks(World* world, Chunk* chunk, Array
 
 void DefaultGenerator::generate_decorations(World* world, Vector3i chunk_position) {
     Ref<Decoration> tree = Object::cast_to<Decoration>(world->decoration_name_map["tree"]);
-    world->place_decoration(tree, chunk_position + Vector3i(0, 0, -1));
+
+    Vector2 chunk_uv = Vector2(
+        Vector2i(chunk_position.x, chunk_position.z)
+        / Vector2i(Chunk::CHUNK_SIZE_X, Chunk::CHUNK_SIZE_Z)
+        % Vector2i(32, 32)
+    ) / 32.0;
+
+    if (chunk_uv.x < 0.0) chunk_uv.x = 1.0 + chunk_uv.x;
+    if (chunk_uv.y < 0.0) chunk_uv.y = 1.0 + chunk_uv.y;
+
+    Vector2 tree_root = Vector2(0, 0);
+
+    Vector2 uv = chunk_uv + tree_root / Vector2(Chunk::CHUNK_SIZE_X, Chunk::CHUNK_SIZE_Z) / 32.0;
+
+    double height = sample_from_noise(main_noise_texture, uv);
+    int64_t block_height = 1 + int(height * 64);
+
+    for (int64_t y = 0; y < Chunk::CHUNK_SIZE_Y - 1; y++) {
+        int64_t real_height = y + chunk_position.y;
+
+        if (block_height == real_height) {
+            world->place_decoration(tree, chunk_position + Vector3i(-2, y + 1, -2));
+        }
+    }
+
+
 }
 
 Ref<NoiseTexture2D> DefaultGenerator::get_main_noise_texture() const {
