@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=31 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="Block" uid="uid://dvafel0lfqor7" path="res://main/items/blocks/air.tres" id="2_ly1ey"]
@@ -25,6 +25,9 @@
 [ext_resource type="Theme" uid="uid://d1c7oys07yrf2" path="res://main/ui/theme.tres" id="15_tmhh0"]
 [ext_resource type="PackedScene" uid="uid://bypaqncoue8cf" path="res://main/items/blocks/icons/block_icon_generator.tscn" id="19_psjrf"]
 [ext_resource type="PackedScene" uid="uid://blba3olqnbk0h" path="res://main/ui/inventory/inventory_slot/inventory_slot.tscn" id="22_xkbwg"]
+[ext_resource type="Texture2D" uid="uid://s748ox3oy1l7" path="res://main/ui/health/heart1.png" id="24_gn7nk"]
+[ext_resource type="Texture2D" uid="uid://eeeo8x66rqhe" path="res://main/ui/health/heart2.png" id="25_et7tr"]
+[ext_resource type="Texture2D" uid="uid://c2w3i6jmft76h" path="res://main/ui/health/heart3.png" id="26_2022m"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
@@ -47,7 +50,7 @@ decorations = Array[Decoration]([ExtResource("12_tyvfj")])
 generator = ExtResource("13_dyeg8")
 block_material = ExtResource("5_ah4j3")
 transparent_block_material = ExtResource("10_ppf03")
-instance_radius = 96
+instance_radius = 80
 script = ExtResource("5_ds8vp")
 
 [node name="Player" parent="." node_paths=PackedStringArray("world") instance=ExtResource("10_4clf3")]
@@ -112,6 +115,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="Inventory" type="GridContainer" parent="UI/UIContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 3
@@ -227,37 +231,170 @@ layout_mode = 2
 [node name="InventorySlot28" parent="UI/UIContainer/VBoxContainer/Inventory" instance=ExtResource("22_xkbwg")]
 layout_mode = 2
 
-[node name="Hotbar" type="HBoxContainer" parent="UI/UIContainer/VBoxContainer"]
+[node name="Hotbar" type="VBoxContainer" parent="UI/UIContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 4
+
+[node name="HealthContainer" type="GridContainer" parent="UI/UIContainer/VBoxContainer/Hotbar"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+theme_override_constants/h_separation = 1
+theme_override_constants/v_separation = 1
+columns = 12
+
+[node name="TextureRect" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect29" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect30" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect2" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect3" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect4" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect21" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect22" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect23" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect24" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect25" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect26" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect27" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect28" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect5" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect6" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect7" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect8" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect9" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect10" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect11" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect12" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect13" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect14" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect15" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("24_gn7nk")
+
+[node name="TextureRect16" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("25_et7tr")
+
+[node name="TextureRect17" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("26_2022m")
+
+[node name="TextureRect18" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("26_2022m")
+
+[node name="TextureRect19" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("26_2022m")
+
+[node name="TextureRect20" type="TextureRect" parent="UI/UIContainer/VBoxContainer/Hotbar/HealthContainer"]
+layout_mode = 2
+texture = ExtResource("26_2022m")
+
+[node name="ActiveInventory" type="HBoxContainer" parent="UI/UIContainer/VBoxContainer/Hotbar"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 10
 theme_override_constants/separation = 1
 
-[node name="InventorySlot27" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+[node name="InventorySlot27" parent="UI/UIContainer/VBoxContainer/Hotbar/ActiveInventory" instance=ExtResource("22_xkbwg")]
 layout_mode = 2
 
-[node name="InventorySlot28" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+[node name="InventorySlot28" parent="UI/UIContainer/VBoxContainer/Hotbar/ActiveInventory" instance=ExtResource("22_xkbwg")]
 layout_mode = 2
 
-[node name="InventorySlot29" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+[node name="InventorySlot29" parent="UI/UIContainer/VBoxContainer/Hotbar/ActiveInventory" instance=ExtResource("22_xkbwg")]
 layout_mode = 2
 
-[node name="InventorySlot30" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+[node name="InventorySlot30" parent="UI/UIContainer/VBoxContainer/Hotbar/ActiveInventory" instance=ExtResource("22_xkbwg")]
 layout_mode = 2
 
-[node name="InventorySlot31" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+[node name="InventorySlot31" parent="UI/UIContainer/VBoxContainer/Hotbar/ActiveInventory" instance=ExtResource("22_xkbwg")]
 layout_mode = 2
 
-[node name="InventorySlot32" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+[node name="InventorySlot32" parent="UI/UIContainer/VBoxContainer/Hotbar/ActiveInventory" instance=ExtResource("22_xkbwg")]
 layout_mode = 2
 
-[node name="InventorySlot33" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+[node name="InventorySlot33" parent="UI/UIContainer/VBoxContainer/Hotbar/ActiveInventory" instance=ExtResource("22_xkbwg")]
 layout_mode = 2
 
-[node name="InventorySlot34" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+[node name="InventorySlot34" parent="UI/UIContainer/VBoxContainer/Hotbar/ActiveInventory" instance=ExtResource("22_xkbwg")]
 layout_mode = 2
 
-[node name="InventorySlot35" parent="UI/UIContainer/VBoxContainer/Hotbar" instance=ExtResource("22_xkbwg")]
+[node name="InventorySlot35" parent="UI/UIContainer/VBoxContainer/Hotbar/ActiveInventory" instance=ExtResource("22_xkbwg")]
 layout_mode = 2
 
 [node name="Crosshair" type="TextureRect" parent="UI"]
