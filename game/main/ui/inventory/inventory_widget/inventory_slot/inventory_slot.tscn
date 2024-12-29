@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3 uid="uid://brf86huudcn1g"]
+
+[ext_resource type="Texture2D" uid="uid://boxnfbxd48wx5" path="res://main/ui/inventory/inventory_widget/inventory_slot/box.png" id="1_m04d4"]
+[ext_resource type="Script" path="res://main/ui/inventory/inventory_widget/inventory_slot/inventory_slot.gd" id="2_t0jck"]
+[ext_resource type="PackedScene" uid="uid://blba3olqnbk0h" path="res://main/ui/inventory/item_widget/item_widget.tscn" id="3_citi2"]
+
+[node name="InventorySlot" type="TextureRect"]
+mouse_filter = 0
+texture = ExtResource("1_m04d4")
+script = ExtResource("2_t0jck")
+item_widget_scene = ExtResource("3_citi2")

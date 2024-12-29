@@ -8,5 +8,5 @@ void fragment() {
 	ALBEDO = texture(textures, vec3(UV.x, UV.y, UV2.y)).rgb;
 	ALPHA = texture(textures, vec3(UV.x, UV.y, UV2.y)).a;
 	// Stop z-fighting
-	DEPTH = FRAGCOORD.z - 0.0001;
+	DEPTH = FRAGCOORD.z - 0.00001;
 }
