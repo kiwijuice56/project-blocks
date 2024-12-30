@@ -18,6 +18,6 @@ func _ready() -> void:
 	items[3].count = 5
 	
 	items[6] = preload("res://main/items/blocks/dirt.tres").duplicate()
-	items[6].count = 64
+	items[6].count = 48
 	
 	inventory_widget.open(self)

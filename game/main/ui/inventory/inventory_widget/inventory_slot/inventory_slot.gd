@@ -36,15 +36,21 @@ static func pick_up(slot: InventorySlot) -> void:
 	held_item.follow_mouse = true
 
 static func drop(slot: InventorySlot) -> void:
-	# Cancel or mismatched items
-	if not is_instance_valid(slot) or (slot.item != null and slot.item.id != held_item.item.id):
-		source_slot.initialize(held_item.item)
-		source_slot.item_changed.emit(source_slot)
-	# Complete transfer
+	# Mismatched items (swap)
+	if slot.item != null and slot.item.id != held_item.item.id:
+		var to_swap: Item = slot.item
+		
+		slot.initialize(held_item.item)
+		slot.item_changed.emit(slot)
+		
+		held_item.initialize(to_swap)
+		
+		return
+	# Complete transfer to empty slot
 	elif slot.item == null:
 		slot.initialize(held_item.item)
 		slot.item_changed.emit(slot)
-	# Share transfer
+	# Drop some and hold remaining
 	elif slot.item.id == held_item.item.id:
 		var total_count: int = held_item.item.count + slot.item.count
 		slot.item.count = min(total_count, slot.item.stack_size)
@@ -52,12 +58,10 @@ static func drop(slot: InventorySlot) -> void:
 		
 		slot.initialize(slot.item)
 		slot.item_changed.emit(slot)
+		
 		if held_item.item.count > 0:
-			source_slot.initialize(held_item.item)
-			source_slot.item_changed.emit(source_slot)
-		else:
-			source_slot.initialize(null)
-			source_slot.item_changed.emit(source_slot)
+			held_item.initialize(held_item.item)
+			return
 	
 	held_item.queue_free()
 	state = IDLE
@@ -79,10 +83,8 @@ func _on_mouse_exited() -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("select", false) and hovered_over and state == IDLE and item_widget.item != null:
 		pick_up(self)
-	if event.is_action_released("select", false) and hovered_over and state == HOLDING_ITEM:
+	elif event.is_action_pressed("select", false) and hovered_over and state == HOLDING_ITEM:
 		drop(self)
-	if event.is_action_released("select", false) and not any_hover and state == HOLDING_ITEM:
-		drop(null)
 
 func initialize(new_item: Item, new_index: int = -1) -> void:
 	item = new_item
