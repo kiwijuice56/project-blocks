@@ -1,0 +1,24 @@
+[gd_scene load_steps=6 format=3 uid="uid://brf86huudcn1g"]
+
+[ext_resource type="Texture2D" uid="uid://boxnfbxd48wx5" path="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_slot/box.png" id="1_m04d4"]
+[ext_resource type="Script" path="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_slot/inventory_slot.gd" id="2_t0jck"]
+[ext_resource type="PackedScene" uid="uid://blba3olqnbk0h" path="res://main/ui/menu/game_menu/inventory/item_widget/item_widget.tscn" id="3_citi2"]
+[ext_resource type="Texture2D" uid="uid://byb177e75jpaw" path="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_slot/hover_box.png" id="3_ywnu6"]
+[ext_resource type="Texture2D" uid="uid://c7qpj5lbhsunr" path="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_slot/outline.png" id="5_j02sa"]
+
+[node name="InventorySlot" type="TextureRect"]
+mouse_filter = 0
+texture = ExtResource("1_m04d4")
+script = ExtResource("2_t0jck")
+normal_texture = ExtResource("1_m04d4")
+hover_texture = ExtResource("3_ywnu6")
+item_widget_scene = ExtResource("3_citi2")
+
+[node name="Outline" type="TextureRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("5_j02sa")
+stretch_mode = 2

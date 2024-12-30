@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c07ev7ri74fpt"
-path="res://.godot/imported/box.png-84448fc247dfeb4d9d17f06c9fd7581d.ctex"
+uid="uid://c7qpj5lbhsunr"
+path="res://.godot/imported/outline.png-129ab388624a61134e5b5e1d21b10d67.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://main/ui/inventory/inventory_widget/inventory_slot/box.png"
-dest_files=["res://.godot/imported/box.png-84448fc247dfeb4d9d17f06c9fd7581d.ctex"]
+source_file="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_slot/outline.png"
+dest_files=["res://.godot/imported/outline.png-129ab388624a61134e5b5e1d21b10d67.ctex"]
 
 [params]
 

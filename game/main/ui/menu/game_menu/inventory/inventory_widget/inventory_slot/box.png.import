@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c2w3i6jmft76h"
-path="res://.godot/imported/heart3.png-538133c93ab2756f4bf7184688aa7044.ctex"
+uid="uid://boxnfbxd48wx5"
+path="res://.godot/imported/box.png-abbe69a54b93b5e6fbf23f2d27330097.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://main/ui/health/heart3.png"
-dest_files=["res://.godot/imported/heart3.png-538133c93ab2756f4bf7184688aa7044.ctex"]
+source_file="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_slot/box.png"
+dest_files=["res://.godot/imported/box.png-abbe69a54b93b5e6fbf23f2d27330097.ctex"]
 
 [params]
 
@@ -21,11 +21,11 @@ compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
-process/fix_alpha_border=false
+process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false

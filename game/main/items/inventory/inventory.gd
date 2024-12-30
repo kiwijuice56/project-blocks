@@ -1,7 +1,6 @@
 class_name Inventory extends Node
 
 @export var capacity: int
-@export var inventory_widget: InventoryWidget
 
 var items: Array[Item]
 
@@ -19,5 +18,3 @@ func _ready() -> void:
 	
 	items[6] = preload("res://main/items/blocks/dirt.tres").duplicate()
 	items[6].count = 48
-	
-	inventory_widget.open(self)

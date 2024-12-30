@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://s748ox3oy1l7"
-path="res://.godot/imported/heart1.png-76ffb5424c73c69526e8c3cf067cb32d.ctex"
+path="res://.godot/imported/heart1.png-4038026e2e242744a06878124e2f5789.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://main/ui/health/heart1.png"
-dest_files=["res://.godot/imported/heart1.png-76ffb5424c73c69526e8c3cf067cb32d.ctex"]
+source_file="res://main/ui/menu/game_menu/health/heart1.png"
+dest_files=["res://.godot/imported/heart1.png-4038026e2e242744a06878124e2f5789.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c07ev7ri74fpt"
-path="res://.godot/imported/box.png-84448fc247dfeb4d9d17f06c9fd7581d.ctex"
+uid="uid://eeeo8x66rqhe"
+path="res://.godot/imported/heart2.png-14edf31d5c1bcd5f3f7126f458992df7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://main/ui/inventory/inventory_widget/inventory_slot/box.png"
-dest_files=["res://.godot/imported/box.png-84448fc247dfeb4d9d17f06c9fd7581d.ctex"]
+source_file="res://main/ui/menu/game_menu/health/heart2.png"
+dest_files=["res://.godot/imported/heart2.png-14edf31d5c1bcd5f3f7126f458992df7.ctex"]
 
 [params]
 

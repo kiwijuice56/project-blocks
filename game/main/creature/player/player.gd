@@ -41,6 +41,9 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	%Camera3D.fov = lerp(%Camera3D.fov, fov * (sprint_fov_scale if is_sprinting else 1.0), sprint_fov_animation_speed * delta)
 	
+	if not movement_enabled:
+		return
+	
 	# Block picking logic
 	if %InteractRayCast3D.is_colliding():
 		var selected_position: Vector3 = (%InteractRayCast3D.get_collision_point() - %InteractRayCast3D.get_collision_normal() * 0.5 - Vector3(1, 1, 1)).ceil()
@@ -86,13 +89,16 @@ func _process(delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	# Movement logic
 	var input: Vector2 = Input.get_vector("left", "right", "up", "down")
+	if not movement_enabled:
+		input = Vector2()
+	
 	var movement_dir: Vector3 = transform.basis * Vector3(input.x, 0, input.y)
 	var look_direction: Vector3 = -get_global_transform().basis.z
 	
 	if not sprint_toggle:
 		is_sprinting_requested = Input.is_action_pressed("sprint")
 	
-	is_sprinting = is_sprinting_requested 
+	is_sprinting = movement_enabled and is_sprinting_requested 
 	
 	if velocity.length() < minimum_sprint_speed or look_direction.normalized().dot(movement_dir.normalized()) < sprint_difference_threshold:
 		is_sprinting = false
@@ -115,7 +121,7 @@ func _physics_process(delta: float) -> void:
 	# Exclude vertical direction from xz lerping
 	velocity.y = temp - gravity * delta
 	
-	if (flying or is_on_floor()) and Input.is_action_pressed("jump"):
+	if movement_enabled and (flying or is_on_floor()) and Input.is_action_pressed("jump"):
 		velocity.y = fly_impulse if flying else jump_impulse 
 	
 	if not world.is_position_loaded(velocity * delta + global_position):
@@ -131,9 +137,3 @@ func _input(event: InputEvent) -> void:
 	
 	if sprint_toggle and event.is_action_pressed("sprint", false):
 		is_sprinting_requested = not is_sprinting_requested
-	
-	if event.is_action_pressed("ui_cancel", false):
-		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		else:
-			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED

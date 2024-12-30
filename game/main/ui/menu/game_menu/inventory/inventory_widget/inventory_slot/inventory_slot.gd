@@ -1,5 +1,7 @@
 class_name InventorySlot extends TextureRect
 
+@export var normal_texture: Texture
+@export var hover_texture: Texture
 @export var item_widget_scene: PackedScene
 
 var item_widget: ItemWidget
@@ -14,7 +16,6 @@ enum { IDLE, HOLDING_ITEM, }
 static var state: int = IDLE
 static var source_slot: InventorySlot
 static var held_item: ItemWidget
-static var any_hover: bool = false
 
 static func pick_up(slot: InventorySlot) -> void:
 	if state != IDLE:
@@ -66,6 +67,34 @@ static func drop(slot: InventorySlot) -> void:
 	held_item.queue_free()
 	state = IDLE
 
+static func deposit(slot: InventorySlot) -> void:
+	# Mismatched items (skip over and do nothing)
+	if slot.item != null and slot.item.id != held_item.item.id:
+		return
+	# Full target (skip over and do nothing)
+	elif slot.item != null and slot.item.count >= slot.item.stack_size:
+		return
+	# Only one block (just drop instead)
+	elif held_item.item.count == 1:
+		drop(slot)
+	# Complete transfer to empty slot (creates new item)
+	elif slot.item == null:
+		held_item.item.count -= 1
+		held_item.initialize(held_item.item)
+		
+		var new_item: Item = held_item.item.duplicate()
+		new_item.count = 1
+		slot.initialize(new_item)
+		slot.item_changed.emit(slot)
+	# Just dropping an item into a bigger stack
+	else:
+		held_item.item.count -= 1
+		held_item.initialize(held_item.item)
+		
+		slot.item.count += 1
+		slot.initialize(slot.item)
+		slot.item_changed.emit(slot)
+
 var hovered_over: bool = false
 
 func _ready() -> void:
@@ -73,18 +102,20 @@ func _ready() -> void:
 	mouse_exited.connect(_on_mouse_exited)
 
 func _on_mouse_entered() -> void:
-	any_hover = true
 	hovered_over = true
+	texture = hover_texture
 
 func _on_mouse_exited() -> void:
-	any_hover = false
 	hovered_over = false
+	texture = normal_texture
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("select", false) and hovered_over and state == IDLE and item_widget.item != null:
 		pick_up(self)
 	elif event.is_action_pressed("select", false) and hovered_over and state == HOLDING_ITEM:
 		drop(self)
+	elif event.is_action_pressed("deposit") and hovered_over and state == HOLDING_ITEM:
+		deposit(self)
 
 func initialize(new_item: Item, new_index: int = -1) -> void:
 	item = new_item
@@ -100,3 +131,6 @@ func initialize(new_item: Item, new_index: int = -1) -> void:
 	add_child(new_widget)
 	
 	item_widget = new_widget
+
+func toggle_outline(on: bool) -> void:
+	%Outline.visible = on
