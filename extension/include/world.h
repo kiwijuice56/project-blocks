@@ -34,6 +34,7 @@ private:
 
 	Ref<PackedScene> dropped_item_scene;
 	Ref<PackedScene> break_effect_scene;
+	Ref<PackedScene> place_effect_scene;
 
 	// The center chunk's position
 	Vector3i center_chunk;
@@ -113,7 +114,7 @@ public:
 	Vector3i snap_to_chunk(Vector3 position); // Snaps a position to the nearest chunk's position
 	Ref<Block> get_block_type_at(Vector3 position);
 	void break_block_at(Vector3 position, bool drop_item, bool play_effect);
-	void place_block_at(Vector3 position, uint32_t block_id);
+	void place_block_at(Vector3 position, Ref<Block> block_type, bool play_effect);
 	void place_decoration(Ref<Decoration> decoration, Vector3i position);
 
 	// Boilerplate setters and getters

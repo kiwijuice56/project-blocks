@@ -1,12 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://cpjed7kvatlii"]
+[gd_scene load_steps=8 format=3 uid="uid://b7dpq1jchls0w"]
 
-[ext_resource type="Texture2D" uid="uid://dbn6d1ljyjdax" path="res://main/items/blocks/textures/dirt.png" id="1_0oe0s"]
-[ext_resource type="Script" uid="uid://vg4orvwvblb2" path="res://main/items/blocks/break_effect/break_effect.gd" id="2_mqsso"]
+[ext_resource type="Texture2D" uid="uid://dbn6d1ljyjdax" path="res://main/items/blocks/textures/dirt.png" id="1_874xa"]
+[ext_resource type="Script" uid="uid://b1jgrmhcc8p1i" path="res://main/items/blocks/place_effect/place_effect.gd" id="2_8sg3s"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_50gqo"]
 transparency = 1
 shading_mode = 2
-albedo_texture = ExtResource("1_0oe0s")
+albedo_texture = ExtResource("1_874xa")
 uv1_scale = Vector3(0.01, 0.063, 0.063)
 texture_filter = 0
 
@@ -29,7 +29,7 @@ scale_curve = SubResource("CurveTexture_h7auq")
 [sub_resource type="BoxMesh" id="BoxMesh_f3sk5"]
 size = Vector3(0.063, 0.063, 0.063)
 
-[node name="BreakEffect" type="GPUParticles3D"]
+[node name="PlaceEffect" type="GPUParticles3D"]
 material_override = SubResource("StandardMaterial3D_50gqo")
 emitting = false
 amount = 18
@@ -40,7 +40,7 @@ explosiveness = 0.94
 fixed_fps = 60
 process_material = SubResource("ParticleProcessMaterial_r566c")
 draw_pass_1 = SubResource("BoxMesh_f3sk5")
-script = ExtResource("2_mqsso")
+script = ExtResource("2_8sg3s")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 unique_name_in_owner = true

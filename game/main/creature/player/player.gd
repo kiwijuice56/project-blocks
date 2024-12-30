@@ -82,28 +82,28 @@ func _process(delta: float) -> void:
 			
 		if held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_just_pressed("secondary_interact") and Ref.world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
 			Ref.player_hotbar.change_amount(hotbar_index, -1)
-			Ref.world.place_block_at(place_position, held_item.id)
+			Ref.world.place_block_at(place_position, ItemMap.map(held_item.id), true)
 	elif %FloorRayCast3D.is_colliding() and held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_just_pressed("secondary_interact"):
-			var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())
-			var look_direction: Vector3 = -%Camera3D.get_global_transform().basis.z
-			
-			if look_direction.y > floor_place_down_angle:
-				return
-			
-			var flat_look_direction: Vector3 = -get_global_transform().basis.z
-			if abs(flat_look_direction.x) < floor_place_deadzone and abs(flat_look_direction.z) < floor_place_deadzone:
-				return
-			
-			if abs(flat_look_direction.x) < abs(flat_look_direction.z):
-				flat_look_direction = Vector3(0, 0, sign(flat_look_direction.z))
-			else:
-				flat_look_direction = Vector3(sign(flat_look_direction.x), 0, 0)
-			
-			var floor_block_position: Vector3i = floor_position + Vector3i(flat_look_direction)
-			
-			if Ref.world.is_position_loaded(floor_block_position):
-				Ref.player_hotbar.change_amount(hotbar_index, -1)
-				Ref.world.place_block_at(floor_block_position,  held_item.id)
+		var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())
+		var look_direction: Vector3 = -%Camera3D.get_global_transform().basis.z
+		
+		if look_direction.y > floor_place_down_angle:
+			return
+		
+		var flat_look_direction: Vector3 = -get_global_transform().basis.z
+		if abs(flat_look_direction.x) < floor_place_deadzone and abs(flat_look_direction.z) < floor_place_deadzone:
+			return
+		
+		if abs(flat_look_direction.x) < abs(flat_look_direction.z):
+			flat_look_direction = Vector3(0, 0, sign(flat_look_direction.z))
+		else:
+			flat_look_direction = Vector3(sign(flat_look_direction.x), 0, 0)
+		
+		var floor_block_position: Vector3i = floor_position + Vector3i(flat_look_direction)
+		
+		if Ref.world.is_position_loaded(floor_block_position):
+			Ref.player_hotbar.change_amount(hotbar_index, -1)
+			Ref.world.place_block_at(floor_block_position, ItemMap.map(held_item.id), true)
 	
 	# Update pointer visual
 	%InteractRayCast3D.force_raycast_update()
@@ -113,10 +113,17 @@ func _process(delta: float) -> void:
 		%BlockOutline.global_position = selected_position + Vector3(0.5, 0.5, 0.5)
 
 func _physics_process(delta: float) -> void:
+	super._physics_process(delta)
+	
 	# Movement logic
 	var input: Vector2 = Input.get_vector("left", "right", "up", "down")
 	if not movement_enabled:
 		input = Vector2()
+	
+	if input != Vector2() and not in_air:
+		%AnimationPlayer.current_animation = "walk"
+	else:
+		%AnimationPlayer.stop()
 	
 	var movement_dir: Vector3 = transform.basis * Vector3(input.x, 0, input.y)
 	var look_direction: Vector3 = -get_global_transform().basis.z
@@ -125,6 +132,8 @@ func _physics_process(delta: float) -> void:
 		is_sprinting_requested = Input.is_action_pressed("sprint")
 	
 	is_sprinting = movement_enabled and is_sprinting_requested 
+	
+	%AnimationPlayer.speed_scale = 1.65 if is_sprinting else 1.0
 	
 	if velocity.length() < minimum_sprint_speed or look_direction.normalized().dot(movement_dir.normalized()) < sprint_difference_threshold:
 		is_sprinting = false

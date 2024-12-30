@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=12 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" uid="uid://briopjymqw2k4" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="PackedScene" uid="uid://bf8144nsbq132" path="res://main/ui/menu/game_menu/game_menu.tscn" id="3_8017u"]
@@ -6,6 +6,7 @@
 [ext_resource type="Shader" uid="uid://c61wm48ml41ta" path="res://main/ui/filter/dithering.gdshader" id="4_25hyt"]
 [ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/world/rendering/block_mesh/block_mesh_material.tres" id="5_ah4j3"]
 [ext_resource type="Script" uid="uid://baqrddgjyyfwb" path="res://main/world/main_world.gd" id="5_ds8vp"]
+[ext_resource type="AudioStream" uid="uid://b8n6mef6etkj4" path="res://main/music/naraka.ogg" id="10_0i4oc"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/creature/player/player.tscn" id="10_4clf3"]
 [ext_resource type="Material" uid="uid://dhxh3up0kwnsn" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.tres" id="10_ppf03"]
 [ext_resource type="DefaultGenerator" uid="uid://diqcbn3451p2b" path="res://main/world/generators/main_generator.tres" id="13_dyeg8"]
@@ -56,3 +57,8 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="GameMenu" parent="UI" instance=ExtResource("3_8017u")]
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("10_0i4oc")
+volume_db = -15.0
+autoplay = true

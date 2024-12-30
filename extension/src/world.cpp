@@ -29,8 +29,8 @@ void World::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_generator", "new_generator"), &World::set_generator);
 
 	ClassDB::bind_method(D_METHOD("get_block_type_at", "position"), &World::get_block_type_at);
-    ClassDB::bind_method(D_METHOD("break_block_at", "position", "drop_item"), &World::break_block_at);
-    ClassDB::bind_method(D_METHOD("place_block_at", "position", "block_type"), &World::place_block_at);
+    ClassDB::bind_method(D_METHOD("break_block_at", "position", "drop_item", "play_effect"), &World::break_block_at);
+    ClassDB::bind_method(D_METHOD("place_block_at", "position", "block_type", "play_effect"), &World::place_block_at);
 
     ADD_PROPERTY(
         PropertyInfo(
@@ -163,6 +163,7 @@ void World::set_loaded_region_center(Vector3 new_center) {
 void World::initialize() {
     dropped_item_scene = ResourceLoader::get_singleton()->load("res://main/items/dropped_item/dropped_item.tscn");
     break_effect_scene = ResourceLoader::get_singleton()->load("res://main/items/blocks/break_effect/break_effect.tscn");
+    place_effect_scene = ResourceLoader::get_singleton()->load("res://main/items/blocks/place_effect/place_effect.tscn");
 
     for (int64_t i = 0; i < block_types.size(); i++) {
         Block* block = Object::cast_to<Block>(block_types[i]);
@@ -492,10 +493,18 @@ void World::break_block_at(Vector3 position, bool drop_item, bool play_effect) {
     emit_signal("block_broken", position);
 }
 
-void World::place_block_at(Vector3 position, uint32_t block_id) {
+void World::place_block_at(Vector3 position, Ref<Block> block_type, bool play_effect) {
     position = position.floor();
 
     Chunk* chunk = get_chunk_at(position);
-    chunk->place_block_at(Vector3i(position), block_id_to_index_map[block_id]);
+    chunk->place_block_at(Vector3i(position), block_type->index);
+
+    if (play_effect) {
+        Node* place_effect = place_effect_scene->instantiate();
+        get_parent()->add_child(place_effect);
+        place_effect->set("global_position", Vector3i(position));
+        place_effect->call("initialize", block_type);
+    }
+
     emit_signal("block_placed", Vector3i(position));
 }

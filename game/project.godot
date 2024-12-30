@@ -43,6 +43,7 @@ folder_colors={
 "res://main/items/blocks/icons/": "teal",
 "res://main/items/blocks/sounds/": "blue",
 "res://main/items/blocks/textures/": "green",
+"res://main/music/": "teal",
 "res://main/ui/": "red",
 "res://main/world/decorations/": "yellow",
 "res://main/world/generators/": "green"
