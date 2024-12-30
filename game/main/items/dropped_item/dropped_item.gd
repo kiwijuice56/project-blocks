@@ -12,13 +12,15 @@ enum { MERGE, SWIM, IDLE, SLEEPING, COLLECTED }
 
 var item: Item
 var state: int = IDLE
+var can_collect: bool = true
+var collect_delay_time: float
 
 func _ready() -> void:
 	%DetectionArea3D.area_entered.connect(_on_area_entered)
 
 # Detects other dropped items to merge with them
 func _on_area_entered(new_area: Area3D) -> void:
-	if state != IDLE:
+	if state != IDLE and state != SLEEPING:
 		return
 	
 	if not new_area.get_parent() is DroppedItem:
@@ -26,7 +28,7 @@ func _on_area_entered(new_area: Area3D) -> void:
 	
 	var other: DroppedItem = new_area.get_parent() as DroppedItem
 	
-	if not is_instance_valid(other) or other.state != IDLE:
+	if not is_instance_valid(other) or other.state != IDLE and other.state != SLEEPING:
 		return
 	
 	if other.item.count > item.count or item.id != other.item.id:
@@ -67,8 +69,9 @@ func _physics_process(delta: float) -> void:
 			velocity.y -= delta * gravity
 		else:
 			velocity.y = 0
-			state = SLEEPING
-			toggle_physics(false)
+			if velocity.is_equal_approx(Vector3()):
+				state = SLEEPING
+				toggle_physics(false)
 
 # Called when instantiated 
 func initialize(set_item: Item) -> void:
@@ -89,6 +92,10 @@ func initialize(set_item: Item) -> void:
 		%Cube.get_surface_override_material(0).albedo_texture = item.texture
 	else:
 		%Cube.visible = true
+	
+	can_collect = false
+	await get_tree().create_timer(collect_delay_time).timeout
+	can_collect = true
 
 func absorb(other: DroppedItem) -> void:
 	# Just in case...
@@ -105,8 +112,12 @@ func absorb(other: DroppedItem) -> void:
 	tween.tween_property(other, "global_position", center, merge_time)
 	await tween.finished
 	
-	# If collected mid-merge, just return
+	# If collected mid-merge, free the other item
 	if state != MERGE:
+		if is_instance_valid(other):
+			other.toggle_physics(true)
+			other.state = IDLE
+			other.check_swim()
 		return
 	
 	# Was other collected mid-merge?
@@ -135,6 +146,7 @@ func absorb(other: DroppedItem) -> void:
 func collect() -> void:
 	toggle_physics.call_deferred(false)
 	state = COLLECTED
+	can_collect = false
 	%CollectAnimationPlayer.play("collect")
 	await %CollectAnimationPlayer.animation_finished
 	queue_free()

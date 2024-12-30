@@ -1,6 +1,6 @@
 [gd_scene load_steps=15 format=3 uid="uid://dfjvlhpkb4608"]
 
-[ext_resource type="Script" path="res://main/items/dropped_item/dropped_item.gd" id="1_m5mmq"]
+[ext_resource type="Script" uid="uid://r73webq6jsbu" path="res://main/items/dropped_item/dropped_item.gd" id="1_m5mmq"]
 [ext_resource type="ArrayMesh" uid="uid://bcem1om1xn87j" path="res://main/items/dropped_item/block.obj" id="2_jajaa"]
 [ext_resource type="AudioStream" uid="uid://coeln5fpcwdtv" path="res://main/items/dropped_item/sounds/pop2.wav" id="5_xqnyb"]
 [ext_resource type="AudioStream" uid="uid://dqted8a666tef" path="res://main/items/dropped_item/sounds/pop3.wav" id="6_wo644"]
@@ -77,8 +77,8 @@ tracks/1/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_3h4ph"]
 _data = {
-"RESET": SubResource("Animation_do0qv"),
-"spin": SubResource("Animation_8y7sc")
+&"RESET": SubResource("Animation_do0qv"),
+&"spin": SubResource("Animation_8y7sc")
 }
 
 [sub_resource type="Animation" id="Animation_ui7vd"]
@@ -180,8 +180,8 @@ tracks/3/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_qy3cb"]
 _data = {
-"RESET": SubResource("Animation_ui7vd"),
-"collect": SubResource("Animation_vaufk")
+&"RESET": SubResource("Animation_ui7vd"),
+&"collect": SubResource("Animation_vaufk")
 }
 
 [node name="DroppedItem" type="CharacterBody3D"]
@@ -226,7 +226,7 @@ bus = &"SFX"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_3h4ph")
+&"": SubResource("AnimationLibrary_3h4ph")
 }
 autoplay = "spin"
 speed_scale = 0.35
@@ -234,6 +234,6 @@ speed_scale = 0.35
 [node name="CollectAnimationPlayer" type="AnimationPlayer" parent="."]
 unique_name_in_owner = true
 libraries = {
-"": SubResource("AnimationLibrary_qy3cb")
+&"": SubResource("AnimationLibrary_qy3cb")
 }
 speed_scale = 5.0

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://blba3olqnbk0h"]
 
-[ext_resource type="Script" path="res://main/ui/menu/game_menu/inventory_widget/item_widget/item_widget.gd" id="1_r7bdn"]
+[ext_resource type="Script" uid="uid://dsfn3ygor71cs" path="res://main/ui/menu/game_menu/inventory_widget/item_widget/item_widget.gd" id="1_r7bdn"]
 [ext_resource type="Texture2D" uid="uid://cbb4dup3dlss0" path="res://main/items/blocks/icons/stone_block.png" id="2_xobfa"]
 [ext_resource type="Theme" uid="uid://d1c7oys07yrf2" path="res://main/ui/theme/theme.tres" id="3_b4qti"]
 

@@ -28,6 +28,7 @@ class_name Player extends Creature
 @export var minimum_sprint_speed: float = 1.0
 @export var floor_place_deadzone: float = 0.6
 @export var floor_place_down_angle: float = -0.6
+@export var throw_speed: float = 8
 
 var is_sprinting_requested: bool = false
 var is_sprinting: bool = false
@@ -48,7 +49,7 @@ func _on_dropped_item_entered(area: Area3D) -> void:
 	if not area.get_parent() is DroppedItem:
 		return
 	var dropped_item: DroppedItem = area.get_parent() as DroppedItem
-	if dropped_item.state == DroppedItem.COLLECTED:
+	if not dropped_item.can_collect:
 		return
 	
 	var remaining_item: Item = %Hotbar.accept(dropped_item.item)
@@ -65,7 +66,7 @@ func _process(delta: float) -> void:
 	if not movement_enabled:
 		return
 	
-	held_item = Ref.player_hotbar.items[hotbar_index]
+	held_item = %Hotbar.items[hotbar_index]
 	
 	# Block picking logic
 	if %InteractRayCast3D.is_colliding():
@@ -172,6 +173,9 @@ func _input(event: InputEvent) -> void:
 			# Do something here later with this information
 			hotbar_index = new_index
 	
+	if movement_enabled and event.is_action_pressed("drop_item", false):
+		drop_from_inventory(%Hotbar, hotbar_index)
+	
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sensitivity)
 		%Camera3D.rotate_x(-event.relative.y * mouse_sensitivity)
@@ -179,3 +183,21 @@ func _input(event: InputEvent) -> void:
 	
 	if sprint_toggle and event.is_action_pressed("sprint", false):
 		is_sprinting_requested = not is_sprinting_requested
+
+func drop_from_inventory(inventory: Inventory, index: int) -> void:
+	var to_drop: Item = inventory.items[index]
+	if to_drop != null:
+		to_drop = to_drop.duplicate()
+		to_drop.count = 1
+		inventory.change_amount(index, -1)
+		throw_item(to_drop)
+
+func throw_item(item: Item) -> void:
+	drop_item(item, %DropPoint.global_position, get_throw_direction() * throw_speed + velocity)
+
+func get_throw_direction() -> Vector3:
+	if %InteractRayCast3D.is_colliding():
+		var look_position: Vector3 = %InteractRayCast3D.get_collision_point()
+		return (look_position - %DropPoint.global_position).normalized()
+	else:
+		return (%InteractRayCast3D.to_global(%InteractRayCast3D.target_position) - %DropPoint.global_position).normalized()

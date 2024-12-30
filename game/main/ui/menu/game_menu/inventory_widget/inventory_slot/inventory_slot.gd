@@ -8,6 +8,7 @@ class_name InventorySlot extends TextureRect
 var item_widget: ItemWidget
 var item: Item
 var index: int = 0
+var hovered_over: bool = false
 
 signal item_changed(slot: InventorySlot)
 
@@ -17,6 +18,7 @@ enum { IDLE, HOLDING_ITEM }
 
 static var state: int = IDLE
 static var held_item: ItemWidget
+static var hovered_slot: InventorySlot
 
 static func pick_up(slot: InventorySlot) -> void:
 	state = HOLDING_ITEM
@@ -92,8 +94,6 @@ static func deposit(slot: InventorySlot) -> void:
 		slot.initialize(slot.item)
 		slot.item_changed.emit(slot)
 
-var hovered_over: bool = false
-
 func _ready() -> void:
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
@@ -101,10 +101,13 @@ func _ready() -> void:
 func _on_mouse_entered() -> void:
 	hovered_over = true
 	texture = hover_texture
+	hovered_slot = self
 
 func _on_mouse_exited() -> void:
 	hovered_over = false
 	texture = normal_texture
+	if hovered_slot == self:
+		hovered_slot = null
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("select", false) and hovered_over and state == IDLE and item_widget.item != null:

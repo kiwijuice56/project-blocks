@@ -25,4 +25,5 @@ func initialize(new_item: Item) -> void:
 	if item.stack_size == 1:
 		%Label.visible = false
 	else:
+		%Label.visible = true
 		%Label.text = str(item.count)

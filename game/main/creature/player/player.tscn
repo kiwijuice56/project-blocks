@@ -1,10 +1,10 @@
 [gd_scene load_steps=12 format=3 uid="uid://ccsm4tlbop58m"]
 
 [ext_resource type="PackedScene" uid="uid://co5xqagmethrd" path="res://main/creature/creature.tscn" id="1_chebf"]
-[ext_resource type="Script" path="res://main/creature/player/player.gd" id="2_4yh36"]
+[ext_resource type="Script" uid="uid://xwioa0gyxopg" path="res://main/creature/player/player.gd" id="2_4yh36"]
 [ext_resource type="Shape3D" uid="uid://bjwdaet7is1fx" path="res://main/creature/player/player_collision_shape.tres" id="2_v2xor"]
 [ext_resource type="PackedScene" uid="uid://cvlj2x7ggstow" path="res://main/creature/player/block_outline/block_outline.tscn" id="3_gneh7"]
-[ext_resource type="Script" path="res://main/items/inventory/inventory.gd" id="3_lpwwm"]
+[ext_resource type="Script" uid="uid://wmqswonvxa7" path="res://main/items/inventory/inventory.gd" id="3_lpwwm"]
 [ext_resource type="Texture2D" uid="uid://216h2mvevyco" path="res://main/creature/player/hand/snap.png" id="5_qydjy"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_o7rwr"]
@@ -42,8 +42,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_fw5do"]
 _data = {
-"RESET": SubResource("Animation_e00qc"),
-"snap": SubResource("Animation_j62jl")
+&"RESET": SubResource("Animation_e00qc"),
+&"snap": SubResource("Animation_j62jl")
 }
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_i1wqy"]
@@ -72,6 +72,7 @@ sprint_difference_threshold = 0.1
 minimum_sprint_speed = 1.0
 floor_place_deadzone = 0.6
 floor_place_down_angle = -0.6
+throw_speed = 16.0
 
 [node name="Inventory" parent="." index="0"]
 capacity = 36
@@ -93,6 +94,10 @@ fov = 80.0
 [node name="InteractRayCast3D" type="RayCast3D" parent="Camera3D" index="0"]
 unique_name_in_owner = true
 target_position = Vector3(0, 0, -4.5)
+
+[node name="DropPoint" type="Marker3D" parent="Camera3D" index="1"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.458212, -0.201143, -0.215995)
 
 [node name="PositionIsolation" type="Node" parent="." index="4"]
 
@@ -131,7 +136,7 @@ hframes = 10
 [node name="HandAnimationPlayer" type="AnimationPlayer" parent="HandSubViewportContainer/SubViewport/Hand" index="0"]
 unique_name_in_owner = true
 libraries = {
-"": SubResource("AnimationLibrary_fw5do")
+&"": SubResource("AnimationLibrary_fw5do")
 }
 
 [node name="CollisionShape3D" parent="ItemArea3D" index="0"]
