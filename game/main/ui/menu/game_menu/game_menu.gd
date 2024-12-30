@@ -6,6 +6,7 @@ var state: int = DEFAULT
 
 func _ready() -> void:
 	%PlayerHotbar.initialize(Ref.player_hotbar)
+	Ref.player.hotbar_index_changed.connect(_on_hotbar_index_changed)
 	close_inventory()
 
 func _input(event: InputEvent) -> void:
@@ -14,6 +15,9 @@ func _input(event: InputEvent) -> void:
 	elif state == INVENTORY and event.is_action_pressed("inventory", false):
 		close_inventory()
 
+func _on_hotbar_index_changed(old_val: int) -> void:
+	%HotbarOutline.position.x = 22 * Ref.player.hotbar_index
+
 func open_inventory() -> void:
 	%Crosshair.visible = false
 	state = INVENTORY
@@ -21,7 +25,10 @@ func open_inventory() -> void:
 	%Inventory.visible = true
 	%Cover.visible = true
 	
+	%HotbarOutline.visible = false
+	
 	Ref.player.movement_enabled = false
+	Ref.player.can_switch_hotbar = false
 	
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
@@ -50,6 +57,9 @@ func close_inventory() -> void:
 	%Inventory.visible = false
 	%Cover.visible = false
 	
+	%HotbarOutline.visible = true
+	
 	Ref.player.movement_enabled = true
+	Ref.player.can_switch_hotbar = true
 	
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED

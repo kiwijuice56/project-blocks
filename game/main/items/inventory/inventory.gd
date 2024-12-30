@@ -11,8 +11,11 @@ signal refresh
 func _ready() -> void:
 	items.resize(capacity)
 
-func set_item(new_item: Item, index: int) -> void:
-	items[index] = new_item
+func change_amount(index: int, amount: int) -> void:
+	items[index].count += amount
+	items[index].count = min(items[index].count, items[index].stack_size)
+	if items[index].count <= 0:
+		items[index] = null
 	refresh.emit()
 
 # Returns whatever item is left

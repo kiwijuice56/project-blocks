@@ -131,6 +131,3 @@ func initialize(new_item: Item, new_index: int = -1) -> void:
 	add_child(new_widget)
 	
 	item_widget = new_widget
-
-func toggle_outline(on: bool) -> void:
-	%Outline.visible = on

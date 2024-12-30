@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bf8144nsbq132"]
+[gd_scene load_steps=10 format=3 uid="uid://bf8144nsbq132"]
 
 [ext_resource type="Script" path="res://main/ui/menu/game_menu/game_menu.gd" id="1_mc8nw"]
 [ext_resource type="Theme" uid="uid://d1c7oys07yrf2" path="res://main/ui/theme.tres" id="1_tt2km"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://eeeo8x66rqhe" path="res://main/ui/menu/game_menu/health/heart2.png" id="5_d5853"]
 [ext_resource type="Texture2D" uid="uid://c2w3i6jmft76h" path="res://main/ui/menu/game_menu/health/heart3.png" id="6_dwbsw"]
 [ext_resource type="PackedScene" uid="uid://khnklyws1paq" path="res://main/ui/menu/game_menu/crosshair.tscn" id="8_ayyap"]
+[ext_resource type="Texture2D" uid="uid://c7qpj5lbhsunr" path="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_slot/outline.png" id="8_s4nee"]
 
 [node name="GameMenu" type="Control"]
 layout_mode = 3
@@ -41,6 +42,7 @@ theme_override_constants/margin_right = 2
 theme_override_constants/margin_bottom = 2
 
 [node name="FPSLabel" type="Label" parent="MarginContainer"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
@@ -198,9 +200,23 @@ texture = ExtResource("6_dwbsw")
 layout_mode = 2
 texture = ExtResource("6_dwbsw")
 
-[node name="PlayerHotbar" parent="MarginContainer/ScreenContainer/BottomContainer" instance=ExtResource("3_f4p4h")]
-unique_name_in_owner = true
+[node name="Control" type="Control" parent="MarginContainer/ScreenContainer/BottomContainer"]
+custom_minimum_size = Vector2(198, 22)
 layout_mode = 2
+
+[node name="PlayerHotbar" parent="MarginContainer/ScreenContainer/BottomContainer/Control" instance=ExtResource("3_f4p4h")]
+unique_name_in_owner = true
+layout_mode = 1
+offset_right = 198.0
+offset_bottom = 22.0
+
+[node name="HotbarOutline" type="TextureRect" parent="MarginContainer/ScreenContainer/BottomContainer/Control"]
+unique_name_in_owner = true
+layout_mode = 1
+offset_right = 95.0
+offset_bottom = 22.0
+texture = ExtResource("8_s4nee")
+stretch_mode = 2
 
 [node name="Crosshair" parent="MarginContainer" instance=ExtResource("8_ayyap")]
 unique_name_in_owner = true

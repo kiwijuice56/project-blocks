@@ -4,6 +4,7 @@ class_name Creature extends CharacterBody3D
 
 var movement_enabled: bool = true
 
+var held_item: Item
 var health: float
 
 func _ready() -> void:

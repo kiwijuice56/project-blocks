@@ -1,8 +1,5 @@
 class_name Player extends Creature
 
-@export var world: World
-@export var selected_block: Block
-
 @export_group("Toggles")
 @export var flying: bool = false
 @export var sprint_toggle: bool = false
@@ -34,6 +31,19 @@ class_name Player extends Creature
 
 var is_sprinting_requested: bool = false
 var is_sprinting: bool = false
+var can_switch_hotbar: bool = true
+
+var hotbar_index: int = 0:
+	set(val):
+		var old_val: int = hotbar_index
+		hotbar_index = val
+		hotbar_index_changed.emit(old_val)
+
+signal hotbar_index_changed(old_val: int)
+
+func _ready() -> void:
+	super._ready()
+	hotbar_index = 0
 
 func _on_dropped_item_entered(area: Area3D) -> void:
 	if not area.get_parent() is DroppedItem:
@@ -56,6 +66,8 @@ func _process(delta: float) -> void:
 	if not movement_enabled:
 		return
 	
+	held_item = Ref.player_hotbar.items[hotbar_index]
+	
 	# Block picking logic
 	if %InteractRayCast3D.is_colliding():
 		var selected_position: Vector3 = (%InteractRayCast3D.get_collision_point() - %InteractRayCast3D.get_collision_normal() * 0.5 - Vector3(1, 1, 1)).ceil()
@@ -65,12 +77,13 @@ func _process(delta: float) -> void:
 		%PlacementCheckShapeCast3D.global_position = Vector3(place_position) + Vector3(0.5, 0.5, 0.5)
 		%PlacementCheckShapeCast3D.force_shapecast_update()
 		
-		if Input.is_action_just_pressed("main_interact") and world.is_position_loaded(block_position):
-			world.break_block_at(block_position, true, true)
+		if Input.is_action_just_pressed("main_interact") and Ref.world.is_position_loaded(block_position):
+			Ref.world.break_block_at(block_position, true, true)
 			
-		if Input.is_action_just_pressed("secondary_interact") and world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
-			world.place_block_at(place_position, selected_block.id)
-	elif %FloorRayCast3D.is_colliding() and Input.is_action_just_pressed("secondary_interact"):
+		if held_item is Block and Input.is_action_just_pressed("secondary_interact") and Ref.world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
+			Ref.player_hotbar.change_amount(hotbar_index, -1)
+			Ref.world.place_block_at(place_position, held_item.id)
+	elif %FloorRayCast3D.is_colliding() and held_item is Block and Input.is_action_just_pressed("secondary_interact"):
 			var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())
 			var look_direction: Vector3 = -%Camera3D.get_global_transform().basis.z
 			
@@ -88,8 +101,9 @@ func _process(delta: float) -> void:
 			
 			var floor_block_position: Vector3i = floor_position + Vector3i(flat_look_direction)
 			
-			if world.is_position_loaded(floor_block_position):
-				world.place_block_at(floor_block_position, selected_block.id)
+			if Ref.world.is_position_loaded(floor_block_position):
+				Ref.player_hotbar.change_amount(hotbar_index, -1)
+				Ref.world.place_block_at(floor_block_position,  held_item.id)
 	
 	# Update pointer visual
 	%InteractRayCast3D.force_raycast_update()
@@ -136,12 +150,28 @@ func _physics_process(delta: float) -> void:
 	if movement_enabled and (flying or is_on_floor()) and Input.is_action_pressed("jump"):
 		velocity.y = fly_impulse if flying else jump_impulse 
 	
-	if not world.is_position_loaded(velocity * delta + global_position):
+	if not Ref.world.is_position_loaded(velocity * delta + global_position):
 		velocity = Vector3()
 	
 	move_and_slide()
 
 func _input(event: InputEvent) -> void:
+	if can_switch_hotbar:
+		var new_index: int = hotbar_index
+		for i in range(9):
+			if event.is_action_pressed("hotbar_%d" %  (i + 1), false):
+				new_index = i
+		if event.is_action_pressed("hotbar_next", false):
+			new_index += 1
+		if event.is_action_pressed("hotbar_back", false):
+			new_index -= 1
+		if hotbar_index < 0:
+			new_index += 9
+		new_index = new_index % 9
+		
+		if hotbar_index != new_index:
+			hotbar_index = new_index
+	
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sensitivity)
 		%Camera3D.rotate_x(-event.relative.y * mouse_sensitivity)
