@@ -1,8 +1,7 @@
-[gd_scene load_steps=16 format=3 uid="uid://dfjvlhpkb4608"]
+[gd_scene load_steps=15 format=3 uid="uid://dfjvlhpkb4608"]
 
 [ext_resource type="Script" path="res://main/items/dropped_item/dropped_item.gd" id="1_m5mmq"]
-[ext_resource type="ArrayMesh" uid="uid://bcem1om1xn87j" path="res://main/items/dropped_item/cube_mesh.obj" id="2_jajaa"]
-[ext_resource type="Texture2D" uid="uid://cv0du38ucw4qi" path="res://main/items/blocks/textures/glass.png" id="3_6e4bb"]
+[ext_resource type="ArrayMesh" uid="uid://bcem1om1xn87j" path="res://main/items/dropped_item/block.obj" id="2_jajaa"]
 [ext_resource type="AudioStream" uid="uid://coeln5fpcwdtv" path="res://main/items/dropped_item/sounds/pop2.wav" id="5_xqnyb"]
 [ext_resource type="AudioStream" uid="uid://dqted8a666tef" path="res://main/items/dropped_item/sounds/pop3.wav" id="6_wo644"]
 
@@ -12,9 +11,8 @@ radius = 0.3
 [sub_resource type="SphereShape3D" id="SphereShape3D_6blph"]
 radius = 0.7
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fmwsh"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g6ugl"]
 transparency = 4
-albedo_texture = ExtResource("3_6e4bb")
 texture_filter = 0
 
 [sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_dk1b2"]
@@ -83,6 +81,54 @@ _data = {
 "spin": SubResource("Animation_8y7sc")
 }
 
+[sub_resource type="Animation" id="Animation_ui7vd"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Cube:scale:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0.1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Cube:scale:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0.1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Cube:scale:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0.1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("PopPlayer:playing")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
 [sub_resource type="Animation" id="Animation_vaufk"]
 resource_name = "collect"
 length = 1.5
@@ -132,54 +178,6 @@ tracks/3/keys = {
 "values": [true]
 }
 
-[sub_resource type="Animation" id="Animation_ui7vd"]
-length = 0.001
-tracks/0/type = "bezier"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Cube:scale:x")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"handle_modes": PackedInt32Array(0),
-"points": PackedFloat32Array(0.1, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0)
-}
-tracks/1/type = "bezier"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Cube:scale:y")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"handle_modes": PackedInt32Array(0),
-"points": PackedFloat32Array(0.1, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0)
-}
-tracks/2/type = "bezier"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Cube:scale:z")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"handle_modes": PackedInt32Array(0),
-"points": PackedFloat32Array(0.1, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0)
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("PopPlayer:playing")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [false]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_qy3cb"]
 _data = {
 "RESET": SubResource("Animation_ui7vd"),
@@ -210,7 +208,7 @@ shape = SubResource("SphereShape3D_6blph")
 unique_name_in_owner = true
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
 mesh = ExtResource("2_jajaa")
-surface_material_override/0 = SubResource("StandardMaterial3D_fmwsh")
+surface_material_override/0 = SubResource("StandardMaterial3D_g6ugl")
 
 [node name="ShadowCaster" type="MeshInstance3D" parent="Cube"]
 unique_name_in_owner = true

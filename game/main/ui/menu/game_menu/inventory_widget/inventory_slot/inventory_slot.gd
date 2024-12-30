@@ -1,28 +1,25 @@
 class_name InventorySlot extends TextureRect
+# A single slot of an InventoryWidget
 
 @export var normal_texture: Texture
 @export var hover_texture: Texture
 @export var item_widget_scene: PackedScene
 
 var item_widget: ItemWidget
-
 var item: Item
 var index: int = 0
 
 signal item_changed(slot: InventorySlot)
 
-enum { IDLE, HOLDING_ITEM, }
+# All dragging/dropping logic is handled within the static class, since there
+# can only be one dragged item at a time
+enum { IDLE, HOLDING_ITEM }
 
 static var state: int = IDLE
-static var source_slot: InventorySlot
 static var held_item: ItemWidget
 
 static func pick_up(slot: InventorySlot) -> void:
-	if state != IDLE:
-		return
 	state = HOLDING_ITEM
-	
-	source_slot = slot
 	
 	var selected_item: Item = slot.item
 	

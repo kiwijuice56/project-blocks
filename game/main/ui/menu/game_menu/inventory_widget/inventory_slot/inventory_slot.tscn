@@ -1,0 +1,14 @@
+[gd_scene load_steps=5 format=3 uid="uid://brf86huudcn1g"]
+
+[ext_resource type="Texture2D" uid="uid://c07ev7ri74fpt" path="res://main/ui/menu/game_menu/inventory_widget/inventory_slot/box.png" id="1_m04d4"]
+[ext_resource type="Script" path="res://main/ui/menu/game_menu/inventory_widget/inventory_slot/inventory_slot.gd" id="2_t0jck"]
+[ext_resource type="PackedScene" uid="uid://blba3olqnbk0h" path="res://main/ui/menu/game_menu/inventory_widget/item_widget/item_widget.tscn" id="3_citi2"]
+[ext_resource type="Texture2D" uid="uid://byb177e75jpaw" path="res://main/ui/menu/game_menu/inventory_widget/inventory_slot/hover_box.png" id="3_ywnu6"]
+
+[node name="InventorySlot" type="TextureRect"]
+mouse_filter = 0
+texture = ExtResource("1_m04d4")
+script = ExtResource("2_t0jck")
+normal_texture = ExtResource("1_m04d4")
+hover_texture = ExtResource("3_ywnu6")
+item_widget_scene = ExtResource("3_citi2")

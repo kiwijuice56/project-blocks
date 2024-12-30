@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://khnklyws1paq"]
 
-[ext_resource type="Shader" path="res://main/ui/crosshair_inversion.gdshader" id="1_iactj"]
-[ext_resource type="Texture2D" uid="uid://dny2s70gsc4cf" path="res://main/ui/crosshair.png" id="2_iqcdc"]
+[ext_resource type="Shader" path="res://main/ui/menu/game_menu/crosshair/crosshair_inversion.gdshader" id="1_iactj"]
+[ext_resource type="Texture2D" uid="uid://dny2s70gsc4cf" path="res://main/ui/menu/game_menu/crosshair/crosshair.png" id="2_iqcdc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3a5av"]
 shader = ExtResource("1_iactj")

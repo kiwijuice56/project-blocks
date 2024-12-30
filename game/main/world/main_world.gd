@@ -4,6 +4,7 @@ class_name MainWorld extends World
 func _ready() -> void:
 	set_physics_process(false)
 	initialize()
+	# The noise texture is initially null while it is being generated
 	if generator is DefaultGenerator:
 		await generator.main_noise_texture.changed
 	set_physics_process(true)
@@ -15,6 +16,7 @@ func _input(event: InputEvent) -> void:
 	if generator is DebugGenerator and event.is_action_pressed("capture", false):
 		capture_decoration()
 
+# Helper method to easily build decorations within the game
 func capture_decoration() -> void:
 	var new_decoration: Decoration = Decoration.new()
 	

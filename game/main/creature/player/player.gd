@@ -35,9 +35,8 @@ var can_switch_hotbar: bool = true
 
 var hotbar_index: int = 0:
 	set(val):
-		var old_val: int = hotbar_index
 		hotbar_index = val
-		hotbar_index_changed.emit(old_val)
+		hotbar_index_changed.emit()
 
 signal hotbar_index_changed(old_val: int)
 
@@ -170,6 +169,7 @@ func _input(event: InputEvent) -> void:
 		new_index = new_index % 9
 		
 		if hotbar_index != new_index:
+			# Do something here later with this information
 			hotbar_index = new_index
 	
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:

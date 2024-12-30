@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://b4a3jxime5miw"]
 
-[ext_resource type="PackedScene" uid="uid://brf86huudcn1g" path="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_slot/inventory_slot.tscn" id="1_4hns5"]
-[ext_resource type="Script" path="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_widget.gd" id="1_075po"]
+[ext_resource type="PackedScene" uid="uid://brf86huudcn1g" path="res://main/ui/menu/game_menu/inventory_widget/inventory_slot/inventory_slot.tscn" id="1_4hns5"]
+[ext_resource type="Script" path="res://main/ui/menu/game_menu/inventory_widget/inventory_widget.gd" id="1_075po"]
 
 [node name="InventoryWidget" type="GridContainer"]
 size_flags_horizontal = 4

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://byb177e75jpaw"
-path="res://.godot/imported/hover_box.png-8715026b97147b36c1bc5c3272933e47.ctex"
+path="res://.godot/imported/hover_box.png-33fad315d17e37b2dc7bf4eb2907d738.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_slot/hover_box.png"
-dest_files=["res://.godot/imported/hover_box.png-8715026b97147b36c1bc5c3272933e47.ctex"]
+source_file="res://main/ui/menu/game_menu/inventory_widget/inventory_slot/hover_box.png"
+dest_files=["res://.godot/imported/hover_box.png-33fad315d17e37b2dc7bf4eb2907d738.ctex"]
 
 [params]
 

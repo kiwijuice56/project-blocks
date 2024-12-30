@@ -1,4 +1,5 @@
 class_name GameMenu extends Menu
+# Handles the main screen seen during gameplay, such as the inventory and hotbar
 
 enum { DEFAULT, INVENTORY }
 
@@ -15,7 +16,8 @@ func _input(event: InputEvent) -> void:
 	elif state == INVENTORY and event.is_action_pressed("inventory", false):
 		close_inventory()
 
-func _on_hotbar_index_changed(old_val: int) -> void:
+func _on_hotbar_index_changed() -> void:
+	# Offset the outline image
 	%HotbarOutline.position.x = 22 * Ref.player.hotbar_index
 
 func open_inventory() -> void:

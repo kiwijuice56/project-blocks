@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c7qpj5lbhsunr"
-path="res://.godot/imported/outline.png-129ab388624a61134e5b5e1d21b10d67.ctex"
+uid="uid://dny2s70gsc4cf"
+path="res://.godot/imported/crosshair.png-ccf05abbf30292514dbbf9d6af7df75f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_slot/outline.png"
-dest_files=["res://.godot/imported/outline.png-129ab388624a61134e5b5e1d21b10d67.ctex"]
+source_file="res://main/ui/menu/game_menu/crosshair/crosshair.png"
+dest_files=["res://.godot/imported/crosshair.png-ccf05abbf30292514dbbf9d6af7df75f.ctex"]
 
 [params]
 
-compress/mode=3
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
@@ -25,10 +25,10 @@ mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
-process/fix_alpha_border=false
+process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1

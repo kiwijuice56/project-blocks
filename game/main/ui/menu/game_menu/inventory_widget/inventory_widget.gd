@@ -1,4 +1,5 @@
 class_name InventoryWidget extends GridContainer
+# A visual representation of an inventory
 
 @export var inventory_slot_scene: PackedScene
 

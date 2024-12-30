@@ -1,14 +1,14 @@
 [gd_scene load_steps=10 format=3 uid="uid://bf8144nsbq132"]
 
 [ext_resource type="Script" path="res://main/ui/menu/game_menu/game_menu.gd" id="1_mc8nw"]
-[ext_resource type="Theme" uid="uid://d1c7oys07yrf2" path="res://main/ui/theme.tres" id="1_tt2km"]
+[ext_resource type="Theme" uid="uid://d1c7oys07yrf2" path="res://main/ui/theme/theme.tres" id="1_tt2km"]
 [ext_resource type="Script" path="res://main/ui/fps_label.gd" id="2_3an1b"]
-[ext_resource type="PackedScene" uid="uid://b4a3jxime5miw" path="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_widget.tscn" id="3_f4p4h"]
+[ext_resource type="PackedScene" uid="uid://b4a3jxime5miw" path="res://main/ui/menu/game_menu/inventory_widget/inventory_widget.tscn" id="3_f4p4h"]
 [ext_resource type="Texture2D" uid="uid://s748ox3oy1l7" path="res://main/ui/menu/game_menu/health/heart1.png" id="4_luwyj"]
 [ext_resource type="Texture2D" uid="uid://eeeo8x66rqhe" path="res://main/ui/menu/game_menu/health/heart2.png" id="5_d5853"]
 [ext_resource type="Texture2D" uid="uid://c2w3i6jmft76h" path="res://main/ui/menu/game_menu/health/heart3.png" id="6_dwbsw"]
-[ext_resource type="PackedScene" uid="uid://khnklyws1paq" path="res://main/ui/menu/game_menu/crosshair.tscn" id="8_ayyap"]
-[ext_resource type="Texture2D" uid="uid://c7qpj5lbhsunr" path="res://main/ui/menu/game_menu/inventory/inventory_widget/inventory_slot/outline.png" id="8_s4nee"]
+[ext_resource type="PackedScene" uid="uid://khnklyws1paq" path="res://main/ui/menu/game_menu/crosshair/crosshair.tscn" id="8_ayyap"]
+[ext_resource type="Texture2D" uid="uid://c7qpj5lbhsunr" path="res://main/ui/menu/game_menu/hotbar/outline.png" id="8_s4nee"]
 
 [node name="GameMenu" type="Control"]
 layout_mode = 3

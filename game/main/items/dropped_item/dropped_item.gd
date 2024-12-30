@@ -8,15 +8,15 @@ class_name DroppedItem extends CharacterBody3D
 @export var swim_speed: float = 8.0
 @export var awaken_distnace: float = 4.0
 
-var item: Item
-
 enum { MERGE, SWIM, IDLE, SLEEPING, COLLECTED }
 
+var item: Item
 var state: int = IDLE
 
 func _ready() -> void:
 	%DetectionArea3D.area_entered.connect(_on_area_entered)
 
+# Detects other dropped items to merge with them
 func _on_area_entered(new_area: Area3D) -> void:
 	if state != IDLE:
 		return

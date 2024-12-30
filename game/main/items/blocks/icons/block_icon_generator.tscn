@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://bypaqncoue8cf"]
 
 [ext_resource type="Script" path="res://main/items/blocks/icons/block_icon_generator.gd" id="1_paxe8"]
-[ext_resource type="ArrayMesh" uid="uid://bcem1om1xn87j" path="res://main/items/dropped_item/cube_mesh.obj" id="2_jpxdj"]
+[ext_resource type="ArrayMesh" uid="uid://bcem1om1xn87j" path="res://main/items/dropped_item/block.obj" id="2_jpxdj"]
 [ext_resource type="Texture2D" uid="uid://b612rxkl7h1ex" path="res://main/items/blocks/textures/grass.png" id="3_wfkuj"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6cvqi"]
