@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=22 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="Block" uid="uid://dvafel0lfqor7" path="res://main/items/blocks/air.tres" id="2_ly1ey"]
@@ -20,7 +20,6 @@
 [ext_resource type="Block" uid="uid://ciypj7qy2lyx8" path="res://main/items/blocks/void.tres" id="10_q2dle"]
 [ext_resource type="Decoration" uid="uid://cfpar2tsjnn8h" path="res://main/world/decorations/tree.tres" id="12_tyvfj"]
 [ext_resource type="DefaultGenerator" uid="uid://diqcbn3451p2b" path="res://main/world/generators/main_generator.tres" id="13_dyeg8"]
-[ext_resource type="Script" path="res://main/items/inventory/inventory.gd" id="26_e541b"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
@@ -38,16 +37,6 @@ generator = ExtResource("13_dyeg8")
 block_material = ExtResource("5_ah4j3")
 transparent_block_material = ExtResource("10_ppf03")
 script = ExtResource("5_ds8vp")
-
-[node name="Inventories" type="Node" parent="."]
-
-[node name="PlayerInventory" type="Node" parent="Inventories"]
-script = ExtResource("26_e541b")
-capacity = 36
-
-[node name="PlayerHotbar" type="Node" parent="Inventories"]
-script = ExtResource("26_e541b")
-capacity = 9
 
 [node name="Player" parent="." node_paths=PackedStringArray("world") instance=ExtResource("10_4clf3")]
 unique_name_in_owner = true

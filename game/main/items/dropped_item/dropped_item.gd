@@ -52,6 +52,8 @@ func _physics_process(delta: float) -> void:
 	if not world.is_position_loaded(global_position):
 		return
 	
+	move_and_slide()
+	
 	if state == SWIM:
 		if world.get_block_type_at(global_position).id == 0:
 			state = IDLE
@@ -66,12 +68,8 @@ func _physics_process(delta: float) -> void:
 			velocity.y -= delta * gravity
 		else:
 			velocity.y = 0
-		
-		if velocity.is_equal_approx(Vector3()):
 			state = SLEEPING
 			toggle_physics(false)
-	
-	move_and_slide()
 
 # Called when instantiated 
 func initialize(set_item: Item) -> void:
@@ -83,7 +81,7 @@ func initialize(set_item: Item) -> void:
 	position += Vector3(0.5, 0.5, 0.5)
 	velocity = initial_speed * Vector3(randf_range(-1., 1.), 1., randf_range(-1., 1.)).normalized()
 	
-	item = set_item
+	item = set_item.duplicate()
 	
 	# Visuals
 	if item is Block:
@@ -94,6 +92,10 @@ func initialize(set_item: Item) -> void:
 		%Cube.visible = true
 
 func absorb(other: DroppedItem) -> void:
+	if not is_instance_valid(other):
+		state = IDLE
+		return
+	
 	toggle_physics(false)
 	other.toggle_physics(false)
 	
@@ -102,6 +104,12 @@ func absorb(other: DroppedItem) -> void:
 	tween.tween_property(self, "global_position", center, merge_time)
 	tween.tween_property(other, "global_position", center, merge_time)
 	await tween.finished
+	
+	if not is_instance_valid(other):
+		toggle_physics(true)
+		state = IDLE
+		check_swim()
+		return
 	
 	toggle_physics(true)
 	other.toggle_physics(true)
@@ -115,6 +123,7 @@ func absorb(other: DroppedItem) -> void:
 	else:
 		other.state = IDLE
 		other.check_swim()
+	
 	state = IDLE
 	check_swim()
 

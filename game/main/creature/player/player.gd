@@ -35,8 +35,17 @@ class_name Player extends Creature
 var is_sprinting_requested: bool = false
 var is_sprinting: bool = false
 
-func _ready() -> void:
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+func _on_dropped_item_entered(area: Area3D) -> void:
+	if not area.get_parent() is DroppedItem:
+		return
+	var dropped_item: DroppedItem = area.get_parent() as DroppedItem
+	var remaining_item: Item = %Hotbar.accept(dropped_item.item)
+	if remaining_item == null:
+		area.get_parent().queue_free()
+	else:
+		remaining_item = %Inventory.accept(dropped_item.item)
+		if remaining_item == null:
+			area.get_parent().queue_free()
 
 func _process(delta: float) -> void:
 	%Camera3D.fov = lerp(%Camera3D.fov, fov * (sprint_fov_scale if is_sprinting else 1.0), sprint_fov_animation_speed * delta)

@@ -88,7 +88,7 @@ shape = SubResource("SphereShape3D_nod4t")
 
 [node name="DetectionArea3D" type="Area3D" parent="."]
 unique_name_in_owner = true
-collision_layer = 9
+collision_layer = 8
 collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="DetectionArea3D"]

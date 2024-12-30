@@ -1,9 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://ccsm4tlbop58m"]
+[gd_scene load_steps=12 format=3 uid="uid://ccsm4tlbop58m"]
 
 [ext_resource type="PackedScene" uid="uid://co5xqagmethrd" path="res://main/creature/creature.tscn" id="1_chebf"]
 [ext_resource type="Script" path="res://main/creature/player/player.gd" id="2_4yh36"]
 [ext_resource type="Shape3D" uid="uid://bjwdaet7is1fx" path="res://main/creature/player/player_collision_shape.tres" id="2_v2xor"]
 [ext_resource type="PackedScene" uid="uid://cvlj2x7ggstow" path="res://main/creature/player/block_outline/block_outline.tscn" id="3_gneh7"]
+[ext_resource type="Script" path="res://main/items/inventory/inventory.gd" id="3_lpwwm"]
 [ext_resource type="Texture2D" uid="uid://216h2mvevyco" path="res://main/creature/player/hand/snap.png" id="5_qydjy"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_o7rwr"]
@@ -45,6 +46,10 @@ _data = {
 "snap": SubResource("Animation_j62jl")
 }
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_i1wqy"]
+radius = 0.3
+height = 1.8
+
 [node name="Player" instance=ExtResource("1_chebf")]
 collision_layer = 6
 script = ExtResource("2_4yh36")
@@ -69,15 +74,19 @@ minimum_sprint_speed = 1.0
 floor_place_deadzone = 0.6
 floor_place_down_angle = -0.6
 
-[node name="CollisionShape3D" parent="." index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-shape = ExtResource("2_v2xor")
+[node name="Inventory" parent="." index="0"]
+capacity = 36
 
-[node name="FloorRayCast3D" type="RayCast3D" parent="." index="1"]
+[node name="Hotbar" type="Node" parent="." index="1"]
+unique_name_in_owner = true
+script = ExtResource("3_lpwwm")
+capacity = 9
+
+[node name="FloorRayCast3D" type="RayCast3D" parent="." index="2"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 
-[node name="Camera3D" type="Camera3D" parent="." index="2"]
+[node name="Camera3D" type="Camera3D" parent="." index="3"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 1.411, 0)
 fov = 80.0
@@ -86,7 +95,7 @@ fov = 80.0
 unique_name_in_owner = true
 target_position = Vector3(0, 0, -4.5)
 
-[node name="PositionIsolation" type="Node" parent="." index="3"]
+[node name="PositionIsolation" type="Node" parent="." index="4"]
 
 [node name="BlockOutline" parent="PositionIsolation" index="0" instance=ExtResource("3_gneh7")]
 unique_name_in_owner = true
@@ -98,7 +107,7 @@ exclude_parent = false
 target_position = Vector3(0, 0, 0)
 collision_mask = 2
 
-[node name="HandSubViewportContainer" type="SubViewportContainer" parent="." index="4"]
+[node name="HandSubViewportContainer" type="SubViewportContainer" parent="." index="5"]
 visible = false
 anchors_preset = 15
 anchor_right = 1.0
@@ -125,3 +134,11 @@ unique_name_in_owner = true
 libraries = {
 "": SubResource("AnimationLibrary_fw5do")
 }
+
+[node name="CollisionShape3D" parent="ItemArea3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("CapsuleShape3D_i1wqy")
+
+[node name="CollisionShape3D" parent="." index="7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = ExtResource("2_v2xor")
