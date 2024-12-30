@@ -39,13 +39,16 @@ func _on_dropped_item_entered(area: Area3D) -> void:
 	if not area.get_parent() is DroppedItem:
 		return
 	var dropped_item: DroppedItem = area.get_parent() as DroppedItem
+	if dropped_item.state == DroppedItem.COLLECTED:
+		return
+	
 	var remaining_item: Item = %Hotbar.accept(dropped_item.item)
 	if remaining_item == null:
-		area.get_parent().queue_free()
+		dropped_item.collect()
 	else:
 		remaining_item = %Inventory.accept(dropped_item.item)
 		if remaining_item == null:
-			area.get_parent().queue_free()
+			dropped_item.collect()
 
 func _process(delta: float) -> void:
 	%Camera3D.fov = lerp(%Camera3D.fov, fov * (sprint_fov_scale if is_sprinting else 1.0), sprint_fov_animation_speed * delta)

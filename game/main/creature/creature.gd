@@ -13,6 +13,9 @@ func _on_dropped_item_entered(area: Area3D) -> void:
 	if not area.get_parent() is DroppedItem:
 		return
 	var dropped_item: DroppedItem = area.get_parent() as DroppedItem
+	if dropped_item.state == DroppedItem.COLLECTED:
+		return
+	
 	var remaining_item: Item = %Inventory.accept(dropped_item.item)
 	if remaining_item == null:
-		area.get_parent().queue_free()
+		dropped_item.collect()

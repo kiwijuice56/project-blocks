@@ -11,7 +11,7 @@ class_name DroppedItem extends CharacterBody3D
 var world: World
 var item: Item
 
-enum { MERGE, SWIM, IDLE, SLEEPING }
+enum { MERGE, SWIM, IDLE, SLEEPING, COLLECTED }
 
 var state: int = IDLE
 
@@ -92,7 +92,8 @@ func initialize(set_item: Item) -> void:
 		%Cube.visible = true
 
 func absorb(other: DroppedItem) -> void:
-	if not is_instance_valid(other):
+	# Just in case...
+	if not is_instance_valid(other) or other.state != MERGE:
 		state = IDLE
 		return
 	
@@ -105,7 +106,12 @@ func absorb(other: DroppedItem) -> void:
 	tween.tween_property(other, "global_position", center, merge_time)
 	await tween.finished
 	
-	if not is_instance_valid(other):
+	# If collected mid-merge, just return
+	if state != MERGE:
+		return
+	
+	# Was other collected mid-merge?
+	if not is_instance_valid(other) or other.state != MERGE:
 		toggle_physics(true)
 		state = IDLE
 		check_swim()
@@ -114,10 +120,10 @@ func absorb(other: DroppedItem) -> void:
 	toggle_physics(true)
 	other.toggle_physics(true)
 	
+	# Distribute items
 	var total_count = other.item.count + item.count
 	item.count = min(total_count, item.stack_size)
 	other.item.count = total_count - item.count
-	
 	if other.item.count == 0:
 		other.queue_free()
 	else:
@@ -126,6 +132,13 @@ func absorb(other: DroppedItem) -> void:
 	
 	state = IDLE
 	check_swim()
+
+func collect() -> void:
+	toggle_physics.call_deferred(false)
+	state = COLLECTED
+	%CollectAnimationPlayer.play("collect")
+	await %CollectAnimationPlayer.animation_finished
+	queue_free()
 
 func toggle_collision(enable: bool) -> void:
 	%CollisionShape3D.disabled = not enable

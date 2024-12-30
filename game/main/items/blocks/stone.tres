@@ -33,7 +33,6 @@ image = SubResource("Image_ilg88")
 texture = ExtResource("1_xr6dm")
 break_sound = SubResource("AudioStreamRandomizer_vn4vs")
 id = 210957605
-stack_size = 1
 display_name = "stone block"
 internal_name = "stone"
 icon = SubResource("ImageTexture_2p4rg")
