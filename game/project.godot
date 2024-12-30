@@ -21,6 +21,7 @@ config/icon="res://icon.png"
 [autoload]
 
 Ref="*res://main/autoload/ref.gd"
+ItemMap="*res://main/autoload/item_map.gd"
 
 [display]
 

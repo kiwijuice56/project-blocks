@@ -73,6 +73,9 @@ minimum_sprint_speed = 1.0
 floor_place_deadzone = 0.6
 floor_place_down_angle = -0.6
 throw_speed = 16.0
+max_health = 10
+pick_up_items = true
+repickup_delay = 1.0
 
 [node name="Inventory" parent="." index="0"]
 capacity = 36

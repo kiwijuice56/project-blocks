@@ -8,6 +8,9 @@
 collision_layer = 4
 script = ExtResource("1_hvdlm")
 dropped_item_scene = ExtResource("2_lw8no")
+max_health = null
+pick_up_items = null
+repickup_delay = null
 
 [node name="Inventory" type="Node" parent="."]
 unique_name_in_owner = true

@@ -5,6 +5,7 @@
 #include "../include/generator.h"
 #include "../include/chunk.h"
 #include "../include/decoration.h"
+#include "../include/item_state.h"
 
 #include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/classes/node3d.hpp>

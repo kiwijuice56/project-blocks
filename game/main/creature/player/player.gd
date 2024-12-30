@@ -80,10 +80,10 @@ func _process(delta: float) -> void:
 		if Input.is_action_just_pressed("main_interact") and Ref.world.is_position_loaded(block_position):
 			Ref.world.break_block_at(block_position, true, true)
 			
-		if held_item is Block and Input.is_action_just_pressed("secondary_interact") and Ref.world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
+		if held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_just_pressed("secondary_interact") and Ref.world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
 			Ref.player_hotbar.change_amount(hotbar_index, -1)
 			Ref.world.place_block_at(place_position, held_item.id)
-	elif %FloorRayCast3D.is_colliding() and held_item is Block and Input.is_action_just_pressed("secondary_interact"):
+	elif %FloorRayCast3D.is_colliding() and held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_just_pressed("secondary_interact"):
 			var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())
 			var look_direction: Vector3 = -%Camera3D.get_global_transform().basis.z
 			
@@ -185,14 +185,14 @@ func _input(event: InputEvent) -> void:
 		is_sprinting_requested = not is_sprinting_requested
 
 func drop_from_inventory(inventory: Inventory, index: int) -> void:
-	var to_drop: Item = inventory.items[index]
+	var to_drop: ItemState = inventory.items[index]
 	if to_drop != null:
 		to_drop = to_drop.duplicate()
 		to_drop.count = 1
 		inventory.change_amount(index, -1)
 		throw_item(to_drop)
 
-func throw_item(item: Item) -> void:
+func throw_item(item: ItemState) -> void:
 	drop_item(item, %DropPoint.global_position, get_throw_direction() * throw_speed + velocity)
 
 func get_throw_direction() -> Vector3:

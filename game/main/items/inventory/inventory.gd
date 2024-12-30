@@ -3,7 +3,7 @@ class_name Inventory extends Node
 
 @export var capacity: int
 
-var items: Array[Item]
+var items: Array[ItemState]
 
 # Emitted when this inventory requires a UI update.. items picked up,
 # used, etc.
@@ -14,14 +14,14 @@ func _ready() -> void:
 
 func change_amount(index: int, amount: int) -> void:
 	items[index].count += amount
-	items[index].count = min(items[index].count, items[index].stack_size)
+	items[index].count = min(items[index].count, ItemMap.map(items[index].id).stack_size)
 	if items[index].count <= 0:
 		items[index] = null
 	refresh.emit(index)
 
 # Attempts to pack an item into this inventory, returning the remaining items
 # if there is not enough space
-func accept(item: Item) -> Item:
+func accept(item: ItemState) -> ItemState:
 	# First, try putting the item into a matching stack
 	for i in range(capacity):
 		if items[i] == null:
@@ -31,7 +31,7 @@ func accept(item: Item) -> Item:
 			var initial_amount: int = items[i].count
 			
 			var total_count: int = items[i].count + item.count
-			items[i].count = min(items[i].stack_size, total_count)
+			items[i].count = min(ItemMap.map(items[i].id).stack_size, total_count)
 			item.count = total_count - items[i].count
 			
 			if items[i].count != initial_amount:

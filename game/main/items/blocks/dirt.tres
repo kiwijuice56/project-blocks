@@ -29,7 +29,6 @@ image = SubResource("Image_66mij")
 texture = ExtResource("1_js20h")
 break_sound = SubResource("AudioStreamRandomizer_kr2cv")
 id = 324041069
-stack_size = 1
 display_name = "dirt block"
 internal_name = "dirt"
 icon = SubResource("ImageTexture_5ltg5")

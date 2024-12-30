@@ -48,10 +48,10 @@ func close_inventory() -> void:
 		InventorySlot.hovered_slot._on_mouse_exited()
 	# Take care of any held items
 	if InventorySlot.state == InventorySlot.HOLDING_ITEM:
-		var held_item: Item = InventorySlot.held_item.item
+		var held_item: ItemState = InventorySlot.held_item.item
 		InventorySlot.held_item.queue_free()
 		
-		var remaining_item: Item = Ref.player_hotbar.accept(held_item)
+		var remaining_item: ItemState = Ref.player_hotbar.accept(held_item)
 		if remaining_item != null:
 			remaining_item = Ref.player_inventory.accept(remaining_item)
 		if remaining_item != null:

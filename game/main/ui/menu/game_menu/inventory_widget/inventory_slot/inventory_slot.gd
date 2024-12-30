@@ -6,7 +6,7 @@ class_name InventorySlot extends TextureRect
 @export var item_widget_scene: PackedScene
 
 var item_widget: ItemWidget
-var item: Item
+var item: ItemState
 var index: int = 0
 var hovered_over: bool = false
 
@@ -23,7 +23,7 @@ static var hovered_slot: InventorySlot
 static func pick_up(slot: InventorySlot) -> void:
 	state = HOLDING_ITEM
 	
-	var selected_item: Item = slot.item
+	var selected_item: ItemState = slot.item
 	
 	slot.initialize(null)
 	slot.item_changed.emit(slot)
@@ -38,7 +38,7 @@ static func pick_up(slot: InventorySlot) -> void:
 static func drop(slot: InventorySlot) -> void:
 	# Mismatched items (swap)
 	if slot.item != null and slot.item.id != held_item.item.id:
-		var to_swap: Item = slot.item
+		var to_swap: ItemState = slot.item
 		
 		slot.initialize(held_item.item)
 		slot.item_changed.emit(slot)
@@ -53,7 +53,7 @@ static func drop(slot: InventorySlot) -> void:
 	# Drop some and hold remaining
 	elif slot.item.id == held_item.item.id:
 		var total_count: int = held_item.item.count + slot.item.count
-		slot.item.count = min(total_count, slot.item.stack_size)
+		slot.item.count = min(total_count, ItemMap.map(slot.item.id).stack_size)
 		held_item.item.count = total_count - slot.item.count
 		
 		slot.initialize(slot.item)
@@ -71,7 +71,7 @@ static func deposit(slot: InventorySlot) -> void:
 	if slot.item != null and slot.item.id != held_item.item.id:
 		return
 	# Full target (skip over and do nothing)
-	elif slot.item != null and slot.item.count >= slot.item.stack_size:
+	elif slot.item != null and slot.item.count >= ItemMap.map(slot.item.id).stack_size:
 		return
 	# Only one block (just drop instead)
 	elif held_item.item.count == 1:
@@ -81,7 +81,7 @@ static func deposit(slot: InventorySlot) -> void:
 		held_item.item.count -= 1
 		held_item.initialize(held_item.item)
 		
-		var new_item: Item = held_item.item.duplicate()
+		var new_item: ItemState = held_item.item.duplicate()
 		new_item.count = 1
 		slot.initialize(new_item)
 		slot.item_changed.emit(slot)
@@ -117,7 +117,7 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("deposit") and hovered_over and state == HOLDING_ITEM:
 		deposit(self)
 
-func initialize(new_item: Item, new_index: int = -1) -> void:
+func initialize(new_item: ItemState, new_index: int = -1) -> void:
 	item = new_item
 	
 	if new_index >= 0:

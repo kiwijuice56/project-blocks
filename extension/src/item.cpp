@@ -8,8 +8,6 @@ using namespace godot;
 void Item::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_id"), &Item::get_id);
 	ClassDB::bind_method(D_METHOD("set_id", "new_id"), &Item::set_id);
-    ClassDB::bind_method(D_METHOD("get_count"), &Item::get_count);
-	ClassDB::bind_method(D_METHOD("set_count", "new_count"), &Item::set_count);
     ClassDB::bind_method(D_METHOD("get_stack_size"), &Item::get_stack_size);
 	ClassDB::bind_method(D_METHOD("set_stack_size", "new_stack_size"), &Item::set_stack_size);
     ClassDB::bind_method(D_METHOD("get_display_name"), &Item::get_display_name);
@@ -23,12 +21,6 @@ void Item::_bind_methods() {
         PropertyInfo(Variant::INT, "id"),
         "set_id",
         "get_id"
-    );
-
-    ADD_PROPERTY(
-        PropertyInfo(Variant::INT, "count"),
-        "set_count",
-        "get_count"
     );
 
     ADD_PROPERTY(
@@ -75,14 +67,6 @@ uint32_t Item::get_id() const {
 
 void Item::set_id(uint32_t new_id) {
     id = new_id;
-}
-
-uint32_t Item::get_count() const {
-    return count;
-}
-
-void Item::set_count(uint32_t new_count) {
-    count = new_count;
 }
 
 uint32_t Item::get_stack_size() const {

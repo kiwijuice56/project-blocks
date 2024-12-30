@@ -10,7 +10,7 @@ class_name DroppedItem extends CharacterBody3D
 
 enum { MERGE, SWIM, IDLE, SLEEPING, COLLECTED }
 
-var item: Item
+var item: ItemState
 var state: int = IDLE
 var can_collect: bool = true
 var collect_delay_time: float
@@ -74,7 +74,7 @@ func _physics_process(delta: float) -> void:
 				toggle_physics(false)
 
 # Called when instantiated 
-func initialize(set_item: Item) -> void:
+func initialize(set_item: ItemState) -> void:
 	Ref.world.block_placed.connect(_on_block_placed)
 	Ref.world.block_broken.connect(_on_block_broken)
 	
@@ -86,10 +86,10 @@ func initialize(set_item: Item) -> void:
 	item = set_item.duplicate()
 	
 	# Visuals
-	if item is Block:
+	if ItemMap.map(item.id) is Block:
 		%Cube.visible = true
 		%Cube.set_surface_override_material(0, %Cube.get_surface_override_material(0).duplicate())
-		%Cube.get_surface_override_material(0).albedo_texture = item.texture
+		%Cube.get_surface_override_material(0).albedo_texture = ItemMap.map(item.id).texture
 	else:
 		%Cube.visible = true
 	
@@ -106,6 +106,7 @@ func absorb(other: DroppedItem) -> void:
 	toggle_physics(false)
 	other.toggle_physics(false)
 	
+	var total_velocity: Vector3 = velocity + other.velocity
 	var center: Vector3 = (global_position + other.global_position) / 2
 	var tween: Tween = get_tree().create_tween().set_parallel(true)
 	tween.tween_property(self, "global_position", center, merge_time)
@@ -117,13 +118,16 @@ func absorb(other: DroppedItem) -> void:
 		if is_instance_valid(other):
 			other.toggle_physics(true)
 			other.state = IDLE
+			other.velocity = total_velocity / 2
 			other.check_swim()
+			
 		return
 	
 	# Was other collected mid-merge?
 	if not is_instance_valid(other) or other.state != MERGE:
 		toggle_physics(true)
 		state = IDLE
+		velocity = total_velocity / 2
 		check_swim()
 		return
 	
@@ -132,15 +136,17 @@ func absorb(other: DroppedItem) -> void:
 	
 	# Distribute items
 	var total_count = other.item.count + item.count
-	item.count = min(total_count, item.stack_size)
+	item.count = min(total_count, ItemMap.map(item.id).stack_size)
 	other.item.count = total_count - item.count
 	if other.item.count == 0:
 		other.queue_free()
 	else:
 		other.state = IDLE
+		other.velocity = total_velocity / 2
 		other.check_swim()
 	
 	state = IDLE
+	velocity = total_velocity / 2
 	check_swim()
 
 func collect() -> void:

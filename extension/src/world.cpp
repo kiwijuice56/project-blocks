@@ -476,7 +476,10 @@ void World::break_block_at(Vector3 position, bool drop_item, bool play_effect) {
         get_parent()->add_child(dropped_item);
         dropped_item->set("global_position", Vector3i(position));
         dropped_item->set("world", this);
-        dropped_item->call("initialize", block_type->get_drop_item() != nullptr ? block_type->get_drop_item() : block_type);
+        Ref<ItemState> new_item = memnew(ItemState);
+        new_item->set_id((block_type->get_drop_item() != nullptr ? block_type->get_drop_item() : block_type)->get_id());
+        new_item->set_count(1);
+        dropped_item->call("initialize", new_item);
     }
 
     if (play_effect) {

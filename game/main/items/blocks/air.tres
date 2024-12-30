@@ -17,6 +17,7 @@ image = SubResource("Image_7mnjm")
 [resource]
 texture = ExtResource("1_bwxy4")
 transparent = true
+can_drop = false
 display_name = "air block"
 internal_name = "air"
 icon = SubResource("ImageTexture_s6ti7")

@@ -8,7 +8,7 @@ class_name Creature extends CharacterBody3D
 
 var movement_enabled: bool = true
 
-var held_item: Item
+var held_item: ItemState
 var health: float
 
 func _ready() -> void:
@@ -25,7 +25,7 @@ func _on_dropped_item_entered(area: Area3D) -> void:
 	if remaining_item == null:
 		dropped_item.collect()
 
-func drop_item(item: Item, drop_position: Vector3, initial_velocity: Vector3) -> void:
+func drop_item(item: ItemState, drop_position: Vector3, initial_velocity: Vector3) -> void:
 	var new_item: DroppedItem = dropped_item_scene.instantiate()
 	new_item.collect_delay_time = repickup_delay
 	get_parent().add_child(new_item)

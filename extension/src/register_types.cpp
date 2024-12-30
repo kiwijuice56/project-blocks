@@ -4,6 +4,7 @@
 #include "../include/world.h"
 #include "../include/block.h"
 #include "../include/item.h"
+#include "../include/item_state.h"
 #include "../include/decoration.h"
 #include "../include/generator.h"
 #include "../include/debug_generator.h"
@@ -21,6 +22,7 @@ void initialize_gdblocks_module(ModuleInitializationLevel p_level) {
 	}
 
 	GDREGISTER_CLASS(Item);
+	GDREGISTER_CLASS(ItemState);
 	GDREGISTER_CLASS(Block);
 	GDREGISTER_CLASS(Decoration);
 	GDREGISTER_CLASS(Chunk);
