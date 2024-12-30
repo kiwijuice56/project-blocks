@@ -36,7 +36,8 @@ func reload_types() -> void:
 			if dir.dir_exists(path):
 				stack.append(path)
 			else:
-				if ResourceLoader.exists(path):
+				if ".tres" in path:
+					path = path.replace(".remap", "")
 					var resource: Resource = ResourceLoader.load(path)
 					if resource is Block:
 						block_types.append(resource as Block)

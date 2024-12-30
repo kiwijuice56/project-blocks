@@ -207,7 +207,9 @@ drop_item={
 
 [physics]
 
+3d/physics_engine="Jolt Physics"
 3d/default_gravity=18.0
+3d/solver/solver_iterations=4
 
 [rendering]
 

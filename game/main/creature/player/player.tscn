@@ -77,7 +77,7 @@ _data = {
 [node name="Player" instance=ExtResource("1_chebf")]
 collision_layer = 6
 script = ExtResource("2_4yh36")
-flying = false
+flying = true
 sprint_toggle = false
 ground_accel = 56.0
 air_accel = 48.0

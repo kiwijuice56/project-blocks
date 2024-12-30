@@ -24,11 +24,13 @@ script = ExtResource("1_wx0yy")
 generator = ExtResource("13_dyeg8")
 block_material = ExtResource("5_ah4j3")
 transparent_block_material = ExtResource("10_ppf03")
+instance_radius = 96
 script = ExtResource("5_ds8vp")
 
 [node name="Player" parent="." instance=ExtResource("10_4clf3")]
 unique_name_in_owner = true
 transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 8, 64, 8)
+flying = false
 fly_impulse = 9.0
 mouse_sensitivity = 0.02
 

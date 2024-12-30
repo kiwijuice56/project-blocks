@@ -186,6 +186,7 @@ _data = {
 
 [node name="DroppedItem" type="CharacterBody3D"]
 collision_layer = 8
+safe_margin = 0.01
 script = ExtResource("1_m5mmq")
 gravity = 32.0
 initial_speed = 9.0

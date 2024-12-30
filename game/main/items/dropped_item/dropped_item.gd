@@ -6,7 +6,7 @@ class_name DroppedItem extends CharacterBody3D
 @export var horizontal_dampening: float = 8.0
 @export var merge_time: float = 0.5
 @export var swim_speed: float = 8.0
-@export var awaken_distnace: float = 4.0
+@export var awaken_distance: float = 4.0
 
 enum { MERGE, SWIM, IDLE, SLEEPING, COLLECTED }
 
@@ -40,11 +40,11 @@ func _on_area_entered(new_area: Area3D) -> void:
 	absorb.call_deferred(other)
 
 func _on_block_placed(block_position: Vector3) -> void:
-	if (state == IDLE or state == SLEEPING) and block_position.distance_to(global_position) < awaken_distnace:
+	if (state == IDLE or state == SLEEPING) and block_position.distance_to(global_position) < awaken_distance:
 		check_swim()
 
 func _on_block_broken(block_position: Vector3) -> void:
-	if state == SLEEPING and block_position.distance_to(global_position) < awaken_distnace:
+	if state == SLEEPING and block_position.distance_to(global_position) < awaken_distance:
 		state = IDLE
 		toggle_physics(true)
 		check_swim()
@@ -58,10 +58,9 @@ func _physics_process(delta: float) -> void:
 	if state == SWIM:
 		if Ref.world.get_block_type_at(global_position).id == 0:
 			state = IDLE
-			toggle_collision(true)
+			toggle_collision.call_deferred(true)
 			velocity = Vector3()
-	
-	if state == IDLE:
+	elif state == IDLE:
 		# Basic gravity and movement dampening
 		velocity.x = lerp(velocity.x, 0.0, horizontal_dampening * delta)
 		velocity.z = lerp(velocity.z, 0.0, horizontal_dampening * delta)
@@ -71,7 +70,7 @@ func _physics_process(delta: float) -> void:
 			velocity.y = 0
 			if velocity.is_equal_approx(Vector3()):
 				state = SLEEPING
-				toggle_physics(false)
+				toggle_physics.call_deferred(false)
 
 # Called when instantiated 
 func initialize(set_item: ItemState) -> void:
@@ -158,6 +157,7 @@ func collect() -> void:
 	queue_free()
 
 func toggle_collision(enable: bool) -> void:
+	pass
 	%CollisionShape3D.disabled = not enable
 
 func toggle_physics(enable: bool) -> void:
