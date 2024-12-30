@@ -1,7 +1,9 @@
 class_name MainWorld extends World
 # An extension of the World class to more easily interface with GDscript
+# Also sets block and decoration type arrays automatically
 
 func _ready() -> void:
+	reload_types()
 	set_physics_process(false)
 	initialize()
 	# The noise texture is initially null while it is being generated
@@ -16,6 +18,34 @@ func _input(event: InputEvent) -> void:
 	if generator is DebugGenerator and event.is_action_pressed("capture", false):
 		capture_decoration()
 
+func sort_by_id(a: Block, b: Block) -> bool:
+	return a.id < b.id
+
+func reload_types() -> void:
+	var stack: Array[String] = ["res://main/"]
+	
+	block_types.clear()
+	decorations.clear()
+	
+	while stack.size() > 0:
+		var dir: DirAccess = DirAccess.open(stack.pop_back())
+		dir.list_dir_begin()
+		var file_name: String = dir.get_next()
+		while file_name != "":
+			var path: String = dir.get_current_dir() + "/" + file_name
+			if dir.dir_exists(path):
+				stack.append(path)
+			else:
+				if ResourceLoader.exists(path):
+					var resource: Resource = ResourceLoader.load(path)
+					if resource is Block:
+						block_types.append(resource as Block)
+					if resource is Decoration:
+						decorations.append(resource as Decoration)
+			file_name = dir.get_next()
+	
+	block_types.sort_custom(sort_by_id)
+ 
 # Helper method to easily build decorations within the game
 func capture_decoration() -> void:
 	var new_decoration: Decoration = Decoration.new()

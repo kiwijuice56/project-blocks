@@ -1,24 +1,13 @@
-[gd_scene load_steps=22 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=11 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" uid="uid://briopjymqw2k4" path="res://main/main.gd" id="1_wx0yy"]
-[ext_resource type="Block" uid="uid://dvafel0lfqor7" path="res://main/items/blocks/air.tres" id="2_ly1ey"]
-[ext_resource type="Block" uid="uid://mcck1kusgwcq" path="res://main/items/blocks/grass.tres" id="3_7huqy"]
 [ext_resource type="PackedScene" uid="uid://bf8144nsbq132" path="res://main/ui/menu/game_menu/game_menu.tscn" id="3_8017u"]
 [ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/world/rendering/environments/high_graphics_environment.tres" id="4_6ud5x"]
 [ext_resource type="Shader" uid="uid://c61wm48ml41ta" path="res://main/ui/filter/dithering.gdshader" id="4_25hyt"]
-[ext_resource type="Block" uid="uid://dlj05o1xwr5wf" path="res://main/items/blocks/debug.tres" id="4_b12mt"]
-[ext_resource type="Block" uid="uid://bd4umsf48hbgg" path="res://main/items/blocks/dirt.tres" id="4_pcuap"]
-[ext_resource type="Block" uid="uid://bmi1nq6o1vmgk" path="res://main/items/blocks/sand.tres" id="5_44enk"]
 [ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/world/rendering/block_mesh/block_mesh_material.tres" id="5_ah4j3"]
 [ext_resource type="Script" uid="uid://baqrddgjyyfwb" path="res://main/world/main_world.gd" id="5_ds8vp"]
-[ext_resource type="Block" uid="uid://cdvybrvipagwk" path="res://main/items/blocks/stone.tres" id="6_egu44"]
-[ext_resource type="Block" uid="uid://gxs2expu8dk4" path="res://main/items/blocks/glass.tres" id="8_kb88p"]
-[ext_resource type="Block" uid="uid://p17prpekq02x" path="res://main/items/blocks/leaves.tres" id="9_yktqp"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/creature/player/player.tscn" id="10_4clf3"]
-[ext_resource type="Block" uid="uid://d4kufyi4bfmh6" path="res://main/items/blocks/wood.tres" id="10_fo42d"]
 [ext_resource type="Material" uid="uid://dhxh3up0kwnsn" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.tres" id="10_ppf03"]
-[ext_resource type="Block" uid="uid://ciypj7qy2lyx8" path="res://main/items/blocks/void.tres" id="10_q2dle"]
-[ext_resource type="Decoration" uid="uid://cfpar2tsjnn8h" path="res://main/world/decorations/tree.tres" id="12_tyvfj"]
 [ext_resource type="DefaultGenerator" uid="uid://diqcbn3451p2b" path="res://main/world/generators/main_generator.tres" id="13_dyeg8"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
@@ -31,8 +20,6 @@ shader_parameter/bit_depth = 12.0
 script = ExtResource("1_wx0yy")
 
 [node name="MainWorld" type="World" parent="."]
-block_types = Array[Block]([ExtResource("2_ly1ey"), ExtResource("10_q2dle"), ExtResource("4_b12mt"), ExtResource("6_egu44"), ExtResource("4_pcuap"), ExtResource("3_7huqy"), ExtResource("5_44enk"), ExtResource("10_fo42d"), ExtResource("8_kb88p"), ExtResource("9_yktqp")])
-decorations = Array[Decoration]([ExtResource("12_tyvfj")])
 generator = ExtResource("13_dyeg8")
 block_material = ExtResource("5_ah4j3")
 transparent_block_material = ExtResource("10_ppf03")
