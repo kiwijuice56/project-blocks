@@ -18,12 +18,12 @@ func _input(event: InputEvent) -> void:
 	
 	if state == INVENTORY and event.is_action_pressed("drop_item", false):
 		if InventorySlot.held_item != null:
-			Ref.player.throw_item(InventorySlot.held_item.item)
+			Ref.player.get_node("%DropItems").drop_item(InventorySlot.held_item.item)
 			InventorySlot.held_item.queue_free()
 			InventorySlot.held_item = null
 			InventorySlot.state = DEFAULT
 		elif InventorySlot.hovered_slot != null:
-			Ref.player.drop_from_inventory(InventorySlot.hovered_slot.get_parent().inventory, InventorySlot.hovered_slot.index)
+			Ref.player.get_node("%DropItems").drop_and_remove_from_inventory(InventorySlot.hovered_slot.get_parent().inventory, InventorySlot.hovered_slot.index)
 
 func _on_hotbar_index_changed() -> void:
 	# Offset the outline image

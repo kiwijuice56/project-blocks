@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://ckxlpl71nqlua"]
+
+[ext_resource type="Script" uid="uid://krceyo0b64kb" path="res://main/entity/behaviors/pick_up_items/pick_up_items.gd" id="1_ll7ei"]
+
+[node name="PickUpItems" type="Node3D"]
+script = ExtResource("1_ll7ei")
+
+[node name="ItemArea3D" type="Area3D" parent="."]
+unique_name_in_owner = true
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ItemArea3D"]
+unique_name_in_owner = true

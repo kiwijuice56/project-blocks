@@ -1,4 +1,4 @@
-class_name Player extends Creature
+class_name Player extends Entity
 
 @export_group("Toggles")
 @export var flying: bool = false
@@ -42,7 +42,6 @@ var hotbar_index: int = 0:
 signal hotbar_index_changed(old_val: int)
 
 func _ready() -> void:
-	super._ready()
 	hotbar_index = 0
 
 func _on_dropped_item_entered(area: Area3D) -> void:
@@ -183,7 +182,7 @@ func _input(event: InputEvent) -> void:
 			hotbar_index = new_index
 	
 	if movement_enabled and event.is_action_pressed("drop_item", false):
-		drop_from_inventory(%Hotbar, hotbar_index)
+		%DropItems.drop_and_remove_from_inventory(%Hotbar, hotbar_index)
 	
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sensitivity)
@@ -192,21 +191,3 @@ func _input(event: InputEvent) -> void:
 	
 	if sprint_toggle and event.is_action_pressed("sprint", false):
 		is_sprinting_requested = not is_sprinting_requested
-
-func drop_from_inventory(inventory: Inventory, index: int) -> void:
-	var to_drop: ItemState = inventory.items[index]
-	if to_drop != null:
-		to_drop = to_drop.duplicate()
-		to_drop.count = 1
-		inventory.change_amount(index, -1)
-		throw_item(to_drop)
-
-func throw_item(item: ItemState) -> void:
-	drop_item(item, %DropPoint.global_position, get_throw_direction() * throw_speed + velocity)
-
-func get_throw_direction() -> Vector3:
-	if %InteractRayCast3D.is_colliding():
-		var look_position: Vector3 = %InteractRayCast3D.get_collision_point()
-		return (look_position - %DropPoint.global_position).normalized()
-	else:
-		return (%InteractRayCast3D.to_global(%InteractRayCast3D.target_position) - %DropPoint.global_position).normalized()

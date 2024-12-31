@@ -60,6 +60,10 @@ func _physics_process(delta: float) -> void:
 	
 	move_and_slide()
 	
+	# We have to double check!
+	if not Ref.world.is_position_loaded(global_position):
+		return
+	
 	if state == SWIM:
 		if Ref.world.get_block_type_at(global_position).id == 0:
 			state = IDLE
@@ -164,7 +168,6 @@ func collect() -> void:
 	queue_free()
 
 func toggle_collision(enable: bool) -> void:
-	pass
 	%CollisionShape3D.disabled = not enable
 
 func toggle_physics(enable: bool) -> void:
@@ -173,6 +176,8 @@ func toggle_physics(enable: bool) -> void:
 
 # Checks if this item is inside of a block, and initiate a swim outwards if so
 func check_swim() -> void:
+	if not Ref.world.is_position_loaded(global_position):
+		return
 	if Ref.world.get_block_type_at(global_position).id != 0:
 		state = SWIM
 		var swim_dir: Vector3 = Vector3.UP

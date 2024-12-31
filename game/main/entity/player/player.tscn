@@ -1,0 +1,123 @@
+[gd_scene load_steps=12 format=3 uid="uid://ccsm4tlbop58m"]
+
+[ext_resource type="PackedScene" uid="uid://co5xqagmethrd" path="res://main/entity/entity.tscn" id="1_chebf"]
+[ext_resource type="Script" uid="uid://xwioa0gyxopg" path="res://main/entity/player/player.gd" id="2_4yh36"]
+[ext_resource type="Shape3D" uid="uid://bjwdaet7is1fx" path="res://main/entity/player/player_collision_shape.tres" id="2_v2xor"]
+[ext_resource type="PackedScene" uid="uid://cvlj2x7ggstow" path="res://main/entity/player/block_outline/block_outline.tscn" id="3_gneh7"]
+[ext_resource type="Script" uid="uid://wmqswonvxa7" path="res://main/items/inventory/inventory.gd" id="3_lpwwm"]
+[ext_resource type="PackedScene" uid="uid://ckxlpl71nqlua" path="res://main/entity/behaviors/pick_up_items/pick_up_items.tscn" id="5_gf10l"]
+[ext_resource type="Script" uid="uid://djhddjugd4yhq" path="res://main/entity/behaviors/drop_items/drop_items.gd" id="5_yo8f8"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1ux1p"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_o7rwr"]
+
+[sub_resource type="Animation" id="Animation_k3wsc"]
+resource_name = "walk"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"step"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_25mdb"]
+_data = {
+&"walk": SubResource("Animation_k3wsc")
+}
+
+[node name="Player" instance=ExtResource("1_chebf")]
+collision_layer = 6
+script = ExtResource("2_4yh36")
+flying = true
+sprint_toggle = false
+ground_accel = 56.0
+air_accel = 48.0
+gravity = 32.0
+sprint_speed = 5.2
+jump_speed_multiplier = 1.1
+fly_speed = 16.0
+walk_speed = 3.9
+jump_impulse = 9.0
+fly_impulse = 32.0
+mouse_sensitivity = 0.015
+fov = 86.0
+sprint_fov_scale = 1.15
+sprint_fov_animation_speed = 9.0
+sprint_difference_threshold = 0.1
+minimum_sprint_speed = 1.0
+floor_place_deadzone = 0.6
+floor_place_down_angle = -0.6
+throw_speed = 16.0
+
+[node name="CollisionShape3D" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = ExtResource("2_v2xor")
+
+[node name="PickUpItems" parent="Behaviors" index="0" node_paths=PackedStringArray("inventory_priority", "inventory_secondary", "entity") instance=ExtResource("5_gf10l")]
+inventory_priority = NodePath("../../Hotbar")
+inventory_secondary = NodePath("../../Inventory")
+shape = SubResource("CapsuleShape3D_1ux1p")
+entity = NodePath("../..")
+
+[node name="DropItems" type="Node3D" parent="Behaviors" index="1" node_paths=PackedStringArray("target_raycast", "drop_spawn", "entity")]
+unique_name_in_owner = true
+script = ExtResource("5_yo8f8")
+target_raycast = NodePath("../../Camera3D/InteractRayCast3D")
+drop_spawn = NodePath("../../Camera3D/DropSpawn")
+entity = NodePath("../..")
+
+[node name="FloorRayCast3D" type="RayCast3D" parent="." index="3"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+
+[node name="Camera3D" type="Camera3D" parent="." index="4"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 1.411, 0)
+fov = 80.0
+
+[node name="InteractRayCast3D" type="RayCast3D" parent="Camera3D" index="0"]
+unique_name_in_owner = true
+target_position = Vector3(0, 0, -4.5)
+
+[node name="DropSpawn" type="Marker3D" parent="Camera3D" index="1"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.409502, -0.201143, -0.215995)
+
+[node name="Inventory" parent="." index="5"]
+capacity = 36
+
+[node name="Hotbar" type="Node" parent="." index="6"]
+unique_name_in_owner = true
+script = ExtResource("3_lpwwm")
+capacity = 9
+
+[node name="PositionIsolation" type="Node" parent="." index="7"]
+
+[node name="BlockOutline" parent="PositionIsolation" index="0" instance=ExtResource("3_gneh7")]
+unique_name_in_owner = true
+
+[node name="PlacementCheckShapeCast3D" type="ShapeCast3D" parent="PositionIsolation" index="1"]
+unique_name_in_owner = true
+shape = SubResource("BoxShape3D_o7rwr")
+exclude_parent = false
+target_position = Vector3(0, 0, 0)
+collision_mask = 2
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="8"]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_25mdb")
+}

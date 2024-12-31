@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dbjnr0lqkh2gr"]
+
+[ext_resource type="Script" uid="uid://dy3bgymk1fynn" path="res://main/entity/held_item/held_item.gd" id="1_xtq3u"]
+
+[node name="HeldItem" type="Node3D"]
+script = ExtResource("1_xtq3u")

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cvlj2x7ggstow"]
 
-[ext_resource type="ArrayMesh" uid="uid://bffmgwni5ctme" path="res://main/creature/player/block_outline/block_outline.obj" id="1_nfp3w"]
+[ext_resource type="ArrayMesh" uid="uid://bffmgwni5ctme" path="res://main/entity/player/block_outline/block_outline.obj" id="1_nfp3w"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_okdxy"]
 render_priority = 2
