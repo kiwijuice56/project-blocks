@@ -4,6 +4,11 @@ class_name Entity extends CharacterBody3D
 @export var max_health: int = 10
 @export var strength: int
 
+@export_group("Movement")
+@export var speed: float = 3.9
+@export var ground_accel: float = 56.0
+@export var air_accel: float = 48.0
+
 var held_item: ItemState
 var health: int
 var movement_enabled: bool = true

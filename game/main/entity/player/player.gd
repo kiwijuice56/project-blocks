@@ -5,17 +5,13 @@ class_name Player extends Entity
 @export var sprint_toggle: bool = false
 
 @export_group("Acceleration")
-@export var ground_accel: float = 56.0
-@export var air_accel: float = 48.0
+
 @export var gravity: float = 32
 
-@export_group("Speed")
-@export var sprint_speed: float = 5.2
+@export_group("Movement")
+@export var sprint_speed_multiplier: float = 1.3
 @export var jump_speed_multiplier: float = 1.1
-@export var fly_speed: float = 16
-@export var walk_speed: float = 3.9
-
-@export_group("Impulse")
+@export var fly_speed_multiplier: float = 8
 @export var jump_impulse: float = 9
 @export var fly_impulse: float = 32
 
@@ -28,7 +24,6 @@ class_name Player extends Entity
 @export var minimum_sprint_speed: float = 1.0
 @export var floor_place_deadzone: float = 0.6
 @export var floor_place_down_angle: float = -0.6
-@export var throw_speed: float = 8
 
 var is_sprinting_requested: bool = false
 var is_sprinting: bool = false
@@ -43,21 +38,6 @@ signal hotbar_index_changed(old_val: int)
 
 func _ready() -> void:
 	hotbar_index = 0
-
-func _on_dropped_item_entered(area: Area3D) -> void:
-	if not area.get_parent() is DroppedItem:
-		return
-	var dropped_item: DroppedItem = area.get_parent() as DroppedItem
-	if not dropped_item.can_collect:
-		return
-	
-	var remaining_item: Item = %Hotbar.accept(dropped_item.item)
-	if remaining_item == null:
-		dropped_item.collect()
-	else:
-		remaining_item = %Inventory.accept(dropped_item.item)
-		if remaining_item == null:
-			dropped_item.collect()
 
 func _process(delta: float) -> void:
 	%Camera3D.fov = lerp(%Camera3D.fov, fov * (sprint_fov_scale if is_sprinting else 1.0), sprint_fov_animation_speed * delta)
@@ -137,13 +117,13 @@ func _physics_process(delta: float) -> void:
 	if velocity.length() < minimum_sprint_speed or look_direction.normalized().dot(movement_dir.normalized()) < sprint_difference_threshold:
 		is_sprinting = false
 	
-	var target_speed: float = walk_speed
+	var target_speed: float = speed
 	var accel: float = ground_accel
 	
 	if is_sprinting:
-		target_speed = sprint_speed
+		target_speed = speed * sprint_speed_multiplier
 	if flying:
-		target_speed = fly_speed
+		target_speed =  speed * fly_speed_multiplier
 	
 	if not is_on_floor():
 		accel = air_accel

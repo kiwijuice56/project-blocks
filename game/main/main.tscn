@@ -31,6 +31,8 @@ script = ExtResource("5_ds8vp")
 unique_name_in_owner = true
 transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 8, 64, 8)
 flying = false
+sprint_speed_multiplier = 1.3
+fly_speed_multiplier = 8.0
 fly_impulse = 9.0
 mouse_sensitivity = 0.02
 
@@ -63,4 +65,3 @@ mouse_filter = 2
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("10_0i4oc")
 volume_db = -15.0
-autoplay = true
