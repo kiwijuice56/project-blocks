@@ -1,6 +1,7 @@
-[gd_scene load_steps=12 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=14 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" uid="uid://briopjymqw2k4" path="res://main/main.gd" id="1_wx0yy"]
+[ext_resource type="Shader" uid="uid://bvjnprxr4rehl" path="res://main/world/rendering/block_mesh/water.gdshader" id="3_0i4oc"]
 [ext_resource type="PackedScene" uid="uid://bf8144nsbq132" path="res://main/ui/menu/game_menu/game_menu.tscn" id="3_8017u"]
 [ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/world/rendering/environments/high_graphics_environment.tres" id="4_6ud5x"]
 [ext_resource type="Shader" uid="uid://c61wm48ml41ta" path="res://main/ui/filter/dithering.gdshader" id="4_25hyt"]
@@ -9,7 +10,12 @@
 [ext_resource type="AudioStream" uid="uid://b8n6mef6etkj4" path="res://main/music/naraka.ogg" id="10_0i4oc"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/entity/player/player.tscn" id="10_4clf3"]
 [ext_resource type="Material" uid="uid://dhxh3up0kwnsn" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.tres" id="10_ppf03"]
-[ext_resource type="DefaultGenerator" uid="uid://diqcbn3451p2b" path="res://main/world/generators/main_generator.tres" id="13_dyeg8"]
+
+[sub_resource type="DebugGenerator" id="DebugGenerator_grrlh"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bsumw"]
+render_priority = 0
+shader = ExtResource("3_0i4oc")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
@@ -21,8 +27,9 @@ shader_parameter/bit_depth = 12.0
 script = ExtResource("1_wx0yy")
 
 [node name="MainWorld" type="World" parent="."]
-generator = ExtResource("13_dyeg8")
+generator = SubResource("DebugGenerator_grrlh")
 block_material = ExtResource("5_ah4j3")
+water_material = SubResource("ShaderMaterial_bsumw")
 transparent_block_material = ExtResource("10_ppf03")
 instance_radius = 96
 script = ExtResource("5_ds8vp")
@@ -31,8 +38,6 @@ script = ExtResource("5_ds8vp")
 unique_name_in_owner = true
 transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 8, 64, 8)
 flying = false
-sprint_speed_multiplier = 1.3
-fly_speed_multiplier = 8.0
 fly_impulse = 9.0
 mouse_sensitivity = 0.02
 

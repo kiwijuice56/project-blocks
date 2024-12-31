@@ -42,9 +42,9 @@ protected:
     void add_face_uvs(uint64_t id, Vector2i scale);
     void add_face_normals(Vector3i normal);
     void add_rectangular_prism(Vector3i start, Vector3i size);
-    void greedy_mesh_generation(bool transparent);
-    Vector3i greedy_scan(Vector3i start);
-    bool greedy_invalid(Vector3i position);
+    void greedy_mesh_generation(bool transparent, bool water_pass);
+    Vector3i greedy_scan(Vector3i start, bool water_pass);
+    bool greedy_invalid(Vector3i position, bool water_pass);
 
 public:
     // The dimensions of individual chunks
@@ -62,6 +62,13 @@ public:
     TypedArray<Block> block_types;
     Ref<ShaderMaterial> block_material;
 	Ref<ShaderMaterial> transparent_block_material;
+    Ref<ShaderMaterial> water_material;
+
+    // Water data
+    PackedByteArray water;
+    PackedByteArray water_buffer;
+    bool water_sleeping = false;
+    bool has_water = false;
 
     Chunk();
 	~Chunk();
@@ -81,6 +88,9 @@ public:
     void remove_block_at(Vector3i global_position);
     void place_block_at(Vector3i global_position, uint32_t block_index);
     uint64_t get_block_index_at_global(Vector3i global_position);
+
+    // Water methods
+    void simulate_water();
 };
 }
 

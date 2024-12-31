@@ -11,6 +11,9 @@ signal refresh(index: int)
 
 func _ready() -> void:
 	items.resize(capacity)
+	items[0] = ItemState.new()
+	items[0].id = 164199506
+	items[0].count = 64
 
 func change_amount(index: int, amount: int) -> void:
 	items[index].count += amount

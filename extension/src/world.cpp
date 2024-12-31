@@ -8,6 +8,7 @@ using namespace godot;
 void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("initialize"), &World::initialize);
     ClassDB::bind_method(D_METHOD("set_loaded_region_center", "new_center"), &World::set_loaded_region_center);
+    ClassDB::bind_method(D_METHOD("simulate_water"), &World::simulate_water);
     ClassDB::bind_method(D_METHOD("is_position_loaded"), &World::is_position_loaded);
 
     ClassDB::bind_method(D_METHOD("get_block_types"), &World::get_block_types);
@@ -18,6 +19,9 @@ void World::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("get_block_material"), &World::get_block_material);
 	ClassDB::bind_method(D_METHOD("set_block_material", "new_material"), &World::set_block_material);
+
+    ClassDB::bind_method(D_METHOD("get_water_material"), &World::get_water_material);
+	ClassDB::bind_method(D_METHOD("set_water_material", "new_material"), &World::set_water_material);
 
     ClassDB::bind_method(D_METHOD("get_transparent_block_material"), &World::get_transparent_block_material);
 	ClassDB::bind_method(D_METHOD("set_transparent_block_material", "new_material"), &World::set_transparent_block_material);
@@ -79,6 +83,17 @@ void World::_bind_methods() {
     ADD_PROPERTY(
         PropertyInfo(
             Variant::OBJECT,
+            "water_material",
+            PROPERTY_HINT_RESOURCE_TYPE,
+            "ShaderMaterial"
+        ),
+        "set_water_material",
+        "get_water_material"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(
+            Variant::OBJECT,
             "transparent_block_material",
             PROPERTY_HINT_RESOURCE_TYPE,
             "ShaderMaterial"
@@ -116,6 +131,14 @@ Ref<ShaderMaterial> World::get_block_material() const {
 
 void World::set_block_material(Ref<ShaderMaterial> new_material) {
     block_material = new_material;
+}
+
+Ref<ShaderMaterial> World::get_water_material() const {
+    return water_material;
+}
+
+void World::set_water_material(Ref<ShaderMaterial> new_material) {
+    water_material = new_material;
 }
 
 Ref<ShaderMaterial> World::get_transparent_block_material() const {
@@ -207,6 +230,7 @@ void World::regenerate_chunks() {
                 new_chunk->block_types = block_types;
                 new_chunk->block_material = block_material;
                 new_chunk->transparent_block_material = transparent_block_material;
+                new_chunk->water_material = water_material;
 
                 add_child(new_chunk);
 
@@ -239,6 +263,29 @@ void World::initialize_chunk_decorations(uint64_t index) {
     generator->generate_decorations(this, coordinate);
 
     decoration_generated[coordinate] = true;
+}
+
+void World::simulate_water() {
+    int64_t chunk_radius_x = water_simulate_radius / Chunk::CHUNK_SIZE_X;
+    int64_t chunk_radius_y = water_simulate_radius / Chunk::CHUNK_SIZE_Y;
+    int64_t chunk_radius_z = water_simulate_radius / Chunk::CHUNK_SIZE_Z;
+    for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
+        for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
+            for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
+                Vector3i coordinate = Vector3i(
+                        Chunk::CHUNK_SIZE_X * x,
+                        Chunk::CHUNK_SIZE_Y * y,
+                        Chunk::CHUNK_SIZE_Z * z) + center_chunk;
+
+                if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
+                    continue;
+                }
+
+                Object::cast_to<Chunk>(chunk_map[coordinate])->simulate_water();
+                Object::cast_to<Chunk>(chunk_map[coordinate])->generate_mesh(false);
+            }
+        }
+    }
 }
 
 void World::update_loaded_region() {

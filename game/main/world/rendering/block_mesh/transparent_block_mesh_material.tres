@@ -3,5 +3,5 @@
 [ext_resource type="Shader" uid="uid://dnx2e6euqgx2" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.gdshader" id="1_1fesj"]
 
 [resource]
-render_priority = 1
+render_priority = 0
 shader = ExtResource("1_1fesj")

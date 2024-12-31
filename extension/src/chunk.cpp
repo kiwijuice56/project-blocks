@@ -10,15 +10,12 @@ void Chunk::_bind_methods() {
 }
 
 Chunk::Chunk() {
-    vertices = PackedVector3Array();
-    uvs = PackedVector2Array();
-    uvs2 = PackedVector2Array();
-    normals = PackedVector3Array();
-
     visited = new bool[CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y];
 
-    blocks = PackedInt32Array();
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
+
+    water.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
+    water_buffer.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 
     // Initialize StaticBody3D data
     shape_data_opaque = memnew(ConcavePolygonShape3D);
@@ -28,7 +25,6 @@ Chunk::Chunk() {
 
     StaticBody3D* static_body_opaque = memnew(StaticBody3D);
     static_body_opaque->call_deferred("add_child", collision_shape_opaque);
-
     add_child(static_body_opaque);
 
     shape_data_transparent = memnew(ConcavePolygonShape3D);
@@ -38,7 +34,6 @@ Chunk::Chunk() {
 
     StaticBody3D* static_body_transparent = memnew(StaticBody3D);
     static_body_transparent->call_deferred("add_child", collision_shape_transparent);
-
     add_child(static_body_transparent);
 }
 
@@ -85,7 +80,7 @@ void Chunk::calculate_block_statistics() {
 }
 
 void Chunk::generate_mesh(bool immediate) {
-    if (block_count == 0) {
+    if (block_count == 0 && !has_water) {
         clear_collision();
         call_deferred("set_visible", false);
         return;
@@ -99,7 +94,7 @@ void Chunk::generate_mesh(bool immediate) {
     uvs.clear();
     uvs2.clear();
 
-    greedy_mesh_generation(false);
+    greedy_mesh_generation(false, false);
 
     // Package data into an ArrayMesh
     Array arrays;
@@ -137,7 +132,7 @@ void Chunk::generate_mesh(bool immediate) {
     uvs.clear();
     uvs2.clear();
 
-    greedy_mesh_generation(true);
+    greedy_mesh_generation(true, false);
 
     arrays[ArrayMesh::ARRAY_VERTEX] = vertices;
     arrays[ArrayMesh::ARRAY_NORMAL] = normals;
@@ -161,6 +156,26 @@ void Chunk::generate_mesh(bool immediate) {
         } else {
             shape_data_transparent->call_deferred("set_faces", PackedVector3Array());
         }
+    }
+
+    // Third pass (water)
+
+    vertices.clear();
+    normals.clear();
+    uvs.clear();
+    uvs2.clear();
+
+    greedy_mesh_generation(false, true);
+
+    arrays[ArrayMesh::ARRAY_VERTEX] = vertices;
+    arrays[ArrayMesh::ARRAY_NORMAL] = normals;
+    arrays[ArrayMesh::ARRAY_TEX_UV] = uvs;
+    arrays[ArrayMesh::ARRAY_TEX_UV2] = uvs2;
+
+    if (vertices.size() > 0) {
+        array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+        array_mesh->surface_set_material(material_idx, water_material);
+        material_idx += 1;
     }
 
     call_deferred("set_mesh", array_mesh);
@@ -205,30 +220,34 @@ void Chunk::place_block_at(Vector3i global_position, uint32_t block_index) {
 }
 
 // Fill vertex, normal, and uv arrays with proper triangles (using the greedy meshing algorithm)
-void Chunk::greedy_mesh_generation(bool transparent) {
+void Chunk::greedy_mesh_generation(bool transparent, bool water_pass) {
     for (uint64_t i = 0; i < CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y; i++) {
         visited[i] = false;
     }
 
     face_count = 0;
 
-    for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
+    for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
-            for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
-                current_greedy_block = get_block_index_at(Vector3i(x, y, z));
+            for (uint64_t x = 0; x < CHUNK_SIZE_Y; x++) {
+                if (!water_pass) {
+                    current_greedy_block = get_block_index_at(Vector3i(x, y, z));
 
-                bool block_transparent = Object::cast_to<Block>(block_types[current_greedy_block])->get_transparent();
+                    bool block_transparent = Object::cast_to<Block>(block_types[current_greedy_block])->get_transparent();
 
-                if (block_transparent != transparent)  {
-                    continue;
+                    if (block_transparent != transparent)  {
+                        continue;
+                    }
+                } else {
+                    current_greedy_block = water[position_to_index(Vector3i(x, y, z))];
                 }
 
-                if (greedy_invalid(Vector3i(x, y, z))) {
+                if (greedy_invalid(Vector3i(x, y, z), water_pass)) {
                     continue;
                 }
 
                 Vector3i start = Vector3i(x, y, z);
-                Vector3i size = transparent ? Vector3i(1, 1, 1) : greedy_scan(start);
+                Vector3i size = transparent ? Vector3i(1, 1, 1) : greedy_scan(start, water_pass);
 
                 add_rectangular_prism(start, size);
             }
@@ -237,9 +256,9 @@ void Chunk::greedy_mesh_generation(bool transparent) {
 }
 
 // Greedily find the size of the largest prism we can add to our mesh
-Vector3i Chunk::greedy_scan(Vector3i start) {
+Vector3i Chunk::greedy_scan(Vector3i start, bool water_pass) {
     Vector3i size = Vector3i(1, 1, 1);
-    while (!greedy_invalid(start + Vector3i(size.x, 0, 0))) {
+    while (!greedy_invalid(start + Vector3i(size.x, 0, 0), water_pass)) {
         visited[position_to_index(start + Vector3i(size.x, 0, 0))] = true;
         size.x++;
     }
@@ -247,7 +266,7 @@ Vector3i Chunk::greedy_scan(Vector3i start) {
     bool axis_done = false;
     while (!axis_done) {
         for (uint8_t x = 0; x < uint8_t(size.x); x++) {
-            if (greedy_invalid(start + Vector3i(x, 0, size.z))) {
+            if (greedy_invalid(start + Vector3i(x, 0, size.z), water_pass)) {
                 axis_done = true;
                 break;
             }
@@ -263,7 +282,7 @@ Vector3i Chunk::greedy_scan(Vector3i start) {
     while (!axis_done) {
         for (uint8_t x = 0; x < uint8_t(size.x); x++) {
             for (uint8_t z = 0; z < uint8_t(size.z); z++) {
-                if (greedy_invalid(start + Vector3i(x, size.y, z))) {
+                if (greedy_invalid(start + Vector3i(x, size.y, z), water_pass)) {
                     axis_done = true;
                     break;
                 }
@@ -281,30 +300,44 @@ Vector3i Chunk::greedy_scan(Vector3i start) {
 }
 
 // Check if a position contains a block that can be merged with our current greedy scan
-bool Chunk::greedy_invalid(Vector3i position) {
+bool Chunk::greedy_invalid(Vector3i position, bool water_pass) {
     if (!in_bounds(position) || visited[position_to_index(position)]) {
         return true;
     }
 
-    uint64_t block_id = get_block_index_at(position);
+    if (water_pass) {
+        uint8_t water_level = water[position_to_index(position)];
 
-    if (block_id == 0) {
+        if (water_level == 0) {
+            return true;
+        }
+
+        if (water_level == current_greedy_block) {
+            return false;
+        }
+
         return true;
+    } else {
+        uint64_t block_id = get_block_index_at(position);
+
+        if (block_id == 0) {
+            return true;
+        }
+
+        if (block_id == current_greedy_block) {
+            return false;
+        }
+
+        bool fully_covered =
+            in_bounds(Vector3i(+1, 0, 0) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(+1, 0, 0) + position)])->get_transparent() &&
+            in_bounds(Vector3i(-1, 0, 0) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(-1, 0, 0) + position)])->get_transparent() &&
+            in_bounds(Vector3i(0, +1, 0) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(0, +1, 0) + position)])->get_transparent() &&
+            in_bounds(Vector3i(0, -1, 0) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(0, -1, 0) + position)])->get_transparent() &&
+            in_bounds(Vector3i(0, 0, +1) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(0, 0, +1) + position)])->get_transparent() &&
+            in_bounds(Vector3i(0, 0, -1) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(0, 0, -1) + position)])->get_transparent();
+
+        return !fully_covered;
     }
-
-    if (block_id == current_greedy_block) {
-        return false;
-    }
-
-    bool fully_covered =
-        in_bounds(Vector3i(+1, 0, 0) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(+1, 0, 0) + position)])->get_transparent() &&
-        in_bounds(Vector3i(-1, 0, 0) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(-1, 0, 0) + position)])->get_transparent() &&
-        in_bounds(Vector3i(0, +1, 0) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(0, +1, 0) + position)])->get_transparent() &&
-        in_bounds(Vector3i(0, -1, 0) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(0, -1, 0) + position)])->get_transparent() &&
-        in_bounds(Vector3i(0, 0, +1) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(0, 0, +1) + position)])->get_transparent() &&
-        in_bounds(Vector3i(0, 0, -1) + position) && !Object::cast_to<Block>(block_types[get_block_index_at(Vector3i(0, 0, -1) + position)])->get_transparent();
-
-    return !fully_covered;
 }
 
 // Adds vertices, uvs, and normals for a rectangular prism to our mesh
@@ -399,4 +432,30 @@ void Chunk::add_face_uvs(uint64_t id, Vector2i scale) {
 
 void Chunk::add_face_normals(Vector3i normal) {
     for (uint8_t i = 0; i < 6; i++) normals[face_count * 6 + i] = normal;
+}
+
+void Chunk::simulate_water() {
+    if (water_sleeping) {
+        return;
+    }
+
+    water_sleeping = true;
+    for (uint64_t x = 0; x < CHUNK_SIZE_X; x++) {
+        for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
+            for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
+                uint8_t w_0 = water[position_to_index(Vector3i(x, y, z))];
+                uint8_t w_1 = in_bounds(Vector3i(x - 1, y, z + 0)) ? water[position_to_index(Vector3i(x - 1, y, z + 0))] : 0;
+                uint8_t w_2 = in_bounds(Vector3i(x + 1, y, z + 0)) ? water[position_to_index(Vector3i(x + 1, y, z + 0))] : 0;
+                uint8_t w_3 = in_bounds(Vector3i(x + 0, y, z + 1)) ? water[position_to_index(Vector3i(x + 0, y, z + 1))] : 0;
+                uint8_t w_4 = in_bounds(Vector3i(x + 0, y, z - 1)) ? water[position_to_index(Vector3i(x + 0, y, z - 1))] : 0;
+                water_buffer[position_to_index(Vector3i(x, y, z))] = (uint8_t) (((uint16_t) w_0 + w_1 + w_2 + w_3 + w_4) / 5);
+            }
+        }
+    }
+    for (uint64_t i = 0; i < CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z; i++) {
+        water[i] = water_buffer[i];
+        if (water[i] != 0) {
+            water_sleeping = false;
+        }
+    }
 }

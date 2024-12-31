@@ -12,6 +12,6 @@ albedo_color = Color(1, 1, 1, 0.0117647)
 disable_receive_shadows = true
 
 [node name="BlockOutline" type="MeshInstance3D"]
-transform = Transform3D(1.001, 0, 0, 0, 1.001, 0, 0, 0, 1.001, 0, 0, 0)
+transform = Transform3D(1.01, 0, 0, 0, 1.01, 0, 0, 0, 1.01, 0, 0, 0)
 material_override = SubResource("StandardMaterial3D_okdxy")
 mesh = ExtResource("1_nfp3w")

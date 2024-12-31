@@ -26,11 +26,13 @@ class World : public Node3D {
 
 private:
 	int64_t instance_radius = 128;
+	int64_t water_simulate_radius = 32;
 
 	// Resources
 	TypedArray<Block> block_types;
 	Ref<ShaderMaterial> block_material;
 	Ref<ShaderMaterial> transparent_block_material;
+	Ref<ShaderMaterial> water_material;
 
 	Ref<PackedScene> dropped_item_scene;
 	Ref<PackedScene> break_effect_scene;
@@ -108,6 +110,8 @@ public:
 	// Used to set the loaded region of the world, new_center is usually the player's position
 	void set_loaded_region_center(Vector3 new_center);
 
+	void simulate_water();
+
 	// Helpful interfacing methods
 	bool is_position_loaded(Vector3 position);
 	Chunk* get_chunk_at(Vector3 position); // Gets the chunk nearest to the given position
@@ -132,6 +136,9 @@ public:
 
 	Ref<ShaderMaterial> get_transparent_block_material() const;
     void set_transparent_block_material(Ref<ShaderMaterial> new_material);
+
+	Ref<ShaderMaterial> get_water_material() const;
+    void set_water_material(Ref<ShaderMaterial> new_material);
 
 	Ref<Generator> get_generator() const;
     void set_generator(Ref<Generator> new_generator);
