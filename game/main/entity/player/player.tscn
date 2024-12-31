@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://ccsm4tlbop58m"]
+[gd_scene load_steps=13 format=3 uid="uid://ccsm4tlbop58m"]
 
 [ext_resource type="PackedScene" uid="uid://co5xqagmethrd" path="res://main/entity/entity.tscn" id="1_chebf"]
 [ext_resource type="Script" uid="uid://xwioa0gyxopg" path="res://main/entity/player/player.gd" id="2_4yh36"]
@@ -6,7 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://cvlj2x7ggstow" path="res://main/entity/player/block_outline/block_outline.tscn" id="3_gneh7"]
 [ext_resource type="Script" uid="uid://wmqswonvxa7" path="res://main/items/inventory/inventory.gd" id="3_lpwwm"]
 [ext_resource type="PackedScene" uid="uid://ckxlpl71nqlua" path="res://main/entity/behaviors/pick_up_items/pick_up_items.tscn" id="5_gf10l"]
-[ext_resource type="Script" uid="uid://djhddjugd4yhq" path="res://main/entity/behaviors/drop_items/drop_items.gd" id="5_yo8f8"]
+[ext_resource type="PackedScene" uid="uid://dbwjmayjd4meg" path="res://main/entity/behaviors/drop_items/drop_items.tscn" id="5_yo8f8"]
+[ext_resource type="Script" uid="uid://bpu5vdls6nnto" path="res://main/entity/behaviors/step/step.gd" id="6_iata8"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1ux1p"]
 radius = 0.3
@@ -21,7 +22,7 @@ loop_mode = 1
 tracks/0/type = "method"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath(".")
+tracks/0/path = NodePath("Behaviors/Step")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -72,11 +73,15 @@ inventory_secondary = NodePath("../../Inventory")
 shape = SubResource("CapsuleShape3D_1ux1p")
 entity = NodePath("../..")
 
-[node name="DropItems" type="Node3D" parent="Behaviors" index="1" node_paths=PackedStringArray("target_raycast", "drop_spawn", "entity")]
+[node name="DropItems" parent="Behaviors" index="1" node_paths=PackedStringArray("target_raycast", "drop_spawn", "entity") instance=ExtResource("5_yo8f8")]
 unique_name_in_owner = true
-script = ExtResource("5_yo8f8")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32258, 1.15148, 0)
 target_raycast = NodePath("../../Camera3D/InteractRayCast3D")
 drop_spawn = NodePath("../../Camera3D/DropSpawn")
+entity = NodePath("../..")
+
+[node name="Step" type="Node3D" parent="Behaviors" index="2" node_paths=PackedStringArray("entity")]
+script = ExtResource("6_iata8")
 entity = NodePath("../..")
 
 [node name="FloorRayCast3D" type="RayCast3D" parent="." index="3"]

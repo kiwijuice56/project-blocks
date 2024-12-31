@@ -38,6 +38,7 @@ window/vsync/vsync_mode=0
 folder_colors={
 "res://main/autoload/": "gray",
 "res://main/entity/": "pink",
+"res://main/entity/behaviors/": "purple",
 "res://main/items/": "yellow",
 "res://main/items/blocks/": "orange",
 "res://main/items/blocks/icons/": "teal",

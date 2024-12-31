@@ -19,6 +19,7 @@ func drop_and_remove_from_inventory(inventory: Inventory, index: int) -> void:
 		drop_item(to_drop)
 
 func drop_item(item: ItemState) -> void:
+	%PopPlayer.play()
 	var new_item: DroppedItem = dropped_item_scene.instantiate()
 	new_item.collect_delay_time = collect_delay_time
 	get_tree().get_root().add_child(new_item)
