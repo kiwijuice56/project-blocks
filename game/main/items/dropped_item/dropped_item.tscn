@@ -238,3 +238,7 @@ libraries = {
 &"": SubResource("AnimationLibrary_qy3cb")
 }
 speed_scale = 5.0
+
+[node name="DespawnTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 600.0

@@ -38,8 +38,8 @@ func drop_item(item: ItemState, drop_position: Vector3, initial_velocity: Vector
 	var new_item: DroppedItem = dropped_item_scene.instantiate()
 	new_item.collect_delay_time = repickup_delay
 	get_parent().add_child(new_item)
+	new_item.global_position = drop_position - Vector3(0.5, 0.5, 0.5)
 	new_item.initialize(item)
-	new_item.global_position = drop_position
 	new_item.velocity = initial_velocity
 
 func step() -> void:

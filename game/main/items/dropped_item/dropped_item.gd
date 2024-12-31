@@ -17,6 +17,11 @@ var collect_delay_time: float
 
 func _ready() -> void:
 	%DetectionArea3D.area_entered.connect(_on_area_entered)
+	%DespawnTimer.timeout.connect(_on_timeout)
+
+func _on_timeout() -> void:
+	if state == SLEEPING:
+		queue_free()
 
 # Detects other dropped items to merge with them
 func _on_area_entered(new_area: Area3D) -> void:
@@ -91,6 +96,8 @@ func initialize(set_item: ItemState) -> void:
 		%Cube.get_surface_override_material(0).albedo_texture = ItemMap.map(item.id).texture
 	else:
 		%Cube.visible = true
+	
+	check_swim()
 	
 	can_collect = false
 	await get_tree().create_timer(collect_delay_time).timeout
