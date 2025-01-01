@@ -30,7 +30,7 @@ void DebugGenerator::generate_water(World* world, Chunk* chunk, Array decoration
             for (uint64_t z = 0; z < Chunk::CHUNK_SIZE_Z; z++) {
                 for (uint64_t y = 0; y < Chunk::CHUNK_SIZE_Y; y++) {
                     if (y >= 8 && y <= 12 && x >= 6 && x <= 10 && z >= 6 && z <= 10) {
-                        chunk->set_water_at(Vector3i(x, y, z), 255);
+                        chunk->water[Chunk::position_to_index(Vector3i(x, y, z))] = 255;
                     }
                 }
             }

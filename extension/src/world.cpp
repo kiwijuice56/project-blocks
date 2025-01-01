@@ -5,6 +5,10 @@
 
 using namespace godot;
 
+////////////////////////
+//   Initialization   //
+////////////////////////
+
 void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("initialize"), &World::initialize);
     ClassDB::bind_method(D_METHOD("set_loaded_region_center", "new_center"), &World::set_loaded_region_center);
@@ -118,73 +122,7 @@ World::World() { }
 
 World::~World() { }
 
-void World::set_block_types(TypedArray<Block> new_block_types) {
-    block_types = new_block_types;
-}
-
-TypedArray<Block> World::get_block_types() const {
-    return block_types;
-}
-
-Ref<ShaderMaterial> World::get_block_material() const {
-    return block_material;
-}
-
-void World::set_block_material(Ref<ShaderMaterial> new_material) {
-    block_material = new_material;
-}
-
-Ref<ShaderMaterial> World::get_water_material() const {
-    return water_material;
-}
-
-void World::set_water_material(Ref<ShaderMaterial> new_material) {
-    water_material = new_material;
-}
-
-Ref<ShaderMaterial> World::get_transparent_block_material() const {
-    return transparent_block_material;
-}
-
-void World::set_transparent_block_material(Ref<ShaderMaterial> new_material) {
-    transparent_block_material = new_material;
-}
-
-void World::set_instance_radius(int64_t new_radius) {
-    instance_radius = new_radius;
-}
-
-int64_t World::get_instance_radius() const {
-    return instance_radius;
-}
-
-TypedArray<Decoration> World::get_decorations() const {
-    return decorations;
-}
-
-void World::set_decorations(TypedArray<Decoration> new_decorations) {
-    decorations = new_decorations;
-}
-
-Ref<Generator> World::get_generator() const {
-    return generator;
-}
-
-void World::set_generator(Ref<Generator> new_generator) {
-    generator = new_generator;
-}
-
-void World::set_loaded_region_center(Vector3 new_center) {
-    Vector3i new_center_chunk = Vector3i();
-    new_center_chunk.x = new_center.x - int64_t(new_center.x) % Chunk::CHUNK_SIZE_X;
-    new_center_chunk.y = new_center.y - int64_t(new_center.y) % Chunk::CHUNK_SIZE_Y;
-    new_center_chunk.z = new_center.z - int64_t(new_center.z) % Chunk::CHUNK_SIZE_Z;
-
-    center_chunk = new_center_chunk;
-    center = Vector3i(new_center);
-    update_loaded_region();
-}
-
+// We need a separate method because of some loading issues in Godot
 void World::initialize() {
     dropped_item_scene = ResourceLoader::get_singleton()->load("res://main/items/dropped_item/dropped_item.tscn");
     break_effect_scene = ResourceLoader::get_singleton()->load("res://main/items/blocks/break_effect/break_effect.tscn");
@@ -206,11 +144,11 @@ void World::initialize() {
 
     // Do not create chunk children when only in the editor
     if (!Engine::get_singleton()->is_editor_hint()) {
-        regenerate_chunks();
+        instantiate_chunks();
     }
 }
 
-void World::regenerate_chunks() {
+void World::instantiate_chunks() {
     all_chunks.clear();
 
     center_chunk = Vector3i(0, 0, 0);
@@ -243,75 +181,41 @@ void World::regenerate_chunks() {
     }
 }
 
-void World::initialize_chunk(uint64_t index) {
-    Chunk* chunk = Object::cast_to<Chunk>(init_queue[index]);
-    Vector3i coordinate = init_queue_positions[index];
+void World::create_texture_atlas() {
+    TypedArray<Image> images;
 
-    if (chunk_data.has(coordinate)) {
-        chunk->blocks = chunk_data[coordinate];
-        chunk->water = chunk_water_data[coordinate];
-    } else {
-        generator->generate_terrain_blocks(this, chunk, decoration_map[coordinate], coordinate);
-        generator->generate_decoration_blocks(this, chunk, decoration_map[coordinate], coordinate);
-        generator->generate_water(this, chunk, decoration_map[coordinate], coordinate);
-    }
-
-    chunk->calculate_block_statistics();
-    chunk->never_initialized = false;
-    chunk->generate_mesh(false);
-    chunk->generate_water_mesh();
-
-    // Ensure water isn't asleep when a chunk is loaded
-    if (chunk->water_count > 0) {
-        chunk->water_chunk_awake.fill(1);
-    }
-
-    is_chunk_loaded[coordinate] = true;
-}
-
-void World::initialize_chunk_decorations(uint64_t index) {
-    Vector3i coordinate = init_queue_positions[index];
-    generator->generate_decorations(this, coordinate);
-    decoration_generated[coordinate] = true;
-}
-
-void World::simulate_water() {
-    int64_t chunk_radius_x = water_simulate_radius / Chunk::CHUNK_SIZE_X;
-    int64_t chunk_radius_y = water_simulate_radius / Chunk::CHUNK_SIZE_Y;
-    int64_t chunk_radius_z = water_simulate_radius / Chunk::CHUNK_SIZE_Z;
-
-    for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
-        for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
-            for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
-                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
-
-                if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
-                    continue;
-                }
-
-                Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
-                chunk->simulate_water();
-            }
-        }
-    }
-    for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
-        for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
-            for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
-                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
-                if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
-                    continue;
-                }
-
-                Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
-                if (chunk->water_updated) {
-                    chunk->generate_water_mesh();
-                    chunk->water_updated = false;
-                }
-            }
+    images.resize(6 * block_types.size());
+    for (int64_t i = 0; i < block_types.size(); i++) {
+        Block* block = Object::cast_to<Block>(block_types[i]);
+        Ref<Image> combined_image = block->get_texture()->get_image();
+        for (int64_t j = 0; j < 6; j++) {
+            Ref<Image> side_image = Image::create_empty(16, 16, false, Image::FORMAT_RGBA8);
+            side_image->blit_rect(combined_image, Rect2i(j * 16, 0, 16, 16), Vector2i());
+            images[6 * i + j] = side_image;
         }
     }
 
-    odd_water_frame = !odd_water_frame;
+    Ref<Texture2DArray> atlas = memnew(Texture2DArray);
+    atlas->create_from_images(images);
+    block_material->set_shader_parameter("textures", atlas);
+    transparent_block_material->set_shader_parameter("textures", atlas);
+}
+
+
+////////////////////////
+//   Chunk Loading    //
+////////////////////////
+
+
+void World::set_loaded_region_center(Vector3 new_center) {
+    Vector3i new_center_chunk = Vector3i();
+    new_center_chunk.x = new_center.x - int64_t(new_center.x) % Chunk::CHUNK_SIZE_X;
+    new_center_chunk.y = new_center.y - int64_t(new_center.y) % Chunk::CHUNK_SIZE_Y;
+    new_center_chunk.z = new_center.z - int64_t(new_center.z) % Chunk::CHUNK_SIZE_Z;
+
+    center_chunk = new_center_chunk;
+    center = Vector3i(new_center);
+    update_loaded_region();
 }
 
 void World::update_loaded_region() {
@@ -435,6 +339,83 @@ void World::update_loaded_region() {
     }
 }
 
+void World::initialize_chunk(uint64_t index) {
+    Chunk* chunk = Object::cast_to<Chunk>(init_queue[index]);
+    Vector3i coordinate = init_queue_positions[index];
+
+    if (chunk_data.has(coordinate)) {
+        chunk->blocks = chunk_data[coordinate];
+        chunk->water = chunk_water_data[coordinate];
+    } else {
+        generator->generate_terrain_blocks(this, chunk, decoration_map[coordinate], coordinate);
+        generator->generate_decoration_blocks(this, chunk, decoration_map[coordinate], coordinate);
+        generator->generate_water(this, chunk, decoration_map[coordinate], coordinate);
+    }
+
+    chunk->calculate_block_statistics();
+    chunk->never_initialized = false;
+    chunk->generate_mesh(false);
+    chunk->generate_water_mesh();
+
+    // Ensure water isn't asleep when a chunk is loaded
+    if (chunk->water_count > 0) {
+        chunk->water_chunk_awake.fill(1);
+    }
+
+    is_chunk_loaded[coordinate] = true;
+}
+
+void World::initialize_chunk_decorations(uint64_t index) {
+    Vector3i coordinate = init_queue_positions[index];
+    generator->generate_decorations(this, coordinate);
+    decoration_generated[coordinate] = true;
+}
+
+
+//////////////////////////////
+//   Interfacing Methods    //
+//////////////////////////////
+
+
+void World::simulate_water() {
+    int64_t chunk_radius_x = water_simulate_radius / Chunk::CHUNK_SIZE_X;
+    int64_t chunk_radius_y = water_simulate_radius / Chunk::CHUNK_SIZE_Y;
+    int64_t chunk_radius_z = water_simulate_radius / Chunk::CHUNK_SIZE_Z;
+
+    for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
+        for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
+            for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
+                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
+
+                if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
+                    continue;
+                }
+
+                Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
+                chunk->simulate_water();
+            }
+        }
+    }
+    for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
+        for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
+            for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
+                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
+                if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
+                    continue;
+                }
+
+                Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
+                if (chunk->water_updated) {
+                    chunk->generate_water_mesh();
+                    chunk->water_updated = false;
+                }
+            }
+        }
+    }
+
+    odd_water_frame = !odd_water_frame;
+}
+
 void World::place_decoration(Ref<Decoration> decoration, Vector3i position) {
     Ref<Decoration> new_decoration = memnew(Decoration);
     new_decoration->position = position;
@@ -505,27 +486,6 @@ bool World::is_chunk_in_radius(Vector3i coordinate, int64_t radius) {
     return (center_chunk - coordinate).length_squared() < radius * radius;
 }
 
-void World::create_texture_atlas() {
-    TypedArray<Image> images;
-
-    images.resize(6 * block_types.size());
-    for (int64_t i = 0; i < block_types.size(); i++) {
-        Block* block = Object::cast_to<Block>(block_types[i]);
-        Ref<Image> combined_image = block->get_texture()->get_image();
-        for (int64_t j = 0; j < 6; j++) {
-            Ref<Image> side_image = Image::create_empty(16, 16, false, Image::FORMAT_RGBA8);
-            side_image->blit_rect(combined_image, Rect2i(j * 16, 0, 16, 16), Vector2i());
-            images[6 * i + j] = side_image;
-        }
-    }
-
-    Ref<Texture2DArray> atlas = memnew(Texture2DArray);
-    atlas->create_from_images(images);
-    block_material->set_shader_parameter("textures", atlas);
-    transparent_block_material->set_shader_parameter("textures", atlas);
-
-}
-
 Ref<Block> World::get_block_type_at(Vector3 position) {
     position = position.floor();
 
@@ -584,3 +544,64 @@ void World::place_water_at(Vector3 position, uint8_t amount) {
     chunk->set_water_at(Vector3i(position), amount);
 }
 
+
+///////////////////////////////////
+//   Boilerplate setter/getter   //
+//////////////////////////////////
+
+
+void World::set_block_types(TypedArray<Block> new_block_types) {
+    block_types = new_block_types;
+}
+
+TypedArray<Block> World::get_block_types() const {
+    return block_types;
+}
+
+Ref<ShaderMaterial> World::get_block_material() const {
+    return block_material;
+}
+
+void World::set_block_material(Ref<ShaderMaterial> new_material) {
+    block_material = new_material;
+}
+
+Ref<ShaderMaterial> World::get_water_material() const {
+    return water_material;
+}
+
+void World::set_water_material(Ref<ShaderMaterial> new_material) {
+    water_material = new_material;
+}
+
+Ref<ShaderMaterial> World::get_transparent_block_material() const {
+    return transparent_block_material;
+}
+
+void World::set_transparent_block_material(Ref<ShaderMaterial> new_material) {
+    transparent_block_material = new_material;
+}
+
+void World::set_instance_radius(int64_t new_radius) {
+    instance_radius = new_radius;
+}
+
+int64_t World::get_instance_radius() const {
+    return instance_radius;
+}
+
+TypedArray<Decoration> World::get_decorations() const {
+    return decorations;
+}
+
+void World::set_decorations(TypedArray<Decoration> new_decorations) {
+    decorations = new_decorations;
+}
+
+Ref<Generator> World::get_generator() const {
+    return generator;
+}
+
+void World::set_generator(Ref<Generator> new_generator) {
+    generator = new_generator;
+}

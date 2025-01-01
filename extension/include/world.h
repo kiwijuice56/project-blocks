@@ -102,22 +102,18 @@ public:
 
 	void initialize();
 	void create_texture_atlas();
-
-	void regenerate_chunks();
-	void initialize_chunk(uint64_t index);
-	void initialize_chunk_decorations(uint64_t index);
-
-	void update_loaded_region();
-
-	bool is_chunk_in_radius(Vector3i coordinate, int64_t radius);
+	void instantiate_chunks();
 
 	// Used to set the loaded region of the world, new_center is usually the player's position
 	void set_loaded_region_center(Vector3 new_center);
-
-	void simulate_water();
+	void update_loaded_region();
+	void initialize_chunk(uint64_t index); // MT
+	void initialize_chunk_decorations(uint64_t index); // MT
 
 	// Helpful interfacing methods
+	void simulate_water();
 	bool is_position_loaded(Vector3 position);
+	bool is_chunk_in_radius(Vector3i coordinate, int64_t radius);
 	Chunk* get_chunk_at(Vector3 position); // Gets the chunk nearest to the given position
 	Vector3i snap_to_chunk(Vector3 position); // Snaps a position to the nearest chunk's position
 	Ref<Block> get_block_type_at(Vector3 position);

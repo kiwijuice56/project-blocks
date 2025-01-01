@@ -6,6 +6,12 @@
 
 using namespace godot;
 
+
+////////////////////////
+//   Initialization   //
+////////////////////////
+
+
 void Chunk::_bind_methods() {
 
 }
@@ -483,7 +489,7 @@ void Chunk::add_face_normals(Vector3i normal) {
 void Chunk::water_chunk_wake_set(Vector3i local_position, bool awake) {
     Vector3i water_chunk_coord = local_position / Vector3i(WATER_CHUNK_SIZE_X, WATER_CHUNK_SIZE_Y, WATER_CHUNK_SIZE_Z);
     water_chunk_awake[uint64_t(water_chunk_coord.x) + uint64_t(water_chunk_coord.z) * WATER_CHUNK_SIZE_X + uint64_t(water_chunk_coord.y) * WATER_CHUNK_SIZE_X * WATER_CHUNK_SIZE_Z] = awake ? 1 : 0;
-    // waken surrounding chunks
+    // TODO: waken surrounding chunks
 }
 
 bool Chunk::is_valid_water(Vector3i local_position) {
