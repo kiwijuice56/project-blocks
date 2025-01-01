@@ -64,6 +64,7 @@ public:
 
 	// Stores block data of modified chunks (Vector3i : PackedInt32Array)
 	Dictionary chunk_data;
+	Dictionary chunk_water_data; // PackedByteArray
 
 	// Used to access chunks that need to be initialized
 	std::vector<Chunk*> init_queue;

@@ -27,6 +27,8 @@ public:
 	// This function should not fill in a decoration's blocks
 	virtual void generate_terrain_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position);
 
+	virtual void generate_water(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position);
+
 	// Place down blocks of decorations that are in range of this chunk
 	void generate_decoration_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position);
 

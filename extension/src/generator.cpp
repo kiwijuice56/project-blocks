@@ -18,6 +18,10 @@ void Generator::generate_terrain_blocks(World* world, Chunk* chunk, Array decora
     chunk->blocks.fill(0);
 }
 
+void Generator::generate_water(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
+    chunk->water.fill(0);
+}
+
 void Generator::generate_decorations(World* world, Vector3i chunk_position) {
 
 }

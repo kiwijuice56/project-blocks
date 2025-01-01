@@ -71,11 +71,17 @@ bool Chunk::in_bounds(Vector3i position) {
 void Chunk::calculate_block_statistics() {
     uint8_t main_block_type = blocks[0];
     uniform = true;
+    has_water = false;
     block_count = 0;
     for (uint64_t i = 0; i < blocks.size(); i++) {
         uniform = blocks[i] == main_block_type;
         if (blocks[i] > 0) {
             block_count++;
+        }
+    }
+    for (uint64_t i = 0; i < water.size(); i++) {
+        if (water[i] > 0) {
+            has_water = true;
         }
     }
 }
@@ -463,6 +469,9 @@ void Chunk::set_water_at(Vector3i global_position, uint8_t water_level) {
     generate_mesh(false);
 
     modified = true;
+    if (water_level > 0) {
+        has_water = true;
+    }
 }
 
 void Chunk::simulate_water() {

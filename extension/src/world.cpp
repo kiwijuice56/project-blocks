@@ -248,9 +248,11 @@ void World::initialize_chunk(uint64_t index) {
 
     if (chunk_data.has(coordinate)) {
         chunk->blocks = chunk_data[coordinate];
+        chunk->water = chunk_water_data[coordinate];
     } else {
         generator->generate_terrain_blocks(this, chunk, decoration_map[coordinate], coordinate);
         generator->generate_decoration_blocks(this, chunk, decoration_map[coordinate], coordinate);
+        generator->generate_water(this, chunk, decoration_map[coordinate], coordinate);
     }
 
     chunk->calculate_block_statistics();
@@ -285,7 +287,6 @@ void World::simulate_water() {
                 }
 
                 Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
-                UtilityFunctions::print(coordinate);
                 chunk->simulate_water();
             }
         }
@@ -385,6 +386,7 @@ void World::update_loaded_region() {
 
                 if (chunk->modified) {
                     chunk_data[coordinate] = chunk->blocks;
+                    chunk_water_data[coordinate] = chunk->water;
                 }
             } else {
                 chunk->simulating_water = is_chunk_in_radius(coordinate, water_simulate_radius);

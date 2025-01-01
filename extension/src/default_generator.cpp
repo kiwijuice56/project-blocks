@@ -26,6 +26,10 @@ DefaultGenerator::DefaultGenerator() { }
 
 DefaultGenerator::~DefaultGenerator() { }
 
+void DefaultGenerator::generate_water(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
+    chunk->water.fill(0);
+}
+
 void DefaultGenerator::generate_terrain_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
     Vector2 chunk_uv = Vector2(
         Vector2i(chunk_position.x, chunk_position.z)
@@ -88,8 +92,6 @@ void DefaultGenerator::generate_decorations(World* world, Vector3i chunk_positio
             world->place_decoration(tree, chunk_position + Vector3i(-2, y + 1, -2));
         }
     }
-
-
 }
 
 Ref<NoiseTexture2D> DefaultGenerator::get_main_noise_texture() const {

@@ -16,10 +16,6 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	set_loaded_region_center(%Player.global_position)
 	if x % 4 == 0:
-		print()
-		print(%Player.global_position)
-		print()
-		
 		simulate_water()
 	x += 1
 
