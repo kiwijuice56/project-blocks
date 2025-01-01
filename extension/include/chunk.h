@@ -26,16 +26,16 @@ public:
     static const int64_t CHUNK_SIZE_Y = 16;
     static const int64_t CHUNK_SIZE_Z = 16;
 
-    // Wrapper around internal water methods
-    struct WaterQuery {
-        uint8_t water;
-        bool valid;
-    };
+    // The dimensions of individual chunks
+    static const int64_t WATER_CHUNK_SIZE_X = 8;
+    static const int64_t WATER_CHUNK_SIZE_Y = 8;
+    static const int64_t WATER_CHUNK_SIZE_Z = 8;
 
     // Block + water index data
     PackedInt32Array blocks;
     PackedByteArray water; // Stores numerical density 0-255
     PackedByteArray water_buffer; // Buffer between simulation steps
+    PackedByteArray water_chunk_awake; // Stores whether each water subchunk should be awake
 
     // Mesh data
     PackedVector3Array vertices;
@@ -53,7 +53,6 @@ public:
     TypedArray<Block> block_types;
     Ref<ShaderMaterial> block_material;
 	Ref<ShaderMaterial> transparent_block_material;
-    Ref<ShaderMaterial> water_material;
 
     // Greedy meshing state variables
     bool* visited;
@@ -62,10 +61,10 @@ public:
     // Calculated state variables
     uint64_t face_count = 0; // Quads, not tris
     uint64_t block_count = 0;
+    uint64_t water_count = 0;
     bool uniform = false; // Used to optimize chunks of one block type
     bool modified = false; // Whether this chunk has had any blocks placed/removed
     bool never_initialized = true;
-    bool has_water = false;
     bool water_updated = false;
 
     Chunk();
@@ -75,6 +74,8 @@ public:
     void remove_block_at(Vector3i global_position);
     void place_block_at(Vector3i global_position, uint32_t block_index);
     uint64_t get_block_index_at_global(Vector3i global_position);
+    void set_water_at_global(Vector3i global_position);
+    void get_water_at_global(Vector3i global_position);
 
     // Internal interfacing methods
     uint64_t get_block_index_at(Vector3i position);
@@ -96,10 +97,12 @@ public:
     Vector3i greedy_scan(Vector3i start, bool water_pass);
     bool greedy_invalid(Vector3i position, bool water_pass);
 
-    // Water methods
-    WaterQuery get_water_at(Vector3i local_position);
+    // Water simulation
+    uint8_t get_water_at(Vector3i local_position);
     void set_water_at(Vector3i local_position, uint8_t water);
     void simulate_water();
+    void water_chunk_wake_set(Vector3i local_position, bool awake);
+    bool is_valid_water(Vector3i local_position);
 };
 }
 

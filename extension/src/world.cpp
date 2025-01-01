@@ -234,7 +234,6 @@ void World::regenerate_chunks() {
                 new_chunk->block_material = block_material;
                 new_chunk->transparent_block_material = transparent_block_material;
                 new_chunk->water_mesh->set_material_override(water_material);
-                new_chunk->water_material = water_material;
 
                 add_child(new_chunk);
 
@@ -262,13 +261,17 @@ void World::initialize_chunk(uint64_t index) {
     chunk->generate_mesh(false);
     chunk->generate_water_mesh();
 
+    // Ensure water isn't asleep when a chunk is loaded
+    if (chunk->water_count > 0) {
+        chunk->water_chunk_awake.fill(1);
+    }
+
     is_chunk_loaded[coordinate] = true;
 }
 
 void World::initialize_chunk_decorations(uint64_t index) {
     Vector3i coordinate = init_queue_positions[index];
     generator->generate_decorations(this, coordinate);
-
     decoration_generated[coordinate] = true;
 }
 
@@ -277,14 +280,9 @@ void World::simulate_water() {
     int64_t chunk_radius_y = water_simulate_radius / Chunk::CHUNK_SIZE_Y;
     int64_t chunk_radius_z = water_simulate_radius / Chunk::CHUNK_SIZE_Z;
 
-    uint8_t chunks_simulated = 0;
     for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
         for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
             for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
-                if (chunks_simulated == MAX_WATER_CHUNKS) {
-                    break;
-                }
-
                 Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
 
                 if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
@@ -292,21 +290,7 @@ void World::simulate_water() {
                 }
 
                 Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
-
-                if (!chunk->has_water) {
-                    continue;
-                }
-
-                float distance = (coordinate + Vector3i(8, 8, 8)).distance_to(center);
-                float a = distance / water_simulate_radius;
-
-                if (UtilityFunctions::randf() < UtilityFunctions::pow(a, 0.2)) {
-                    continue;
-                }
-
                 chunk->simulate_water();
-                chunk->water_updated = true;
-                chunks_simulated++;
             }
         }
     }
@@ -555,7 +539,6 @@ void World::break_block_at(Vector3 position, bool drop_item, bool play_effect) {
     Chunk* chunk = get_chunk_at(position);
     Ref<Block> block_type = get_block_type_at(position);
     chunk->remove_block_at(Vector3i(position));
-    chunk->has_water = true; // Not really, but we need to force a water check for flowing water
 
     if (drop_item && block_type->get_can_drop()) {
         Node* dropped_item = dropped_item_scene->instantiate();
@@ -599,6 +582,5 @@ void World::place_water_at(Vector3 position, uint8_t amount) {
 
     Chunk* chunk = get_chunk_at(position);
     chunk->set_water_at(Vector3i(position), amount);
-    chunk->has_water = true;
 }
 
