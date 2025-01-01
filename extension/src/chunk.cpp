@@ -442,10 +442,18 @@ Chunk::WaterQuery Chunk::get_water_at(Vector3i local_position) {
     return result;
 }
 
-void Chunk::set_water_at(Vector3i local_position, uint8_t water_level) {
-    if (in_bounds(local_position)) {
-        water[position_to_index(local_position)] = water_level;
+void Chunk::set_water_at(Vector3i global_position, uint8_t water_level) {
+    Vector3i block_position = global_position - Vector3i(get_global_position());
+    uint64_t index = position_to_index(block_position);
+
+    if (blocks[index] != 0) {
+        return;
     }
+
+    water[index] = water_level;
+    generate_mesh(false);
+
+    modified = true;
 }
 
 void Chunk::simulate_water() {
@@ -473,8 +481,8 @@ void Chunk::simulate_water() {
                 }
                 uint8_t w_0n = (uint8_t) w_0ns;
 
-                set_water_at(Vector3i(x, y, z), w_0n);
-                set_water_at(Vector3i(x, y + 1, z), w_u - (w_0n - w_0));
+                water[position_to_index(Vector3i(x, y, z))] = w_0n;
+                water[position_to_index(Vector3i(x, y + 1, z))] = w_u - (w_0n - w_0);
             }
         }
     }
@@ -490,7 +498,7 @@ void Chunk::simulate_water() {
 
                 uint8_t w_0 = water[position_to_index(Vector3i(x, y, z))];
 
-                float total_water = 0;
+                float total_water = w_0;
                 uint8_t count = 1;
 
                 Chunk::WaterQuery w_1 = get_water_at(Vector3i(x - 1, y, z + 0));
@@ -515,7 +523,7 @@ void Chunk::simulate_water() {
                     count++;
                 }
 
-                water_buffer[position_to_index(Vector3i(x, y, z))] = (uint8_t) UtilityFunctions::ceil(total_water / count);
+                water_buffer[position_to_index(Vector3i(x, y, z))] = (uint8_t) UtilityFunctions::round(total_water / count);
             }
         }
     }

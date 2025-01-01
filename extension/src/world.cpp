@@ -35,6 +35,7 @@ void World::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_block_type_at", "position"), &World::get_block_type_at);
     ClassDB::bind_method(D_METHOD("break_block_at", "position", "drop_item", "play_effect"), &World::break_block_at);
     ClassDB::bind_method(D_METHOD("place_block_at", "position", "block_type", "play_effect"), &World::place_block_at);
+    ClassDB::bind_method(D_METHOD("place_water_at", "position", "amount"), &World::place_water_at);
 
     ADD_PROPERTY(
         PropertyInfo(
@@ -578,3 +579,12 @@ void World::place_block_at(Vector3 position, Ref<Block> block_type, bool play_ef
 
     emit_signal("block_placed", Vector3i(position));
 }
+
+void World::place_water_at(Vector3 position, uint8_t amount) {
+    position = position.floor();
+
+    Chunk* chunk = get_chunk_at(position);
+    chunk->set_water_at(Vector3i(position), amount);
+    chunk->has_water = true;
+}
+

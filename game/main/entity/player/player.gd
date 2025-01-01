@@ -59,9 +59,10 @@ func _process(delta: float) -> void:
 		if Input.is_action_just_pressed("main_interact") and Ref.world.is_position_loaded(block_position):
 			Ref.world.break_block_at(block_position, true, true)
 			
-		if held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_just_pressed("secondary_interact") and Ref.world.is_position_loaded(place_position) and not %PlacementCheckShapeCast3D.is_colliding():
+		if held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_just_pressed("secondary_interact") and Ref.world.is_position_loaded(place_position) and Ref.world.get_block_type_at(place_position).id == 0 and not %PlacementCheckShapeCast3D.is_colliding():
 			Ref.player_hotbar.change_amount(hotbar_index, -1)
-			Ref.world.place_block_at(place_position, ItemMap.map(held_item.id), true)
+			#Ref.world.place_block_at(place_position, ItemMap.map(held_item.id), true)
+			Ref.world.place_water_at(place_position, 255)
 	elif %FloorRayCast3D.is_colliding() and held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_pressed("secondary_interact"):
 		var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())
 		var look_direction: Vector3 = -%Camera3D.get_global_transform().basis.z
@@ -80,7 +81,7 @@ func _process(delta: float) -> void:
 		
 		var floor_block_position: Vector3i = floor_position + Vector3i(flat_look_direction)
 		
-		if Ref.world.is_position_loaded(floor_block_position):
+		if Ref.world.is_position_loaded(floor_block_position) and Ref.world.get_block_type_at(floor_block_position).id == 0:
 			Ref.player_hotbar.change_amount(hotbar_index, -1)
 			Ref.world.place_block_at(floor_block_position, ItemMap.map(held_item.id), true)
 	

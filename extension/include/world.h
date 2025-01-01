@@ -123,6 +123,7 @@ public:
 	void break_block_at(Vector3 position, bool drop_item, bool play_effect);
 	void place_block_at(Vector3 position, Ref<Block> block_type, bool play_effect);
 	void place_decoration(Ref<Decoration> decoration, Vector3i position);
+	void place_water_at(Vector3 position, uint8_t amount);
 
 	// Boilerplate setters and getters
 	void set_instance_radius(int64_t new_radius);

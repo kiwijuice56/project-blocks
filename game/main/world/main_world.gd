@@ -13,7 +13,7 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	set_loaded_region_center(%Player.global_position)
-	# simulate_water()
+	simulate_water()
 
 func _input(event: InputEvent) -> void:
 	if generator is DebugGenerator and event.is_action_pressed("capture", false):

@@ -1,21 +1,16 @@
-[gd_scene load_steps=14 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=16 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" uid="uid://briopjymqw2k4" path="res://main/main.gd" id="1_wx0yy"]
-[ext_resource type="Shader" uid="uid://bvjnprxr4rehl" path="res://main/world/rendering/block_mesh/water.gdshader" id="3_0i4oc"]
+[ext_resource type="DefaultGenerator" uid="uid://diqcbn3451p2b" path="res://main/world/generators/main_generator.tres" id="2_bsumw"]
 [ext_resource type="PackedScene" uid="uid://bf8144nsbq132" path="res://main/ui/menu/game_menu/game_menu.tscn" id="3_8017u"]
 [ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/world/rendering/environments/high_graphics_environment.tres" id="4_6ud5x"]
 [ext_resource type="Shader" uid="uid://c61wm48ml41ta" path="res://main/ui/filter/dithering.gdshader" id="4_25hyt"]
+[ext_resource type="Material" uid="uid://dsbaicfaldxva" path="res://main/world/rendering/block_mesh/water_material.tres" id="4_fwcvl"]
 [ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/world/rendering/block_mesh/block_mesh_material.tres" id="5_ah4j3"]
 [ext_resource type="Script" uid="uid://baqrddgjyyfwb" path="res://main/world/main_world.gd" id="5_ds8vp"]
 [ext_resource type="AudioStream" uid="uid://b8n6mef6etkj4" path="res://main/music/naraka.ogg" id="10_0i4oc"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/entity/player/player.tscn" id="10_4clf3"]
 [ext_resource type="Material" uid="uid://dhxh3up0kwnsn" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.tres" id="10_ppf03"]
-
-[sub_resource type="DebugGenerator" id="DebugGenerator_0i4oc"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_bsumw"]
-render_priority = 0
-shader = ExtResource("3_0i4oc")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
@@ -23,30 +18,65 @@ shader_parameter/fog_color = Color(1, 1, 1, 1)
 shader_parameter/resolution_downsampling = 1.0
 shader_parameter/bit_depth = 12.0
 
+[sub_resource type="Animation" id="Animation_fwcvl"]
+resource_name = "shimmer"
+loop_mode = 1
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainWorld:water_material:shader_parameter/fade")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0),
+"points": PackedFloat32Array(0.5, -0.25, 0, 0.25, 0, 0.6, -0.25, 0, 0.25, 0, 0.5, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1)
+}
+
+[sub_resource type="Animation" id="Animation_na0o7"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainWorld:water_material:shader_parameter/fade")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0.5, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_na0o7"]
+_data = {
+&"RESET": SubResource("Animation_na0o7"),
+&"shimmer": SubResource("Animation_fwcvl")
+}
+
 [node name="Main" type="Node"]
 script = ExtResource("1_wx0yy")
 
 [node name="MainWorld" type="World" parent="."]
-generator = SubResource("DebugGenerator_0i4oc")
+generator = ExtResource("2_bsumw")
 block_material = ExtResource("5_ah4j3")
-water_material = SubResource("ShaderMaterial_bsumw")
+water_material = ExtResource("4_fwcvl")
 transparent_block_material = ExtResource("10_ppf03")
-instance_radius = 96
+instance_radius = 80
 script = ExtResource("5_ds8vp")
 
 [node name="Player" parent="." instance=ExtResource("10_4clf3")]
 unique_name_in_owner = true
-transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 8, 19, 8)
+transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 8, 86, 8)
 flying = false
 fly_impulse = 9.0
 mouse_sensitivity = 0.02
 
 [node name="SunLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.884328, 0.327811, -0.33242, 0, 0.712026, 0.702153, 0.466865, -0.620934, 0.629665, 0, 0, 0)
+layers = 5
 light_color = Color(0.877268, 0.80327, 0.741058, 1)
 light_energy = 1.5
 light_bake_mode = 0
-light_cull_mask = 4294967293
 shadow_enabled = true
 directional_shadow_blend_splits = true
 directional_shadow_max_distance = 48.0
@@ -70,3 +100,10 @@ mouse_filter = 2
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("10_0i4oc")
 volume_db = -15.0
+
+[node name="WaterShimmer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_na0o7")
+}
+autoplay = "shimmer"
+speed_scale = 0.5
