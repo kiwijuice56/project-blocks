@@ -25,8 +25,14 @@ class World : public Node3D {
 	GDCLASS(World, Node3D)
 
 private:
+
+protected:
+	static void _bind_methods();
+
+
+public:
 	int64_t instance_radius = 128;
-	int64_t water_simulate_radius = 32;
+	int64_t water_simulate_radius = 16;
 
 	// Resources
 	TypedArray<Block> block_types;
@@ -67,9 +73,6 @@ private:
 	uint64_t task_id = 0;
 	bool has_task = false;
 
-protected:
-	static void _bind_methods();
-
 	void regenerate_chunks();
 	void initialize_chunk(uint64_t index);
 	void World::initialize_chunk_decorations(uint64_t index);
@@ -79,7 +82,7 @@ protected:
 
 	bool is_chunk_in_radius(Vector3i coordinate, int64_t radius);
 
-public:
+
 	static const int64_t MAX_DECORATIONS = 16;
 
 	std::mutex decoration_lock;

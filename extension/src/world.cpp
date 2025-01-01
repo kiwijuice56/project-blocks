@@ -226,6 +226,7 @@ void World::regenerate_chunks() {
                 Chunk* new_chunk = memnew(Chunk);
 
                 new_chunk->set_position(coordinate);
+                new_chunk->world = this;
 
                 new_chunk->block_types = block_types;
                 new_chunk->block_material = block_material;
@@ -269,6 +270,7 @@ void World::simulate_water() {
     int64_t chunk_radius_x = water_simulate_radius / Chunk::CHUNK_SIZE_X;
     int64_t chunk_radius_y = water_simulate_radius / Chunk::CHUNK_SIZE_Y;
     int64_t chunk_radius_z = water_simulate_radius / Chunk::CHUNK_SIZE_Z;
+
     for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
         for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
             for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
@@ -281,8 +283,27 @@ void World::simulate_water() {
                     continue;
                 }
 
-                Object::cast_to<Chunk>(chunk_map[coordinate])->simulate_water();
-                Object::cast_to<Chunk>(chunk_map[coordinate])->generate_mesh(false);
+                Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
+                chunk->simulate_water();
+            }
+        }
+    }
+
+    for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
+        for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
+            for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
+                Vector3i coordinate = Vector3i(
+                        Chunk::CHUNK_SIZE_X * x,
+                        Chunk::CHUNK_SIZE_Y * y,
+                        Chunk::CHUNK_SIZE_Z * z) + center_chunk;
+
+                if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
+                    continue;
+                }
+
+                Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
+                chunk->copy_water_buffer();
+                chunk->generate_mesh(false);
             }
         }
     }
@@ -363,6 +384,8 @@ void World::update_loaded_region() {
                 if (chunk->modified) {
                     chunk_data[coordinate] = chunk->blocks;
                 }
+            } else {
+                chunk->simulating_water = is_chunk_in_radius(coordinate, water_simulate_radius);
             }
         }
 

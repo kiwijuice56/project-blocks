@@ -12,13 +12,13 @@ func _ready() -> void:
 	set_physics_process(true)
 
 func _physics_process(_delta: float) -> void:
-	simulate_water()
 	set_loaded_region_center(%Player.global_position)
+	# simulate_water()
 
 func _input(event: InputEvent) -> void:
 	if generator is DebugGenerator and event.is_action_pressed("capture", false):
 		capture_decoration()
-	if event.is_action_pressed("jump"):
+	if event.is_action_pressed("hotbar_1"):
 		simulate_water()
 
 func sort_by_id(a: Block, b: Block) -> bool:

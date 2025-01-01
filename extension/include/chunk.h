@@ -11,6 +11,9 @@
 #include <godot_cpp/classes/collision_shape3d.hpp>
 
 namespace godot {
+
+class World;
+
 class Chunk : public MeshInstance3D {
 	GDCLASS(Chunk, MeshInstance3D)
 
@@ -55,6 +58,8 @@ public:
     // Block index data
     PackedInt32Array blocks;
 
+    World* world;
+
     bool modified = false; // Whether this chunk has had any blocks placed/removed
     bool never_initialized = true;
 
@@ -65,9 +70,14 @@ public:
     Ref<ShaderMaterial> water_material;
 
     // Water data
+    struct WaterQuery {
+        uint8_t water;
+        bool valid;
+    };
+
     PackedByteArray water;
     PackedByteArray water_buffer;
-    bool water_sleeping = false;
+    bool simulating_water = false;
     bool has_water = false;
 
     Chunk();
@@ -90,7 +100,10 @@ public:
     uint64_t get_block_index_at_global(Vector3i global_position);
 
     // Water methods
+    WaterQuery get_water_at(Vector3i local_position);
+    void set_water_at(Vector3i local_position, uint8_t water);
     void simulate_water();
+    void copy_water_buffer();
 };
 }
 

@@ -11,7 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/entity/player/player.tscn" id="10_4clf3"]
 [ext_resource type="Material" uid="uid://dhxh3up0kwnsn" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.tres" id="10_ppf03"]
 
-[sub_resource type="DebugGenerator" id="DebugGenerator_grrlh"]
+[sub_resource type="DebugGenerator" id="DebugGenerator_0i4oc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bsumw"]
 render_priority = 0
@@ -27,7 +27,7 @@ shader_parameter/bit_depth = 12.0
 script = ExtResource("1_wx0yy")
 
 [node name="MainWorld" type="World" parent="."]
-generator = SubResource("DebugGenerator_grrlh")
+generator = SubResource("DebugGenerator_0i4oc")
 block_material = ExtResource("5_ah4j3")
 water_material = SubResource("ShaderMaterial_bsumw")
 transparent_block_material = ExtResource("10_ppf03")
@@ -36,7 +36,7 @@ script = ExtResource("5_ds8vp")
 
 [node name="Player" parent="." instance=ExtResource("10_4clf3")]
 unique_name_in_owner = true
-transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 8, 64, 8)
+transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 8, 19, 8)
 flying = false
 fly_impulse = 9.0
 mouse_sensitivity = 0.02
