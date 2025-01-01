@@ -12,9 +12,6 @@ class World;
 class Generator : public Resource {
 	GDCLASS(Generator, Resource)
 
-private:
-	Ref<NoiseTexture2D> main_noise_texture;
-
 protected:
 	static void _bind_methods();
 

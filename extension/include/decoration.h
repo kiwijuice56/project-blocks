@@ -10,17 +10,15 @@ namespace godot {
 class Decoration : public Resource {
 	GDCLASS(Decoration, Resource);
 
-private:
-
 protected:
+	static void _bind_methods();
+
+public:
     String internal_name;
 
     Vector3i size;
     PackedInt32Array blocks;
 
-	static void _bind_methods();
-
-public:
     Vector3i position;
 
 	Decoration();

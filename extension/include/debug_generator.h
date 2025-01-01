@@ -8,8 +8,6 @@ namespace godot {
 class DebugGenerator : public Generator {
 	GDCLASS(DebugGenerator, Generator)
 
-private:
-
 protected:
 	static void _bind_methods();
 

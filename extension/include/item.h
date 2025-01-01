@@ -10,20 +10,16 @@ namespace godot {
 class Item : public Resource {
 	GDCLASS(Item, Resource);
 
-private:
-
 protected:
+	static void _bind_methods();
+
+public:
     uint32_t id = 0;
     String internal_name;
     String display_name;
     Ref<Texture2D> icon;
     uint32_t stack_size = 64;
 
-	static void _bind_methods();
-
-    void simulate(uint64_t state);
-
-public:
 	Item();
 	~Item();
 

@@ -285,6 +285,7 @@ void World::simulate_water() {
                 }
 
                 Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
+                UtilityFunctions::print(coordinate);
                 chunk->simulate_water();
             }
         }

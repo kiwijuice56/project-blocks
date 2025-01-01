@@ -8,13 +8,12 @@ namespace godot {
 class DefaultGenerator : public Generator {
 	GDCLASS(DefaultGenerator, Generator)
 
-private:
-	Ref<NoiseTexture2D> main_noise_texture;
-
 protected:
 	static void _bind_methods();
 
 public:
+	Ref<NoiseTexture2D> main_noise_texture;
+
 	DefaultGenerator();
 	~DefaultGenerator();
 

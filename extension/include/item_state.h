@@ -9,17 +9,13 @@ namespace godot {
 class ItemState : public Resource {
 	GDCLASS(ItemState, Resource);
 
-private:
-
 protected:
+	static void _bind_methods();
+
+public:
     uint32_t id = 0;
     uint32_t count = 1;
 
-	static void _bind_methods();
-
-    void simulate(uint64_t state);
-
-public:
 	ItemState();
 	~ItemState();
 

@@ -15,7 +15,7 @@ class Block : public Item {
 
 private:
 
-protected:
+public:
     Ref<Texture2D> texture;
 	Ref<AudioStream> break_sound;
 	Ref<AudioStream> step_sound;
@@ -26,7 +26,6 @@ protected:
 
 	static void _bind_methods();
 
-public:
 	uint32_t index = 0;
 
 	Block();

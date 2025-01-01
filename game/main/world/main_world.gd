@@ -2,6 +2,8 @@ class_name MainWorld extends World
 # An extension of the World class to more easily interface with GDscript
 # Also sets block and decoration type arrays automatically
 
+var x: int = 0
+
 func _ready() -> void:
 	reload_types()
 	set_physics_process(false)
@@ -13,7 +15,13 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	set_loaded_region_center(%Player.global_position)
-	simulate_water()
+	if x % 4 == 0:
+		print()
+		print(%Player.global_position)
+		print()
+		
+		simulate_water()
+	x += 1
 
 func _input(event: InputEvent) -> void:
 	if generator is DebugGenerator and event.is_action_pressed("capture", false):

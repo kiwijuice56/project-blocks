@@ -29,20 +29,23 @@ private:
 protected:
 	static void _bind_methods();
 
-
 public:
+	static const int64_t MAX_DECORATIONS = 16;
+
+	// (In blocks)
 	int64_t instance_radius = 128;
-	int64_t water_simulate_radius = 16;
+	int64_t water_simulate_radius = 17;
 
 	// Resources
 	TypedArray<Block> block_types;
+	TypedArray<Decoration> decorations;
 	Ref<ShaderMaterial> block_material;
 	Ref<ShaderMaterial> transparent_block_material;
 	Ref<ShaderMaterial> water_material;
-
-	Ref<PackedScene> dropped_item_scene;
+	Ref<PackedScene> dropped_item_scene; // These (and below) are set in code for convenience
 	Ref<PackedScene> break_effect_scene;
 	Ref<PackedScene> place_effect_scene;
+	Ref<Generator> generator;
 
 	// The center chunk's position
 	Vector3i center_chunk;
@@ -56,11 +59,8 @@ public:
 	// Stores (Vector3i : Chunk) mapping for easy access
 	Dictionary chunk_map;
 
-	// Stores (Vector3i : bool)
+	// Stores (Vector3i : bool) for which chunks have decorations generated
 	Dictionary decoration_generated;
-
-	// World generation node
-	Ref<Generator> generator;
 
 	// Stores block data of modified chunks (Vector3i : PackedInt32Array)
 	Dictionary chunk_data;
@@ -72,19 +72,6 @@ public:
 	// Multithreading state
 	uint64_t task_id = 0;
 	bool has_task = false;
-
-	void regenerate_chunks();
-	void initialize_chunk(uint64_t index);
-	void World::initialize_chunk_decorations(uint64_t index);
-
-	void update_loaded_region();
-	void create_texture_atlas();
-
-	bool is_chunk_in_radius(Vector3i coordinate, int64_t radius);
-
-
-	static const int64_t MAX_DECORATIONS = 16;
-
 	std::mutex decoration_lock;
 
 	// Stores (Vector3i : Array[Decoration])
@@ -96,9 +83,6 @@ public:
 	// Stores (int : int)
 	Dictionary block_id_to_index_map;
 
-	// Stores all available decorations (String : Decoration)
-	TypedArray<Decoration> decorations;
-
 	// Stores (String : Resource) name to Decoration pairs
 	Dictionary decoration_name_map;
 
@@ -109,6 +93,15 @@ public:
 	~World();
 
 	void initialize();
+	void create_texture_atlas();
+
+	void regenerate_chunks();
+	void initialize_chunk(uint64_t index);
+	void initialize_chunk_decorations(uint64_t index);
+
+	void update_loaded_region();
+
+	bool is_chunk_in_radius(Vector3i coordinate, int64_t radius);
 
 	// Used to set the loaded region of the world, new_center is usually the player's position
 	void set_loaded_region_center(Vector3 new_center);
