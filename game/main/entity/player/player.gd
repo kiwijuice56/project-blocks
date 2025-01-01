@@ -63,6 +63,7 @@ func _process(delta: float) -> void:
 			Ref.player_hotbar.change_amount(hotbar_index, -1)
 			#Ref.world.place_block_at(place_position, ItemMap.map(held_item.id), true)
 			Ref.world.place_water_at(place_position, 255)
+			
 	elif %FloorRayCast3D.is_colliding() and held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_pressed("secondary_interact"):
 		var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())
 		var look_direction: Vector3 = -%Camera3D.get_global_transform().basis.z

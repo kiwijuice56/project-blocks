@@ -277,10 +277,7 @@ void World::simulate_water() {
     for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
         for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
             for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
-                Vector3i coordinate = Vector3i(
-                        Chunk::CHUNK_SIZE_X * x,
-                        Chunk::CHUNK_SIZE_Y * y,
-                        Chunk::CHUNK_SIZE_Z * z) + center_chunk;
+                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
 
                 if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
                     continue;
@@ -295,17 +292,13 @@ void World::simulate_water() {
     for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
         for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
             for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
-                Vector3i coordinate = Vector3i(
-                        Chunk::CHUNK_SIZE_X * x,
-                        Chunk::CHUNK_SIZE_Y * y,
-                        Chunk::CHUNK_SIZE_Z * z) + center_chunk;
+                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
 
                 if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
                     continue;
                 }
 
                 Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
-                chunk->copy_water_buffer();
                 chunk->generate_mesh(false);
             }
         }
@@ -335,10 +328,7 @@ void World::update_loaded_region() {
     for (int64_t y = -deco_radius_y; y <= deco_radius_y; y++) {
         for (int64_t x = -deco_radius_x; x <= deco_radius_x; x++) {
             for (int64_t z = -deco_radius_z; z <= deco_radius_z; z++) {
-                Vector3i coordinate = Vector3i(
-                    Chunk::CHUNK_SIZE_X * x,
-                    Chunk::CHUNK_SIZE_Y * y,
-                    Chunk::CHUNK_SIZE_Z * z) + center_chunk;
+                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
 
                 if (!decoration_map.has(coordinate)) {
                     Array decoration_array;
@@ -356,10 +346,7 @@ void World::update_loaded_region() {
     for (int64_t y = -deco_radius_y; y <= deco_radius_y; y++) {
         for (int64_t x = -deco_radius_x; x <= deco_radius_x; x++) {
             for (int64_t z = -deco_radius_z; z <= deco_radius_z; z++) {
-                Vector3i coordinate = Vector3i(
-                    Chunk::CHUNK_SIZE_X * x,
-                    Chunk::CHUNK_SIZE_Y * y,
-                    Chunk::CHUNK_SIZE_Z * z) + center_chunk;
+                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
 
                 if (decoration_generated.has(coordinate)) {
                     continue;
@@ -388,8 +375,6 @@ void World::update_loaded_region() {
                     chunk_data[coordinate] = chunk->blocks;
                     chunk_water_data[coordinate] = chunk->water;
                 }
-            } else {
-                chunk->simulating_water = is_chunk_in_radius(coordinate, water_simulate_radius);
             }
         }
 
