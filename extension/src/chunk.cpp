@@ -18,6 +18,9 @@ Chunk::Chunk() {
     water.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
     water_buffer.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 
+    water_mesh = memnew(MeshInstance3D);
+    add_child(water_mesh);
+
     // Initialize StaticBody3D data
     shape_data_opaque = memnew(ConcavePolygonShape3D);
 
@@ -93,6 +96,7 @@ void Chunk::generate_mesh(bool immediate) {
         return;
     }
 
+    Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
     int material_idx = 0;
 
     // First pass (opaque objects)
@@ -110,8 +114,6 @@ void Chunk::generate_mesh(bool immediate) {
     arrays[ArrayMesh::ARRAY_NORMAL] = normals;
     arrays[ArrayMesh::ARRAY_TEX_UV] = uvs;
     arrays[ArrayMesh::ARRAY_TEX_UV2] = uvs2;
-
-    Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
 
     if (vertices.size() > 0) {
         array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
@@ -165,7 +167,17 @@ void Chunk::generate_mesh(bool immediate) {
         }
     }
 
-    // Third pass (water)
+    call_deferred("set_mesh", array_mesh);
+    call_deferred("set_visible", true);
+}
+
+void Chunk::generate_water_mesh() {
+    if (!has_water) {
+        water_mesh->call_deferred("set_visible", false);
+        return;
+    }
+
+    Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
 
     vertices.clear();
     normals.clear();
@@ -174,19 +186,18 @@ void Chunk::generate_mesh(bool immediate) {
 
     greedy_mesh_generation(false, true);
 
+    Array arrays;
+    arrays.resize(ArrayMesh::ARRAY_MAX);
+
     arrays[ArrayMesh::ARRAY_VERTEX] = vertices;
     arrays[ArrayMesh::ARRAY_NORMAL] = normals;
-    arrays[ArrayMesh::ARRAY_TEX_UV] = uvs;
-    arrays[ArrayMesh::ARRAY_TEX_UV2] = uvs2;
 
     if (vertices.size() > 0) {
         array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
-        array_mesh->surface_set_material(material_idx, water_material);
-        material_idx += 1;
     }
 
-    call_deferred("set_mesh", array_mesh);
-    call_deferred("set_visible", true);
+    water_mesh->call_deferred("set_mesh", array_mesh);
+    water_mesh->call_deferred("set_visible", true);
 }
 
 void Chunk::clear_collision() {
@@ -258,7 +269,12 @@ void Chunk::greedy_mesh_generation(bool transparent, bool water_pass) {
                 Vector3 size;
 
                 if (water_pass) {
-                    size = Vector3(1, water[position_to_index(Vector3i(x, y, z))] / 255., 1);
+                    uint8_t water_level = water[position_to_index(Vector3i(x, y, z))];
+                    if (water_level == 255) {
+                        size = greedy_scan(start, water_pass);
+                    } else {
+                        size = Vector3(1, water_level / 255., 1);
+                    }
                 } else if (transparent) {
                     size = Vector3(1, 1, 1);
                 } else {
@@ -328,7 +344,7 @@ bool Chunk::greedy_invalid(Vector3i position, bool water_pass) {
             return true;
         }
 
-        return false;
+        return water_level != current_greedy_block;
     } else {
         uint64_t block_id = get_block_index_at(position);
 
@@ -466,7 +482,7 @@ void Chunk::set_water_at(Vector3i global_position, uint8_t water_level) {
     }
 
     water[index] = water_level;
-    generate_mesh(false);
+    generate_water_mesh();
 
     modified = true;
     if (water_level > 0) {

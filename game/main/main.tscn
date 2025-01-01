@@ -61,7 +61,6 @@ generator = ExtResource("2_bsumw")
 block_material = ExtResource("5_ah4j3")
 water_material = ExtResource("4_fwcvl")
 transparent_block_material = ExtResource("10_ppf03")
-instance_radius = 32
 script = ExtResource("5_ds8vp")
 
 [node name="Player" parent="." instance=ExtResource("10_4clf3")]
@@ -72,7 +71,7 @@ fly_impulse = 9.0
 mouse_sensitivity = 0.02
 
 [node name="SunLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.88458, 0.466387, 2.03864e-08, 0, -4.37114e-08, 1, 0.466386, -0.884581, -3.86663e-08, 0, 0, 0)
+transform = Transform3D(0.88458, 0.339981, -0.319264, 0, 0.684547, 0.728969, 0.466386, -0.644832, 0.605537, 0, 0, 0)
 layers = 5
 light_color = Color(0.877268, 0.80327, 0.741058, 1)
 light_energy = 1.5

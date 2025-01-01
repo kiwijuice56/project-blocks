@@ -181,6 +181,7 @@ void World::set_loaded_region_center(Vector3 new_center) {
     new_center_chunk.z = new_center.z - int64_t(new_center.z) % Chunk::CHUNK_SIZE_Z;
 
     center_chunk = new_center_chunk;
+    center = Vector3i(new_center);
     update_loaded_region();
 }
 
@@ -232,6 +233,7 @@ void World::regenerate_chunks() {
                 new_chunk->block_types = block_types;
                 new_chunk->block_material = block_material;
                 new_chunk->transparent_block_material = transparent_block_material;
+                new_chunk->water_mesh->set_material_override(water_material);
                 new_chunk->water_material = water_material;
 
                 add_child(new_chunk);
@@ -258,6 +260,7 @@ void World::initialize_chunk(uint64_t index) {
     chunk->calculate_block_statistics();
     chunk->never_initialized = false;
     chunk->generate_mesh(false);
+    chunk->generate_water_mesh();
 
     is_chunk_loaded[coordinate] = true;
 }
@@ -274,35 +277,52 @@ void World::simulate_water() {
     int64_t chunk_radius_y = water_simulate_radius / Chunk::CHUNK_SIZE_Y;
     int64_t chunk_radius_z = water_simulate_radius / Chunk::CHUNK_SIZE_Z;
 
-    for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
-        for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
-            for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
-                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
+    if (odd_water_frame) {
+        uint8_t chunks_simulated = 0;
+        for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
+            for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
+                for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
+                    if (chunks_simulated == MAX_WATER_CHUNKS) {
+                        break;
+                    }
 
-                if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
-                    continue;
+                    Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
+
+                    if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
+                        continue;
+                    }
+                    float distance = (coordinate + Vector3i(8, 8, 8)).distance_to(center);
+                    float a = distance / water_simulate_radius;
+                    if (UtilityFunctions::randf() < UtilityFunctions::pow(a, 0.2)) {
+                        continue;
+                    }
+
+                    Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
+                    chunk->simulate_water();
+                    chunk->water_updated = true;
+                    chunks_simulated++;
                 }
+            }
+        }
+    } else {
+        for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
+            for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
+                for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
+                    Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
+                    if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
+                        continue;
+                    }
 
-                Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
-                chunk->simulate_water();
+                    Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
+                    if (chunk->water_updated) {
+                        chunk->generate_water_mesh();
+                        chunk->water_updated = false;
+                    }
+                }
             }
         }
     }
-
-    for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
-        for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
-            for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
-                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
-
-                if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
-                    continue;
-                }
-
-                Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
-                chunk->generate_mesh(false);
-            }
-        }
-    }
+    odd_water_frame = !odd_water_frame;
 }
 
 void World::update_loaded_region() {

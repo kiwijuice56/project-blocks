@@ -46,6 +46,7 @@ public:
     // Resources
     ConcavePolygonShape3D* shape_data_opaque;
     ConcavePolygonShape3D* shape_data_transparent;
+    MeshInstance3D* water_mesh;
 
     // Resources set by World
     World* world;
@@ -65,7 +66,7 @@ public:
     bool modified = false; // Whether this chunk has had any blocks placed/removed
     bool never_initialized = true;
     bool has_water = false;
-    bool simulating_water = false;
+    bool water_updated = false;
 
     Chunk();
 	~Chunk();
@@ -83,6 +84,7 @@ public:
 
     // Mesh generation methods
     void generate_mesh(bool immediate);
+    void generate_water_mesh();
     void calculate_block_statistics();
     void clear_collision();
 

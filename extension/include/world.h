@@ -31,6 +31,7 @@ protected:
 
 public:
 	static const int64_t MAX_DECORATIONS = 16;
+	static const int64_t MAX_WATER_CHUNKS = 6;
 
 	// (In blocks)
 	int64_t instance_radius = 128;
@@ -49,6 +50,9 @@ public:
 
 	// The center chunk's position
 	Vector3i center_chunk;
+
+	// The center position
+	Vector3i center;
 
 	// Stores references to all chunk node instances
 	std::vector<Chunk*> all_chunks;
@@ -74,6 +78,9 @@ public:
 	uint64_t task_id = 0;
 	bool has_task = false;
 	std::mutex decoration_lock;
+
+	// Water state
+	bool odd_water_frame = false;
 
 	// Stores (Vector3i : Array[Decoration])
 	Dictionary decoration_map;

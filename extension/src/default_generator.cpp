@@ -27,7 +27,12 @@ DefaultGenerator::DefaultGenerator() { }
 DefaultGenerator::~DefaultGenerator() { }
 
 void DefaultGenerator::generate_water(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
-    chunk->water.fill(0);
+    if (chunk_position.y <= 32) {
+        chunk->water.fill(255);
+    } else {
+        chunk->water.fill(0);
+    }
+
 }
 
 void DefaultGenerator::generate_terrain_blocks(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
