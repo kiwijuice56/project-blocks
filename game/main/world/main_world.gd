@@ -2,8 +2,6 @@ class_name MainWorld extends World
 # An extension of the World class to more easily interface with GDscript
 # Also sets block and decoration type arrays automatically
 
-var x: int = 0
-
 func _ready() -> void:
 	reload_types()
 	set_physics_process(false)

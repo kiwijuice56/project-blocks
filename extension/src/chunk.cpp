@@ -90,12 +90,6 @@ void Chunk::calculate_block_statistics() {
 }
 
 void Chunk::generate_mesh(bool immediate) {
-    if (block_count == 0 && !has_water) {
-        clear_collision();
-        call_deferred("set_visible", false);
-        return;
-    }
-
     Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
     int material_idx = 0;
 
@@ -172,11 +166,6 @@ void Chunk::generate_mesh(bool immediate) {
 }
 
 void Chunk::generate_water_mesh() {
-    if (!has_water) {
-        water_mesh->call_deferred("set_visible", false);
-        return;
-    }
-
     Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
 
     vertices.clear();
@@ -245,10 +234,10 @@ void Chunk::greedy_mesh_generation(bool transparent, bool water_pass) {
 
     face_count = 0;
 
+    has_water = false;
     for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
         for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
             for (uint64_t x = 0; x < CHUNK_SIZE_Y; x++) {
-
                 if (!water_pass) {
                     current_greedy_block = get_block_index_at(Vector3i(x, y, z));
 
@@ -259,6 +248,9 @@ void Chunk::greedy_mesh_generation(bool transparent, bool water_pass) {
                     }
                 } else {
                     current_greedy_block = water[position_to_index(Vector3i(x, y, z))];
+                    if (current_greedy_block > 0) {
+                        has_water = true;
+                    }
                 }
 
                 if (greedy_invalid(Vector3i(x, y, z), water_pass)) {
@@ -485,6 +477,7 @@ void Chunk::set_water_at(Vector3i global_position, uint8_t water_level) {
     generate_water_mesh();
 
     modified = true;
+
     if (water_level > 0) {
         has_water = true;
     }
@@ -503,11 +496,19 @@ void Chunk::simulate_water() {
             Chunk* other_chunk = world->get_chunk_at(g_c2);
             c2 = g_c2 - other_chunk->get_global_position();
 
+            if (other_chunk->blocks[position_to_index(c2)] != 0) {
+                continue;
+            }
+
             uint8_t w0 = water[position_to_index(c1)];
             uint8_t w1 = other_chunk->water[position_to_index(c2)];
 
             water[position_to_index(c1)] = (uint8_t) (((uint16_t) w0 + w1) / 2);
             other_chunk->water[position_to_index(c2)] = (uint8_t) (((uint16_t) w0 + w1) / 2);
+
+            if (w0 + w1 > 0) {
+                other_chunk->has_water = true;
+            }
         }
 
         for (uint8_t x = 0; x < CHUNK_SIZE_X; x++) {
@@ -519,6 +520,10 @@ void Chunk::simulate_water() {
             }
             Chunk* other_chunk = world->get_chunk_at(g_c2);
             c2 = g_c2 - other_chunk->get_global_position();
+
+            if (other_chunk->blocks[position_to_index(c2)] != 0) {
+                continue;
+            }
 
             uint8_t w0 = water[position_to_index(c1)];
             uint8_t w1 = other_chunk->water[position_to_index(c2)];
@@ -537,11 +542,16 @@ void Chunk::simulate_water() {
             Chunk* other_chunk = world->get_chunk_at(g_c2);
             c2 = g_c2 - other_chunk->get_global_position();
 
+            if (other_chunk->blocks[position_to_index(c2)] != 0) {
+                continue;
+            }
+
             uint8_t w0 = water[position_to_index(c1)];
             uint8_t w1 = other_chunk->water[position_to_index(c2)];
 
             water[position_to_index(c1)] = (uint8_t) (((uint16_t) w0 + w1) / 2);
             other_chunk->water[position_to_index(c2)] = (uint8_t) (((uint16_t) w0 + w1) / 2);
+
         }
 
         for (uint8_t z = 0; z < CHUNK_SIZE_Z; z++) {
@@ -554,6 +564,10 @@ void Chunk::simulate_water() {
             Chunk* other_chunk = world->get_chunk_at(g_c2);
             c2 = g_c2 - other_chunk->get_global_position();
 
+            if (other_chunk->blocks[position_to_index(c2)] != 0) {
+                continue;
+            }
+
             uint8_t w0 = water[position_to_index(c1)];
             uint8_t w1 = other_chunk->water[position_to_index(c2)];
 
@@ -561,48 +575,6 @@ void Chunk::simulate_water() {
             other_chunk->water[position_to_index(c2)] = (uint8_t) (((uint16_t) w0 + w1) / 2);
         }
     }
-
-    // Translation step
-    for (uint8_t y = 0; y < CHUNK_SIZE_Y; y++) {
-        for (uint8_t z = 0; z < CHUNK_SIZE_Z; z++) {
-            for (uint8_t x = 0; x < CHUNK_SIZE_X; x++) {
-                if (get_block_index_at(Vector3i(x, y, z)) != 0) {
-                    continue;
-                }
-
-                Chunk* source_chunk = this;
-                Vector3i source_coord = Vector3i(x, y + 1, z);
-                uint8_t w_u;
-                if (in_bounds(source_coord)) {
-                    w_u = water[position_to_index(source_coord)];
-                } else {
-                    Vector3i global_position = Vector3i(x, y + 1, z) + get_global_position();
-                    if (!world->is_position_loaded(global_position)) {
-                        continue;
-                    } else {
-                        source_chunk = world->get_chunk_at(global_position);
-                        source_coord = global_position - source_chunk->get_global_position();
-                        w_u = source_chunk->water[position_to_index(source_coord)];
-                    }
-                }
-
-                if (w_u == 0) {
-                    continue;
-                }
-
-                uint8_t w_0 = water[position_to_index(Vector3i(x, y, z))];
-                uint16_t w_0ns = (uint16_t) (w_0 + (w_u > 1 ? w_u * 0.9 : 1));
-                if (w_0ns > 255) {
-                    w_0ns = 255;
-                }
-                uint8_t w_0n = (uint8_t) w_0ns;
-
-                water[position_to_index(Vector3i(x, y, z))] = w_0n;
-                source_chunk->water[position_to_index(source_coord)] = w_u - (w_0n - w_0);
-            }
-        }
-    }
-
 
     // Diffusion step
     for (uint8_t y = 0; y < CHUNK_SIZE_Y; y++) {
@@ -648,12 +620,72 @@ void Chunk::simulate_water() {
     has_water = false;
     for (uint64_t i = 0; i < CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z; i++) {
         water[i] = water_buffer[i];
-        if (water[i] != 0) {
+        if (water[i] > 0) {
             has_water = true;
         }
     }
-}
 
-void Chunk::copy_water_buffer() {
+    // Translation step
+    for (int8_t y = -1; y < CHUNK_SIZE_Y; y++) {
+        for (uint8_t z = 0; z < CHUNK_SIZE_Z; z++) {
+            for (uint8_t x = 0; x < CHUNK_SIZE_X; x++) {
+                Chunk* dst_chunk = this;
+                Vector3i dst_coord = Vector3i(x, y, z);
+                uint8_t w_0;
+                if (in_bounds(dst_coord)) {
+                    w_0 = water[position_to_index(Vector3i(x, y, z))];
+                } else {
+                    Vector3i global_position = Vector3i(x, y, z) + get_global_position();
+                    if (!world->is_position_loaded(global_position)) {
+                        continue;
+                    } else {
+                        dst_chunk = world->get_chunk_at(global_position);
+                        dst_coord = global_position - dst_chunk->get_global_position();
+                        w_0 = dst_chunk->water[position_to_index(dst_coord)];
+                    }
 
+                    if (w_0 > 0) {
+                        dst_chunk->has_water = true;
+                    }
+                }
+
+                if (dst_chunk->get_block_index_at(dst_coord) != 0) {
+                    continue;
+                }
+
+                Chunk* source_chunk = this;
+                Vector3i source_coord = Vector3i(x, y + 1, z);
+                uint8_t w_u;
+                if (in_bounds(source_coord)) {
+                    w_u = water[position_to_index(source_coord)];
+                } else {
+                    Vector3i global_position = Vector3i(x, y + 1, z) + get_global_position();
+                    if (!world->is_position_loaded(global_position)) {
+                        continue;
+                    } else {
+                        source_chunk = world->get_chunk_at(global_position);
+                        source_coord = global_position - source_chunk->get_global_position();
+                        w_u = source_chunk->water[position_to_index(source_coord)];
+                    }
+                }
+
+                if (w_u == 0) {
+                    continue;
+                }
+
+                uint16_t w_0ns = (uint16_t) (w_0 + (w_u > 86 ? w_u * 0.25 : w_u));
+                if (w_0ns > 255) {
+                    w_0ns = 255;
+                }
+                uint8_t w_0n = (uint8_t) w_0ns;
+
+                dst_chunk->water[position_to_index(dst_coord)] = w_0n;
+                source_chunk->water[position_to_index(source_coord)] = w_u - (w_0n - w_0);
+
+                if (w_u - (w_0n - w_0) > 0) {
+                    source_chunk->has_water = true;
+                }
+            }
+        }
+    }
 }

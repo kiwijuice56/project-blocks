@@ -1,7 +1,6 @@
 [gd_scene load_steps=16 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" uid="uid://briopjymqw2k4" path="res://main/main.gd" id="1_wx0yy"]
-[ext_resource type="DefaultGenerator" uid="uid://diqcbn3451p2b" path="res://main/world/generators/main_generator.tres" id="2_bsumw"]
 [ext_resource type="PackedScene" uid="uid://bf8144nsbq132" path="res://main/ui/menu/game_menu/game_menu.tscn" id="3_8017u"]
 [ext_resource type="Environment" uid="uid://6pultm40s3qg" path="res://main/world/rendering/environments/high_graphics_environment.tres" id="4_6ud5x"]
 [ext_resource type="Shader" uid="uid://c61wm48ml41ta" path="res://main/ui/filter/dithering.gdshader" id="4_25hyt"]
@@ -11,6 +10,8 @@
 [ext_resource type="AudioStream" uid="uid://b8n6mef6etkj4" path="res://main/music/naraka.ogg" id="10_0i4oc"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/entity/player/player.tscn" id="10_4clf3"]
 [ext_resource type="Material" uid="uid://dhxh3up0kwnsn" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.tres" id="10_ppf03"]
+
+[sub_resource type="DebugGenerator" id="DebugGenerator_0i4oc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
@@ -57,7 +58,7 @@ _data = {
 script = ExtResource("1_wx0yy")
 
 [node name="MainWorld" type="World" parent="."]
-generator = ExtResource("2_bsumw")
+generator = SubResource("DebugGenerator_0i4oc")
 block_material = ExtResource("5_ah4j3")
 water_material = ExtResource("4_fwcvl")
 transparent_block_material = ExtResource("10_ppf03")
@@ -71,7 +72,7 @@ fly_impulse = 9.0
 mouse_sensitivity = 0.02
 
 [node name="SunLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.88458, 0.339981, -0.319264, 0, 0.684547, 0.728969, 0.466386, -0.644832, 0.605537, 0, 0, 0)
+transform = Transform3D(0.88458, 0.466387, 2.03864e-08, 0, -4.37114e-08, 1, 0.466386, -0.884581, -3.86663e-08, 0, 0, 0)
 layers = 5
 light_color = Color(0.877268, 0.80327, 0.741058, 1)
 light_energy = 1.5

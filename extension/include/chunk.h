@@ -100,7 +100,6 @@ public:
     WaterQuery get_water_at(Vector3i local_position);
     void set_water_at(Vector3i local_position, uint8_t water);
     void simulate_water();
-    void copy_water_buffer();
 };
 }
 
