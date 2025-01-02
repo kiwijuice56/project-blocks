@@ -13,6 +13,7 @@ config_version=5
 config/name="project-blocks"
 run/main_scene="res://main/main.tscn"
 config/features=PackedStringArray("4.4", "Forward Plus")
+run/max_fps=60
 boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/show_image=false
 config/icon="res://icon.png"
@@ -210,6 +211,7 @@ place_water={
 
 [layer_names]
 
+3d_render/layer_2="Water"
 3d_physics/layer_1="blocks"
 3d_physics/layer_2="player"
 3d_physics/layer_3="creature"

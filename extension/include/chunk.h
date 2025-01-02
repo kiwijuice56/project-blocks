@@ -33,11 +33,17 @@ public:
     static const int64_t WATER_CHUNK_SIZE_Y = 4;
     static const int64_t WATER_CHUNK_SIZE_Z = 4;
 
+    const uint8_t HEAVY = 212;
+    const uint8_t EXTRA = 4;
+    const uint8_t EVAPORATE = 16;
+
     // Block + water index data
     PackedInt32Array blocks;
     PackedByteArray water; // Stores numerical density 0-255
     PackedByteArray water_buffer; // Buffer between simulation steps
     PackedByteArray water_chunk_awake; // Stores whether each water subchunk should be awake
+    PackedByteArray water_chunk_awake_buffer; // Stores whether each water subchunk should be awake
+    uint8_t water_shuffle = 0;
 
     // Mesh data
     PackedVector3Array vertices;
@@ -55,9 +61,6 @@ public:
     TypedArray<Block> block_types;
     Ref<ShaderMaterial> block_material;
 	Ref<ShaderMaterial> transparent_block_material;
-
-    // Water debugging tool
-    TypedArray<MeshInstance3D> water_indicators;
 
     // Greedy meshing state variables
     bool* visited;
@@ -79,8 +82,7 @@ public:
     void remove_block_at(Vector3i global_position);
     void place_block_at(Vector3i global_position, uint32_t block_index);
     uint64_t get_block_index_at_global(Vector3i global_position);
-    void set_water_at_global(Vector3i global_position);
-    void get_water_at_global(Vector3i global_position);
+    uint64_t get_block_index_at_safe(Vector3i local_position);
 
     // Internal interfacing methods
     uint64_t get_block_index_at(Vector3i position);
@@ -104,10 +106,10 @@ public:
 
     // Water simulation
     uint8_t get_water_at(Vector3i local_position);
+    uint8_t get_water_at_safe(Vector3i local_position);
     void set_water_at(Vector3i local_position, uint8_t water);
     void simulate_water();
     void water_chunk_wake_set(Vector3i local_position, bool awake, bool surround);
-    bool is_valid_water(Vector3i local_position);
 };
 }
 

@@ -1,6 +1,0 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cl76x5v2thx4w"]
-
-[ext_resource type="Shader" path="res://main/world/rendering/block_mesh/water_chunk_debug.gdshader" id="1_auxa6"]
-
-[resource]
-shader = ExtResource("1_auxa6")

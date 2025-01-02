@@ -1,6 +1,14 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dsbaicfaldxva"]
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://dsbaicfaldxva"]
 
 [ext_resource type="Shader" uid="uid://bvjnprxr4rehl" path="res://main/world/rendering/block_mesh/water.gdshader" id="1_ystrm"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ystrm"]
+noise_type = 3
+frequency = 0.0148
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_tc6p8"]
+seamless = true
+noise = SubResource("FastNoiseLite_ystrm")
 
 [resource]
 render_priority = 0
@@ -8,4 +16,5 @@ shader = ExtResource("1_ystrm")
 shader_parameter/albedo = Color(0.084, 0.2576, 0.42, 1)
 shader_parameter/specular = 0.313
 shader_parameter/roughness = 0.338
-shader_parameter/fade = 0.5
+shader_parameter/fade = 0.6
+shader_parameter/noise = SubResource("NoiseTexture2D_tc6p8")

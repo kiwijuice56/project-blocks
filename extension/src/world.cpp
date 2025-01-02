@@ -40,6 +40,7 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("break_block_at", "position", "drop_item", "play_effect"), &World::break_block_at);
     ClassDB::bind_method(D_METHOD("place_block_at", "position", "block_type", "play_effect"), &World::place_block_at);
     ClassDB::bind_method(D_METHOD("place_water_at", "position", "amount"), &World::place_water_at);
+    ClassDB::bind_method(D_METHOD("get_water_level_at", "position"), &World::get_water_level);
 
     ADD_PROPERTY(
         PropertyInfo(
@@ -386,7 +387,9 @@ void World::simulate_water() {
         for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
             for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
                 Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
-
+                if ((int64_t)UtilityFunctions::abs(x + y + z)% 3 != water_frame) {
+                    continue;
+                }
                 if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
                     continue;
                 }
@@ -399,6 +402,10 @@ void World::simulate_water() {
     for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
         for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
             for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
+                if ((int64_t)UtilityFunctions::abs(x + y + z) % 3 != water_frame) {
+                    continue;
+                }
+
                 Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
                 if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
                     continue;
@@ -413,7 +420,7 @@ void World::simulate_water() {
         }
     }
 
-    odd_water_frame = !odd_water_frame;
+    water_frame = (water_frame + 1) % 3;
 }
 
 void World::place_decoration(Ref<Decoration> decoration, Vector3i position) {
@@ -542,6 +549,12 @@ void World::place_water_at(Vector3 position, uint8_t amount) {
 
     Chunk* chunk = get_chunk_at(position);
     chunk->set_water_at(Vector3i(position - chunk->get_global_position()), amount);
+}
+
+uint8_t World::get_water_level(Vector3 position) {
+    position = position.floor();
+    Chunk* chunk = get_chunk_at(position);
+    return chunk->get_water_at(Vector3i(position - chunk->get_global_position()));
 }
 
 

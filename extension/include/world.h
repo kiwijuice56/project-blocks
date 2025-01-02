@@ -80,7 +80,7 @@ public:
 	std::mutex decoration_lock;
 
 	// Water state
-	bool odd_water_frame = false;
+	uint8_t water_frame = 0;
 
 	// Stores (Vector3i : Array[Decoration])
 	Dictionary decoration_map;
@@ -121,6 +121,7 @@ public:
 	void place_block_at(Vector3 position, Ref<Block> block_type, bool play_effect);
 	void place_decoration(Ref<Decoration> decoration, Vector3i position);
 	void place_water_at(Vector3 position, uint8_t amount);
+	uint8_t get_water_level(Vector3 position);
 
 	// Boilerplate setters and getters
 	void set_instance_radius(int64_t new_radius);

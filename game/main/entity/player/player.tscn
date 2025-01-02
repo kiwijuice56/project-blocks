@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://ccsm4tlbop58m"]
+[gd_scene load_steps=14 format=3 uid="uid://ccsm4tlbop58m"]
 
 [ext_resource type="PackedScene" uid="uid://co5xqagmethrd" path="res://main/entity/entity.tscn" id="1_chebf"]
 [ext_resource type="Script" uid="uid://xwioa0gyxopg" path="res://main/entity/player/player.gd" id="2_4yh36"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://ckxlpl71nqlua" path="res://main/entity/behaviors/pick_up_items/pick_up_items.tscn" id="5_gf10l"]
 [ext_resource type="PackedScene" uid="uid://dbwjmayjd4meg" path="res://main/entity/behaviors/drop_items/drop_items.tscn" id="5_yo8f8"]
 [ext_resource type="Script" uid="uid://bpu5vdls6nnto" path="res://main/entity/behaviors/step/step.gd" id="6_iata8"]
+[ext_resource type="Script" uid="uid://bffavcvheuula" path="res://main/entity/player/player_camera.gd" id="7_8pj5f"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1ux1p"]
 radius = 0.3
@@ -88,6 +89,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 1.411, 0)
 fov = 80.0
+script = ExtResource("7_8pj5f")
 
 [node name="InteractRayCast3D" type="RayCast3D" parent="Camera3D" index="0"]
 unique_name_in_owner = true
