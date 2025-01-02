@@ -2,8 +2,6 @@ shader_type spatial;
 render_mode unshaded;
 
 uniform vec4 albedo : source_color;
-uniform float specular : hint_range(0.0, 1.0);
-uniform float roughness : hint_range(0.0, 1.0);
 uniform float fade = 0.5;
 
 uniform sampler2D noise;
@@ -14,6 +12,4 @@ void fragment() {
 	if (fade < fract(magic.z * fract(dot(FRAGCOORD.xy, magic.xy)))) {
 		discard;
 	}
-	SPECULAR = specular;
-	ROUGHNESS = roughness;
 }

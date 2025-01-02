@@ -27,6 +27,9 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_water_material"), &World::get_water_material);
 	ClassDB::bind_method(D_METHOD("set_water_material", "new_material"), &World::set_water_material);
 
+    ClassDB::bind_method(D_METHOD("get_water_ghost_material"), &World::get_water_ghost_material);
+	ClassDB::bind_method(D_METHOD("set_water_ghost_material", "new_material"), &World::set_water_ghost_material);
+
     ClassDB::bind_method(D_METHOD("get_transparent_block_material"), &World::get_transparent_block_material);
 	ClassDB::bind_method(D_METHOD("set_transparent_block_material", "new_material"), &World::set_transparent_block_material);
 
@@ -100,6 +103,17 @@ void World::_bind_methods() {
     ADD_PROPERTY(
         PropertyInfo(
             Variant::OBJECT,
+            "water_ghost_material",
+            PROPERTY_HINT_RESOURCE_TYPE,
+            "ShaderMaterial"
+        ),
+        "set_water_ghost_material",
+        "get_water_ghost_material"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(
+            Variant::OBJECT,
             "transparent_block_material",
             PROPERTY_HINT_RESOURCE_TYPE,
             "ShaderMaterial"
@@ -128,6 +142,7 @@ void World::initialize() {
     dropped_item_scene = ResourceLoader::get_singleton()->load("res://main/items/dropped_item/dropped_item.tscn");
     break_effect_scene = ResourceLoader::get_singleton()->load("res://main/items/blocks/break_effect/break_effect.tscn");
     place_effect_scene = ResourceLoader::get_singleton()->load("res://main/items/blocks/place_effect/place_effect.tscn");
+
 
     for (int64_t i = 0; i < block_types.size(); i++) {
         Block* block = Object::cast_to<Block>(block_types[i]);
@@ -173,6 +188,7 @@ void World::instantiate_chunks() {
                 new_chunk->block_material = block_material;
                 new_chunk->transparent_block_material = transparent_block_material;
                 new_chunk->water_mesh->set_material_override(water_material);
+                new_chunk->water_mesh_ghost->set_material_override(water_ghost_material);
 
                 add_child(new_chunk);
 
@@ -407,9 +423,9 @@ void World::simulate_water() {
                 }
 
                 Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
-                if (chunk->water_updated) {
+                if (chunk->water_updated > 0) {
                     chunk->generate_water_mesh(chunk->get_global_position());
-                    chunk->water_updated = false;
+                    chunk->water_updated--;
                 }
             }
         }
@@ -581,6 +597,15 @@ Ref<ShaderMaterial> World::get_water_material() const {
 void World::set_water_material(Ref<ShaderMaterial> new_material) {
     water_material = new_material;
 }
+
+Ref<ShaderMaterial> World::get_water_ghost_material() const {
+    return water_ghost_material;
+}
+
+void World::set_water_ghost_material(Ref<ShaderMaterial> new_material) {
+    water_ghost_material = new_material;
+}
+
 
 Ref<ShaderMaterial> World::get_transparent_block_material() const {
     return transparent_block_material;

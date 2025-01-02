@@ -43,6 +43,7 @@ public:
 	Ref<ShaderMaterial> block_material;
 	Ref<ShaderMaterial> transparent_block_material;
 	Ref<ShaderMaterial> water_material;
+	Ref<ShaderMaterial> water_ghost_material;
 	Ref<PackedScene> dropped_item_scene; // These (and below) are set in code for convenience
 	Ref<PackedScene> break_effect_scene;
 	Ref<PackedScene> place_effect_scene;
@@ -141,6 +142,9 @@ public:
 
 	Ref<ShaderMaterial> get_water_material() const;
     void set_water_material(Ref<ShaderMaterial> new_material);
+
+	Ref<ShaderMaterial> get_water_ghost_material() const;
+    void set_water_ghost_material(Ref<ShaderMaterial> new_material);
 
 	Ref<Generator> get_generator() const;
     void set_generator(Ref<Generator> new_generator);

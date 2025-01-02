@@ -31,6 +31,11 @@ Chunk::Chunk() {
     water_mesh->set_layer_mask_value(2, true);
     add_child(water_mesh);
 
+    water_mesh_ghost = memnew(MeshInstance3D);
+    water_mesh_ghost->set_layer_mask(0);
+    water_mesh_ghost->set_layer_mask_value(2, true);
+    add_child(water_mesh_ghost);
+
     // Initialize collision data
     shape_data_opaque = memnew(ConcavePolygonShape3D);
 
@@ -237,6 +242,8 @@ void Chunk::generate_water_mesh(Vector3 global_position) {
         array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
     }
 
+    Ref<ArrayMesh> old_mesh = water_mesh->get_mesh();
+    water_mesh_ghost->call_deferred("set_mesh", old_mesh);
     water_mesh->call_deferred("set_mesh", array_mesh);
     water_mesh->call_deferred("set_visible", true);
 }
@@ -567,7 +574,7 @@ void Chunk::set_water_at(Vector3i local_position, uint8_t water_level) {
         if (water[index] != water_level) {
             water_chunk_wake_set(local_position, true, true);
             modified = true;
-            water_updated = true;
+            water_updated = 2;
             water_count += water_level - (int16_t) water[index];
         }
 

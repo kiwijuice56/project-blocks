@@ -14,7 +14,5 @@ noise = SubResource("FastNoiseLite_ystrm")
 render_priority = 0
 shader = ExtResource("1_ystrm")
 shader_parameter/albedo = Color(0.084, 0.2576, 0.42, 1)
-shader_parameter/specular = 0.313
-shader_parameter/roughness = 0.338
 shader_parameter/fade = 0.5
 shader_parameter/noise = SubResource("NoiseTexture2D_tc6p8")

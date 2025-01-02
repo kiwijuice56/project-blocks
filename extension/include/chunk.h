@@ -55,6 +55,7 @@ public:
     ConcavePolygonShape3D* shape_data_opaque;
     ConcavePolygonShape3D* shape_data_transparent;
     MeshInstance3D* water_mesh;
+    MeshInstance3D* water_mesh_ghost;
 
     // Resources set by World
     World* world;
@@ -73,7 +74,7 @@ public:
     bool uniform = false; // Used to optimize chunks of one block type
     bool modified = false; // Whether this chunk has had any blocks placed/removed
     bool never_initialized = true;
-    bool water_updated = false;
+    uint8_t water_updated = 0;
 
     Chunk();
 	~Chunk();
