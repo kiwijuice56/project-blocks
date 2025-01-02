@@ -93,7 +93,7 @@ public:
 
     // Mesh generation methods
     void generate_mesh(bool immediate, Vector3 global_position);
-    void generate_water_mesh(Vector3 global_position);
+    void generate_water_mesh(bool clear, Vector3 global_position);
     void calculate_block_statistics();
     void clear_collision();
 

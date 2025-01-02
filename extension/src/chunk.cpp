@@ -222,7 +222,7 @@ void Chunk::generate_mesh(bool immediate, Vector3 global_position) {
     call_deferred("set_visible", true);
 }
 
-void Chunk::generate_water_mesh(Vector3 global_position) {
+void Chunk::generate_water_mesh(bool clear, Vector3 global_position) {
     Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
 
     vertices.clear();
@@ -243,7 +243,11 @@ void Chunk::generate_water_mesh(Vector3 global_position) {
     }
 
     Ref<ArrayMesh> old_mesh = water_mesh->get_mesh();
-    water_mesh_ghost->call_deferred("set_mesh", old_mesh);
+    if (clear) {
+        water_mesh_ghost->call_deferred("set_mesh", memnew(ArrayMesh));
+    } else {
+        water_mesh_ghost->call_deferred("set_mesh", old_mesh);
+    }
     water_mesh->call_deferred("set_mesh", array_mesh);
     water_mesh->call_deferred("set_visible", true);
 }
