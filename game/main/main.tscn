@@ -91,7 +91,7 @@ generator = ExtResource("2_bsumw")
 block_material = ExtResource("5_ah4j3")
 water_material = ExtResource("4_fwcvl")
 transparent_block_material = ExtResource("10_ppf03")
-instance_radius = 80
+instance_radius = 96
 script = ExtResource("5_ds8vp")
 
 [node name="Player" parent="." instance=ExtResource("10_4clf3")]
@@ -102,7 +102,7 @@ fly_impulse = 9.0
 mouse_sensitivity = 0.02
 
 [node name="SunLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.88458, 0.403903, -0.233193, 0, 0.5, 0.866026, 0.466386, -0.76607, 0.442291, 0, 0, 0)
+transform = Transform3D(0.88458, 0.318075, -0.341094, 0, 0.731354, 0.681999, 0.466386, -0.603283, 0.646942, 0, 0, 0)
 layers = 5
 light_color = Color(0.877268, 0.80327, 0.741058, 1)
 light_energy = 1.5
@@ -114,7 +114,9 @@ directional_shadow_max_distance = 48.0
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("4_6ud5x")
 script = ExtResource("9_fwcvl")
-water_fog_light_color = Color(0.0823529, 0.258824, 0.419608, 1)
+water_fog_density = 0.7
+water_fog_light_color = Color(0.0362191, 0.145835, 0.287276, 1)
+water_antriscopy = 0.95
 
 [node name="UI" type="CanvasLayer" parent="."]
 

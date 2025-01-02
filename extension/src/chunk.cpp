@@ -258,12 +258,18 @@ void Chunk::calculate_block_statistics() {
             block_count++;
         }
     }
-    for (uint64_t i = 0; i < water.size(); i++) {
-        // Probably not the best place to put this, but might as well not waste cycles
-        if (blocks[i] != 0) {
-            water[i] = 0;
+    for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
+    for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
+    for (uint64_t x = 0; x < CHUNK_SIZE_Y; x++) {
+        if (get_block_index_at(Vector3i(x, y, z)) != 0) {
+            water[position_to_index(Vector3i(x, y, z))] = 0;
+        // Just a heuristic... be conservative and wake up any chunks with water not at empty/ocean levels
+        } else if (get_water_at(Vector3i(x, y, z)) > 0 && get_water_at(Vector3i(x, y, z)) < 255) {
+            water_chunk_wake_set(Vector3i(x, y, z), true, false);
         }
-        water_count += water[i];
+        water_count += water[position_to_index(Vector3i(x, y, z))];
+    }
+    }
     }
 }
 

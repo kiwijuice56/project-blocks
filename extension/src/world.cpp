@@ -358,11 +358,6 @@ void World::initialize_chunk(uint64_t index) {
     chunk->generate_mesh(false);
     chunk->generate_water_mesh();
 
-    // Ensure water isn't asleep when a chunk is loaded
-    if (chunk->water_count > 0) {
-        chunk->water_chunk_awake.fill(2);
-    }
-
     is_chunk_loaded[coordinate] = true;
 }
 
@@ -558,8 +553,8 @@ uint8_t World::get_water_level(Vector3 position) {
 }
 
 
-///////////////////////////////////
-//   Boilerplate setter/getter   //
+//////////////////////////////////
+//   Boilerplate setter/getter  //
 //////////////////////////////////
 
 
