@@ -116,7 +116,7 @@ void Chunk::remove_block_at(Vector3i global_position) {
     block_count--;
     modified = true;
 
-    generate_mesh(true);
+    generate_mesh(true, get_global_position());
 }
 
 void Chunk::place_block_at(Vector3i global_position, uint32_t block_index) {
@@ -133,7 +133,7 @@ void Chunk::place_block_at(Vector3i global_position, uint32_t block_index) {
     block_count++;
     modified = true;
 
-    generate_mesh(true);
+    generate_mesh(true, get_global_position());
 }
 
 
@@ -142,7 +142,7 @@ void Chunk::place_block_at(Vector3i global_position, uint32_t block_index) {
 /////////////////////////////////
 
 
-void Chunk::generate_mesh(bool immediate) {
+void Chunk::generate_mesh(bool immediate, Vector3 global_position) {
     Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
     int material_idx = 0;
 
@@ -152,7 +152,7 @@ void Chunk::generate_mesh(bool immediate) {
     uvs.clear();
     uvs2.clear();
 
-    greedy_mesh_generation(false, false);
+    greedy_mesh_generation(false, false, global_position);
 
     // Package data into an ArrayMesh
     Array arrays;
@@ -187,7 +187,7 @@ void Chunk::generate_mesh(bool immediate) {
     uvs.clear();
     uvs2.clear();
 
-    greedy_mesh_generation(true, false);
+    greedy_mesh_generation(true, false, global_position);
 
     arrays[ArrayMesh::ARRAY_VERTEX] = vertices;
     arrays[ArrayMesh::ARRAY_NORMAL] = normals;
@@ -217,7 +217,7 @@ void Chunk::generate_mesh(bool immediate) {
     call_deferred("set_visible", true);
 }
 
-void Chunk::generate_water_mesh() {
+void Chunk::generate_water_mesh(Vector3 global_position) {
     Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
 
     vertices.clear();
@@ -225,7 +225,7 @@ void Chunk::generate_water_mesh() {
     uvs.clear();
     uvs2.clear();
 
-    greedy_mesh_generation(false, true);
+    greedy_mesh_generation(false, true, global_position);
 
     Array arrays;
     arrays.resize(ArrayMesh::ARRAY_MAX);
@@ -280,7 +280,7 @@ void Chunk::calculate_block_statistics() {
 
 
 // Fill vertex, normal, and uv arrays with proper triangles (using the greedy meshing algorithm)
-void Chunk::greedy_mesh_generation(bool transparent, bool water_pass) {
+void Chunk::greedy_mesh_generation(bool transparent, bool water_pass, Vector3 global_position) {
     for (uint64_t i = 0; i < CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y; i++) {
         visited[i] = false;
     }
@@ -292,9 +292,7 @@ void Chunk::greedy_mesh_generation(bool transparent, bool water_pass) {
             for (uint64_t x = 0; x < CHUNK_SIZE_Y; x++) {
                 if (!water_pass) {
                     current_greedy_block = get_block_index_at(Vector3i(x, y, z));
-
                     bool block_transparent = Object::cast_to<Block>(block_types[current_greedy_block])->get_transparent();
-
                     if (block_transparent != transparent)  {
                         continue;
                     }
@@ -314,6 +312,12 @@ void Chunk::greedy_mesh_generation(bool transparent, bool water_pass) {
                     if (water_level == 255) {
                         size = greedy_scan(start, water_pass);
                     } else {
+                        if (world->is_position_loaded(Vector3i(x, y + 1, z) + global_position)) {
+                            uint8_t above_water = get_water_at_safe(Vector3i(x, y + 1, z));
+                            if (above_water > 0 && water_level > 0) {
+                                water_level = 255;
+                            }
+                        }
                         size = Vector3(1, water_level / 255., 1);
                     }
                 } else if (transparent) {
@@ -612,8 +616,6 @@ void Chunk::simulate_water() {
             uint8_t heavy_count = 0;
             uint16_t w_0 = get_water_at(Vector3i(x, y, z));
 
-
-
             uint16_t w_1 = 0;
             uint16_t w_2 = 0;
             uint16_t w_3 = 0;
@@ -717,15 +719,24 @@ void Chunk::simulate_water() {
                 continue;
             }
 
-            uint16_t w0n = (uint16_t) (w0 + (ws > 32 ? ws * 0.3 : ws));
+            uint16_t w0n = (uint16_t) (w0 + (ws > 32 ? ws * 0.45 : ws));
             if (w0n > 255) {
                 w0n = 255;
             }
 
             uint8_t w0ni = (uint8_t) w0n;
 
-            set_water_at(Vector3i(x, y, z), w0ni);
             source_chunk->set_water_at(source_coord, ws - (w0ni - w0));
+
+            w0n += EXTRA;
+
+            if (w0n > 255) {
+                w0n = 255;
+            }
+
+            w0ni = (uint8_t) w0n;
+
+            set_water_at(Vector3i(x, y, z), w0ni);
         }
         }
         }

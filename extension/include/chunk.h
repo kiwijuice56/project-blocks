@@ -91,8 +91,8 @@ public:
     static bool in_bounds(Vector3i position);
 
     // Mesh generation methods
-    void generate_mesh(bool immediate);
-    void generate_water_mesh();
+    void generate_mesh(bool immediate, Vector3 global_position);
+    void generate_water_mesh(Vector3 global_position);
     void calculate_block_statistics();
     void clear_collision();
 
@@ -100,7 +100,7 @@ public:
     void add_face_uvs(uint64_t id, Vector2i scale);
     void add_face_normals(Vector3i normal);
     void add_rectangular_prism(Vector3 start, Vector3 size);
-    void greedy_mesh_generation(bool transparent, bool water_pass);
+    void greedy_mesh_generation(bool transparent, bool water_pass, Vector3 global_position);
     Vector3i greedy_scan(Vector3i start, bool water_pass);
     bool greedy_invalid(Vector3i position, bool water_pass);
 

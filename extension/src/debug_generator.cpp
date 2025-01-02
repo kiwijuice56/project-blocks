@@ -25,17 +25,6 @@ void DebugGenerator::generate_terrain_blocks(World* world, Chunk* chunk, Array d
 
 void DebugGenerator::generate_water(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
     chunk->water.fill(0);
-    if (chunk_position == Vector3i(0, 16, 0)) {
-        for (uint64_t x = 0; x < Chunk::CHUNK_SIZE_X; x++) {
-            for (uint64_t z = 0; z < Chunk::CHUNK_SIZE_Z; z++) {
-                for (uint64_t y = 0; y < Chunk::CHUNK_SIZE_Y; y++) {
-                    if (y >= 8 && y <= 12 && x >= 6 && x <= 10 && z >= 6 && z <= 10) {
-                        chunk->water[Chunk::position_to_index(Vector3i(x, y, z))] = 255;
-                    }
-                }
-            }
-        }
-    }
 }
 
 void DebugGenerator::generate_decorations(World* world, Vector3i chunk_position) {

@@ -62,8 +62,9 @@ func _process(delta: float) -> void:
 		if held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_just_pressed("secondary_interact") and Ref.world.is_position_loaded(place_position) and Ref.world.get_block_type_at(place_position).id == 0 and not %PlacementCheckShapeCast3D.is_colliding():
 			Ref.player_hotbar.change_amount(hotbar_index, -1)
 			Ref.world.place_block_at(place_position, ItemMap.map(held_item.id), true)
-		if Input.is_action_just_pressed("place_water") and Ref.world.is_position_loaded(place_position) and Ref.world.get_block_type_at(place_position).id == 0:
-			Ref.world.place_water_at(place_position, 255)
+		for v in [Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1)]:
+			if Input.is_action_just_pressed("place_water") and Ref.world.is_position_loaded(place_position + v) and Ref.world.get_block_type_at(place_position + v).id == 0:
+				Ref.world.place_water_at(place_position + v, 255)
 			
 	elif %FloorRayCast3D.is_colliding() and held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_pressed("secondary_interact"):
 		var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())

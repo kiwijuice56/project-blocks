@@ -355,8 +355,8 @@ void World::initialize_chunk(uint64_t index) {
 
     chunk->calculate_block_statistics();
     chunk->never_initialized = false;
-    chunk->generate_mesh(false);
-    chunk->generate_water_mesh();
+    chunk->generate_mesh(false, coordinate);
+    chunk->generate_water_mesh(coordinate);
 
     is_chunk_loaded[coordinate] = true;
 }
@@ -408,7 +408,7 @@ void World::simulate_water() {
 
                 Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
                 if (chunk->water_updated) {
-                    chunk->generate_water_mesh();
+                    chunk->generate_water_mesh(chunk->get_global_position());
                     chunk->water_updated = false;
                 }
             }
