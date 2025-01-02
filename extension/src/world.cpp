@@ -359,7 +359,7 @@ void World::initialize_chunk(uint64_t index) {
 
     // Ensure water isn't asleep when a chunk is loaded
     if (chunk->water_count > 0) {
-        chunk->water_chunk_awake.fill(1);
+        chunk->water_chunk_awake.fill(2);
     }
 
     is_chunk_loaded[coordinate] = true;
@@ -541,7 +541,7 @@ void World::place_water_at(Vector3 position, uint8_t amount) {
     position = position.floor();
 
     Chunk* chunk = get_chunk_at(position);
-    chunk->set_water_at(Vector3i(position), amount);
+    chunk->set_water_at(Vector3i(position - chunk->get_global_position()), amount);
 }
 
 

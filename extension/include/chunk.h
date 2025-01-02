@@ -9,6 +9,8 @@
 #include <godot_cpp/classes/concave_polygon_shape3d.hpp>
 #include <godot_cpp/classes/static_body3d.hpp>
 #include <godot_cpp/classes/collision_shape3d.hpp>
+#include <godot_cpp/classes/box_mesh.hpp>
+#include <godot_cpp/classes/resource_loader.hpp>
 
 namespace godot {
 
@@ -27,9 +29,9 @@ public:
     static const int64_t CHUNK_SIZE_Z = 16;
 
     // The dimensions of individual chunks
-    static const int64_t WATER_CHUNK_SIZE_X = 8;
-    static const int64_t WATER_CHUNK_SIZE_Y = 8;
-    static const int64_t WATER_CHUNK_SIZE_Z = 8;
+    static const int64_t WATER_CHUNK_SIZE_X = 4;
+    static const int64_t WATER_CHUNK_SIZE_Y = 4;
+    static const int64_t WATER_CHUNK_SIZE_Z = 4;
 
     // Block + water index data
     PackedInt32Array blocks;
@@ -53,6 +55,9 @@ public:
     TypedArray<Block> block_types;
     Ref<ShaderMaterial> block_material;
 	Ref<ShaderMaterial> transparent_block_material;
+
+    // Water debugging tool
+    TypedArray<MeshInstance3D> water_indicators;
 
     // Greedy meshing state variables
     bool* visited;
@@ -101,7 +106,7 @@ public:
     uint8_t get_water_at(Vector3i local_position);
     void set_water_at(Vector3i local_position, uint8_t water);
     void simulate_water();
-    void water_chunk_wake_set(Vector3i local_position, bool awake);
+    void water_chunk_wake_set(Vector3i local_position, bool awake, bool surround);
     bool is_valid_water(Vector3i local_position);
 };
 }

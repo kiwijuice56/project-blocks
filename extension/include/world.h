@@ -35,7 +35,7 @@ public:
 
 	// (In blocks)
 	int64_t instance_radius = 128;
-	int64_t water_simulate_radius = 24;
+	int64_t water_simulate_radius = 64;
 
 	// Resources
 	TypedArray<Block> block_types;
