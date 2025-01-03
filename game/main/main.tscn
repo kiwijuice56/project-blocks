@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=24 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" uid="uid://briopjymqw2k4" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="DefaultGenerator" uid="uid://diqcbn3451p2b" path="res://main/world/generators/main_generator.tres" id="2_73k8k"]
@@ -10,6 +10,7 @@
 [ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/world/rendering/block_mesh/block_mesh_material.tres" id="5_ah4j3"]
 [ext_resource type="Script" uid="uid://baqrddgjyyfwb" path="res://main/world/main_world.gd" id="5_ds8vp"]
 [ext_resource type="Script" uid="uid://dad2gdix2t0dm" path="res://main/world/main_enviroment.gd" id="9_fwcvl"]
+[ext_resource type="Script" uid="uid://ii0jtpmwoho6" path="res://main/world/sun.gd" id="9_n3o0a"]
 [ext_resource type="AudioStream" uid="uid://b8n6mef6etkj4" path="res://main/music/naraka.ogg" id="10_0i4oc"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/entity/player/player.tscn" id="10_4clf3"]
 [ext_resource type="Shader" uid="uid://c3bafvwkfg7ut" path="res://main/ui/filter/water_cover.gdshader" id="10_73k8k"]
@@ -63,7 +64,7 @@ tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
 "handle_modes": PackedInt32Array(0, 0, 0),
-"points": PackedFloat32Array(0.6, -0.25, 0, 0.25, 0, 0.8, -0.25, 0, 0.25, 0, 0.6, -0.25, 0, 0.25, 0),
+"points": PackedFloat32Array(0.83, -0.25, 0, 0.25, 0, 0.95, -0.25, 0, 0.25, 0, 0.83, -0.25, 0, 0.25, 0),
 "times": PackedFloat32Array(0, 0.5, 1)
 }
 tracks/1/type = "bezier"
@@ -84,6 +85,10 @@ _data = {
 &"shimmer": SubResource("Animation_fwcvl")
 }
 
+[sub_resource type="TorusMesh" id="TorusMesh_n3o0a"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_n3o0a"]
+
 [node name="Main" type="Node"]
 script = ExtResource("1_wx0yy")
 
@@ -103,15 +108,18 @@ flying = false
 fly_impulse = 9.0
 mouse_sensitivity = 0.02
 
-[node name="SunLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.88458, 0.318075, -0.341094, 0, 0.731354, 0.681999, 0.466386, -0.603283, 0.646942, 0, 0, 0)
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.88458, 0, -0.466387, 0, 1, 0, 0.466386, 0, 0.884582, 0, 0, 0)
 layers = 5
 light_color = Color(0.877268, 0.80327, 0.741058, 1)
 light_energy = 1.5
 light_bake_mode = 0
 shadow_enabled = true
+directional_shadow_mode = 1
 directional_shadow_blend_splits = true
-directional_shadow_max_distance = 48.0
+directional_shadow_max_distance = 64.0
+script = ExtResource("9_n3o0a")
+day_length = 20.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("4_6ud5x")
@@ -119,6 +127,8 @@ script = ExtResource("9_fwcvl")
 water_fog_density = 0.7
 water_fog_light_color = Color(0.0362191, 0.145835, 0.287276, 1)
 water_antriscopy = 0.6
+water_material = ExtResource("4_fwcvl")
+water_material_ghost = ExtResource("5_5xyti")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -153,3 +163,12 @@ libraries = {
 }
 autoplay = "shimmer"
 speed_scale = 0.25
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = ExtResource("4_fwcvl")
+mesh = SubResource("TorusMesh_n3o0a")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.778659, -1.59469e-08, -0.627447, -0.106582, 0.985467, -0.132267, 0.618328, 0.169866, 0.767343, 0, 0, -1.9393)
+material_override = ExtResource("4_fwcvl")
+mesh = SubResource("BoxMesh_n3o0a")

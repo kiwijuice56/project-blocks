@@ -29,11 +29,13 @@ Chunk::Chunk() {
     water_mesh = memnew(MeshInstance3D);
     water_mesh->set_layer_mask(0);
     water_mesh->set_layer_mask_value(2, true);
+    water_mesh->set_cast_shadows_setting(SHADOW_CASTING_SETTING_OFF);
     add_child(water_mesh);
 
     water_mesh_ghost = memnew(MeshInstance3D);
     water_mesh_ghost->set_layer_mask(0);
     water_mesh_ghost->set_layer_mask_value(2, true);
+    water_mesh_ghost->set_cast_shadows_setting(SHADOW_CASTING_SETTING_OFF);
     add_child(water_mesh_ghost);
 
     // Initialize collision data

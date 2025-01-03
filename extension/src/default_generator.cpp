@@ -94,6 +94,9 @@ void DefaultGenerator::generate_decorations(World* world, Vector3i chunk_positio
         int64_t real_height = y + chunk_position.y;
 
         if (block_height == real_height) {
+            if (chunk_position.y + y + 1 <= 48) {
+                continue;
+            }
             world->place_decoration(tree, chunk_position + Vector3i(-2, y + 1, -2));
         }
     }
