@@ -40,3 +40,6 @@ func step() -> void:
 	new_player.stream = Ref.world.get_block_type_at(floor_point).step_sound
 	new_player.playing = true
 	new_player.finished.connect(new_player.queue_free)
+	
+	if get_parent().has_node("%Splash") and Ref.world.is_position_loaded(floor_point + Vector3(0, 0.5, 0)) and Ref.world.is_under_water(floor_point + Vector3(0, 0.5, 0)):
+		get_parent().get_node("%Splash").splash(0, false)

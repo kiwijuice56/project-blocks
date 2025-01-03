@@ -1,0 +1,13 @@
+[gd_resource type="AudioStreamRandomizer" load_steps=4 format=3 uid="uid://bf4vak6ryrnb"]
+
+[ext_resource type="AudioStream" uid="uid://sh8srngq6ncc" path="res://main/entity/behaviors/splash/big_splash_1.wav" id="1_s1tq6"]
+[ext_resource type="AudioStream" uid="uid://2das1033iie2" path="res://main/entity/behaviors/splash/big_splash_2.wav" id="2_xsf5v"]
+[ext_resource type="AudioStream" uid="uid://dwr325jbxkpjx" path="res://main/entity/behaviors/splash/big_splash_3.wav" id="3_cfqm8"]
+
+[resource]
+random_pitch = 1.2
+random_volume_offset_db = 1.2
+streams_count = 3
+stream_0/stream = ExtResource("1_s1tq6")
+stream_1/stream = ExtResource("2_xsf5v")
+stream_2/stream = ExtResource("3_cfqm8")

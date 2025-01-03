@@ -17,12 +17,22 @@ class_name Entity extends CharacterBody3D
 @export var water_drag_jump = 0.35
 @export var water_drag_gravity: float = 0.1
 
+signal water_entered(vertical_velocity: float)
+signal water_exited(vertical_velocity: float)
+
 var held_item: ItemState
 var health: int
 
 var movement_enabled: bool = true
 var in_air: bool = false
-var under_water: bool = false
+var under_water: bool = false:
+	set(val):
+		if not under_water and val:
+			water_entered.emit(velocity.y)
+		if under_water and not val:
+			water_exited.emit(velocity.y)
+		under_water = val
+var feet_under_water: bool = false
 var buoyancy: float = 0.0
 
 var speed_modifier: float = 1.0
@@ -41,6 +51,7 @@ func _physics_process(delta: float) -> void:
 	velocity.y -= delta * gravity * gravity_modifier
 	
 	under_water = Ref.world.is_position_loaded(%WaterPoint.global_position) and Ref.world.is_under_water(%WaterPoint.global_position)
+	feet_under_water = Ref.world.is_position_loaded(global_position) and Ref.world.is_under_water(global_position)
 	
 	if under_water:
 		buoyancy = lerp(buoyancy, 1.0, delta * 16.0)

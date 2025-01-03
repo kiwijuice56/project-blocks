@@ -1,0 +1,54 @@
+[gd_scene load_steps=9 format=3 uid="uid://f3ye4xfrw7y6"]
+
+[ext_resource type="Shader" uid="uid://ccjqi2my7x4s" path="res://main/world/rendering/block_mesh/water_mesh_renderer.gdshader" id="1_4iejf"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ystrm"]
+noise_type = 3
+frequency = 0.0148
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_tc6p8"]
+seamless = true
+noise = SubResource("FastNoiseLite_ystrm")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4iejf"]
+render_priority = 0
+shader = ExtResource("1_4iejf")
+shader_parameter/albedo = Color(0.264, 0.4642, 0.55, 1)
+shader_parameter/albedo_far = Color(0.0280973, 0.123455, 0.265156, 1)
+shader_parameter/fade = 0.5
+shader_parameter/max_dist = 4.0
+shader_parameter/noise = SubResource("NoiseTexture2D_tc6p8")
+
+[sub_resource type="Curve" id="Curve_4iejf"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_2ku1y"]
+curve = SubResource("Curve_4iejf")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_2ku1y"]
+particle_flag_align_y = true
+particle_flag_rotate_y = true
+emission_shape = 1
+emission_sphere_radius = 0.2
+angle_min = -180.0
+angle_max = 180.0
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 2.0
+initial_velocity_max = 7.0
+scale_curve = SubResource("CurveTexture_2ku1y")
+
+[sub_resource type="BoxMesh" id="BoxMesh_oqjli"]
+size = Vector3(0.035, 0.035, 0.035)
+
+[node name="SplashEffect" type="GPUParticles3D"]
+material_override = SubResource("ShaderMaterial_4iejf")
+cast_shadow = 0
+emitting = false
+amount = 48
+lifetime = 1.5
+one_shot = true
+explosiveness = 0.96
+process_material = SubResource("ParticleProcessMaterial_2ku1y")
+draw_pass_1 = SubResource("BoxMesh_oqjli")
