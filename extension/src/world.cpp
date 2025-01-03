@@ -47,6 +47,7 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("place_block_at", "position", "block_type", "play_effect"), &World::place_block_at);
     ClassDB::bind_method(D_METHOD("place_water_at", "position", "amount"), &World::place_water_at);
     ClassDB::bind_method(D_METHOD("get_water_level_at", "position"), &World::get_water_level);
+    ClassDB::bind_method(D_METHOD("is_under_water", "position"), &World::is_under_water);
 
     ADD_PROPERTY(
         PropertyInfo(
@@ -611,6 +612,15 @@ uint8_t World::get_water_level(Vector3 position) {
     position = position.floor();
     Chunk* chunk = get_chunk_at(position);
     return chunk->get_water_at(Vector3i(position - chunk->get_global_position()));
+}
+
+bool World::is_under_water(Vector3 position) {
+    uint8_t water_level = get_water_level(position);
+    if (water_level == 0) {
+        return false;
+    }
+    float r = position.y - position.floor().y;
+    return r < water_level / 255.;
 }
 
 

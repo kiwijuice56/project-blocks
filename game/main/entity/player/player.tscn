@@ -90,6 +90,8 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 1.411, 0)
 cull_mask = 1048571
 fov = 80.0
+near = 0.01
+far = 2000.0
 script = ExtResource("7_8pj5f")
 
 [node name="InteractRayCast3D" type="RayCast3D" parent="Camera3D" index="0"]

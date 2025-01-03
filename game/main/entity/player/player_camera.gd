@@ -9,6 +9,6 @@ var under_water: bool = false:
 		under_water = val
 
 func _process(_delta: float) -> void:
-	under_water = Ref.world.is_position_loaded(global_position) and Ref.world.get_water_level_at(global_position) > 0
+	under_water = Ref.world.is_position_loaded(global_position) and Ref.world.is_under_water(global_position)
 	set_cull_mask_value(2, not under_water)
 	set_cull_mask_value(3, under_water)

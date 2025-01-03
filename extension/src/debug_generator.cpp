@@ -25,6 +25,9 @@ void DebugGenerator::generate_terrain_blocks(World* world, Chunk* chunk, Array d
 
 void DebugGenerator::generate_water(World* world, Chunk* chunk, Array decorations, Vector3i chunk_position) {
     chunk->water.fill(0);
+    if (chunk_position.y < 0) {
+        chunk->water.fill(255);
+    }
 }
 
 void DebugGenerator::generate_decorations(World* world, Vector3i chunk_position) {

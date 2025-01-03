@@ -398,8 +398,8 @@ void Chunk::greedy_mesh_generation(bool transparent, bool water_pass, Vector3 gl
                     if (water_level == 255) {
                         size = greedy_scan(start, water_pass);
                     } else {
-                        if (world->is_position_loaded(Vector3i(x, y + 1, z) + global_position)) {
-                            uint8_t above_water = get_water_at_safe(Vector3i(x, y + 1, z));
+                        if (in_bounds(Vector3i(x, y + 1, z))) {
+                            uint8_t above_water = get_water_at(Vector3i(x, y + 1, z));
                             if (above_water > 0 && water_level > 0) {
                                 water_level = 255;
                             }

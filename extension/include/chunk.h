@@ -35,7 +35,7 @@ public:
 
     const uint8_t HEAVY = 212;
     const uint8_t EXTRA = 4;
-    const uint8_t EVAPORATE = 16;
+    const uint8_t EVAPORATE = 8;
 
     // Block + water index data
     PackedInt32Array blocks;

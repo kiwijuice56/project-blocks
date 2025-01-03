@@ -128,6 +128,7 @@ public:
 	void place_decoration(Ref<Decoration> decoration, Vector3i position);
 	void place_water_at(Vector3 position, uint8_t amount);
 	uint8_t get_water_level(Vector3 position);
+	bool is_under_water(Vector3 position);
 
 	// Boilerplate setters and getters
 	void set_instance_radius(int64_t new_radius);
