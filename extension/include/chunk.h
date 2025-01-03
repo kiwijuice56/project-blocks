@@ -40,9 +40,10 @@ public:
     // Block + water index data
     PackedInt32Array blocks;
     PackedByteArray water; // Stores numerical density 0-255
-    PackedByteArray water_buffer; // Buffer between simulation steps
     PackedByteArray water_chunk_awake; // Stores whether each water subchunk should be awake
     PackedByteArray water_chunk_awake_buffer; // Stores whether each water subchunk should be awake
+    bool water_surface_meshed = false;
+    uint8_t water_updated = 0;
     uint8_t water_shuffle = 0;
 
     // Mesh data
@@ -56,6 +57,7 @@ public:
     ConcavePolygonShape3D* shape_data_transparent;
     MeshInstance3D* water_mesh;
     MeshInstance3D* water_mesh_ghost;
+    MeshInstance3D* water_mesh_surface;
 
     // Resources set by World
     World* world;
@@ -74,7 +76,6 @@ public:
     bool uniform = false; // Used to optimize chunks of one block type
     bool modified = false; // Whether this chunk has had any blocks placed/removed
     bool never_initialized = true;
-    uint8_t water_updated = 0;
 
     Chunk();
 	~Chunk();
@@ -94,6 +95,7 @@ public:
     // Mesh generation methods
     void generate_mesh(bool immediate, Vector3 global_position);
     void generate_water_mesh(bool clear, Vector3 global_position);
+    void generate_water_surface_mesh(bool remove, Vector3 global_position);
     void calculate_block_statistics();
     void clear_collision();
 

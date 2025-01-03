@@ -1,11 +1,10 @@
 shader_type spatial;
+render_mode cull_disabled, fog_disabled, unshaded;
 
 uniform vec4 albedo : source_color;
 uniform vec4 albedo_far : source_color;
 uniform float fade = 0.5;
 uniform float max_dist = 4.0;
-
-uniform bool under_water = false;
 
 uniform sampler2D noise;
 
@@ -20,9 +19,8 @@ void fragment() {
 	float dist = -pixel_position.z + 0.7 * texture(noise, SCREEN_UV + vec2(cos(TIME * 0.05), sin(TIME * 0.04))).r;
 	float x = clamp(dist / max_dist, 0., 1.);
 	ALBEDO = albedo_far.rgb * x + (1.0 - x) * albedo.rgb;
-	EMISSION = albedo.rgb * 0.25 * x;
 }
 
 void light() {
-	DIFFUSE_LIGHT += 0.25 * ATTENUATION * LIGHT_COLOR;
+	DIFFUSE_LIGHT = vec3(0.);
 }

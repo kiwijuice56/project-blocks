@@ -21,7 +21,6 @@ Chunk::Chunk() {
     visited = new bool[CHUNK_SIZE_X * CHUNK_SIZE_Z * CHUNK_SIZE_Y];
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
     water.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
-    water_buffer.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
     water_chunk_awake.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z / WATER_CHUNK_SIZE_X / WATER_CHUNK_SIZE_Y / WATER_CHUNK_SIZE_Z);
     water_chunk_awake_buffer.resize(water_chunk_awake.size());
 
@@ -37,6 +36,12 @@ Chunk::Chunk() {
     water_mesh_ghost->set_layer_mask_value(2, true);
     water_mesh_ghost->set_cast_shadows_setting(SHADOW_CASTING_SETTING_OFF);
     add_child(water_mesh_ghost);
+
+    water_mesh_surface = memnew(MeshInstance3D);
+    water_mesh_surface->set_layer_mask(0);
+    water_mesh_surface->set_layer_mask_value(3, true);
+    water_mesh_surface->set_cast_shadows_setting(SHADOW_CASTING_SETTING_OFF);
+    add_child(water_mesh_surface);
 
     // Initialize collision data
     shape_data_opaque = memnew(ConcavePolygonShape3D);
@@ -124,6 +129,7 @@ void Chunk::remove_block_at(Vector3i global_position) {
     modified = true;
 
     generate_mesh(true, get_global_position());
+    generate_water_surface_mesh(false, get_global_position());
 }
 
 void Chunk::place_block_at(Vector3i global_position, uint32_t block_index) {
@@ -141,6 +147,7 @@ void Chunk::place_block_at(Vector3i global_position, uint32_t block_index) {
     modified = true;
 
     generate_mesh(true, get_global_position());
+    generate_water_surface_mesh(false, get_global_position());
 }
 
 
@@ -225,6 +232,7 @@ void Chunk::generate_mesh(bool immediate, Vector3 global_position) {
 }
 
 void Chunk::generate_water_mesh(bool clear, Vector3 global_position) {
+    // Water mesh
     Ref<ArrayMesh> array_mesh(memnew(ArrayMesh));
 
     vertices.clear();
@@ -244,14 +252,82 @@ void Chunk::generate_water_mesh(bool clear, Vector3 global_position) {
         array_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
     }
 
+    // Ghost mesh (swapping)
     Ref<ArrayMesh> old_mesh = water_mesh->get_mesh();
     if (clear) {
         water_mesh_ghost->call_deferred("set_mesh", memnew(ArrayMesh));
     } else {
         water_mesh_ghost->call_deferred("set_mesh", old_mesh);
     }
+
     water_mesh->call_deferred("set_mesh", array_mesh);
     water_mesh->call_deferred("set_visible", true);
+}
+
+void Chunk::generate_water_surface_mesh(bool remove, Vector3 global_position) {
+    // Check that chunk above is loaded for regular meshing
+    if (!remove && !world->is_position_loaded(global_position + Vector3(8, 8 + 16, 8))) {
+        return;
+    }
+
+    // Surface mesh
+    Ref<ArrayMesh> array_mesh_surface(memnew(ArrayMesh));
+
+    vertices.clear();
+    normals.clear();
+
+    face_count = 0;
+
+    if (!remove && water_count > 0) {
+        for (uint64_t y = 0; y < CHUNK_SIZE_Y; y++) {
+        for (uint64_t z = 0; z < CHUNK_SIZE_Z; z++) {
+        for (uint64_t x = 0; x < CHUNK_SIZE_Y; x++) {
+            if (get_water_at(Vector3i(x, y, z)) == 0) {
+                continue;
+            }
+
+            if (get_water_at_safe(Vector3i(x, y + 1, z)) != 0) {
+                continue;
+            }
+
+            if (get_water_at(Vector3i(x, y, z)) == 255 && get_block_index_at_safe(Vector3i(x, y + 1, z)) != 0) {
+                continue;
+            }
+
+            Vector3 start = Vector3(x, y, z);
+            Vector3 size = Vector3(1, get_water_at(start) / 255., 1);
+
+            vertices.resize(vertices.size() + 6);
+            normals.resize(normals.size() + 6);
+
+            // Y, facing up
+            vertices[face_count * 6 + 0] = start + Vector3(0, size.y, size.z);
+            vertices[face_count * 6 + 1] = start + Vector3(0, size.y, 0);
+            vertices[face_count * 6 + 2] = start + Vector3(size.x, size.y, 0);
+            vertices[face_count * 6 + 3] = start + Vector3(0, size.y, size.z);
+            vertices[face_count * 6 + 4] = start + Vector3(size.x, size.y, 0);
+            vertices[face_count * 6 + 5] = start + Vector3(size.x, size.y, size.z);
+            add_face_normals(Vector3(0, -1, 0));
+
+            face_count++;
+        }
+        }
+        }
+    }
+
+    Array arrays;
+
+    arrays.resize(ArrayMesh::ARRAY_MAX);
+
+    arrays[ArrayMesh::ARRAY_VERTEX] = vertices;
+    arrays[ArrayMesh::ARRAY_NORMAL] = normals;
+
+    if (vertices.size() > 0) {
+        array_mesh_surface->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+    }
+
+    water_mesh_surface->call_deferred("set_mesh", array_mesh_surface);
+    water_surface_meshed = !remove;
 }
 
 void Chunk::clear_collision() {
@@ -276,9 +352,6 @@ void Chunk::calculate_block_statistics() {
     for (uint64_t x = 0; x < CHUNK_SIZE_Y; x++) {
         if (get_block_index_at(Vector3i(x, y, z)) != 0) {
             water[position_to_index(Vector3i(x, y, z))] = 0;
-        // Just a heuristic... be conservative and wake up any chunks with water not at empty/ocean levels
-        } else if (get_water_at(Vector3i(x, y, z)) > 0 && get_water_at(Vector3i(x, y, z)) < 255) {
-            water_chunk_wake_set(Vector3i(x, y, z), true, false);
         }
         water_count += water[position_to_index(Vector3i(x, y, z))];
     }
@@ -599,6 +672,11 @@ void Chunk::set_water_at(Vector3i local_position, uint8_t water_level) {
 }
 
 void Chunk::simulate_water() {
+    // Stop simulating if too many subchunks have already been simulated this frame
+    if (world->simulated_water_subchunks >= World::MAX_WATER_SUBCHUNKS_PER_FRAME) {
+        return;
+    }
+
     for (uint16_t i = 0; i < water_chunk_awake_buffer.size(); i++) {
         water_chunk_awake_buffer[i] = water_chunk_awake[i];
         if (water_chunk_awake[i] > 0) {
@@ -617,11 +695,11 @@ void Chunk::simulate_water() {
         for (uint8_t y = cy * WATER_CHUNK_SIZE_Y; y < (cy + 1) * WATER_CHUNK_SIZE_Y; y++) {
         for (uint8_t z = cz * WATER_CHUNK_SIZE_Z; z < (cz + 1) * WATER_CHUNK_SIZE_Z; z++) {
         for (uint8_t x = cx * WATER_CHUNK_SIZE_X; x < (cx + 1) * WATER_CHUNK_SIZE_X; x++) {
-            if (get_block_index_at(Vector3i(x, y, z)) != 0) {
+            if ((x + 3 * z) % 5 != water_shuffle) {
                 continue;
             }
 
-            if ((x + 3 * z) % 5 != water_shuffle) {
+            if (get_block_index_at(Vector3i(x, y, z)) != 0) {
                 continue;
             }
 
@@ -682,7 +760,6 @@ void Chunk::simulate_water() {
                 set_water_at(Vector3i(x + 0, y, z - 1), average);
             }
 
-
             set_water_at(Vector3i(x, y, z), average);
         }
         }
@@ -698,6 +775,8 @@ void Chunk::simulate_water() {
         if (water_chunk_awake_buffer[cx + cz * CHUNK_SIZE_X / WATER_CHUNK_SIZE_X + cy * CHUNK_SIZE_X / WATER_CHUNK_SIZE_X * CHUNK_SIZE_Z / WATER_CHUNK_SIZE_Z] == 0) {
             continue;
         }
+
+        world->simulated_water_subchunks++;
 
         for (uint8_t y = cy * WATER_CHUNK_SIZE_Y; y < (cy + 1) * WATER_CHUNK_SIZE_Y; y++) {
         for (uint8_t z = cz * WATER_CHUNK_SIZE_Z; z < (cz + 1) * WATER_CHUNK_SIZE_Z; z++) {
@@ -724,11 +803,11 @@ void Chunk::simulate_water() {
                 }
             }
 
-            if (source_chunk->get_block_index_at(source_coord) != 0) {
+            if (ws == 0) {
                 continue;
             }
 
-            if (ws == 0) {
+            if (source_chunk->get_block_index_at(source_coord) != 0) {
                 continue;
             }
 

@@ -11,3 +11,4 @@ var under_water: bool = false:
 func _process(_delta: float) -> void:
 	under_water = Ref.world.is_position_loaded(global_position) and Ref.world.get_water_level_at(global_position) > 0
 	set_cull_mask_value(2, not under_water)
+	set_cull_mask_value(3, under_water)

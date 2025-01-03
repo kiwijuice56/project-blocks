@@ -30,6 +30,9 @@ void World::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_water_ghost_material"), &World::get_water_ghost_material);
 	ClassDB::bind_method(D_METHOD("set_water_ghost_material", "new_material"), &World::set_water_ghost_material);
 
+    ClassDB::bind_method(D_METHOD("get_water_surface_material"), &World::get_water_surface_material);
+	ClassDB::bind_method(D_METHOD("set_water_surface_material", "new_material"), &World::set_water_surface_material);
+
     ClassDB::bind_method(D_METHOD("get_transparent_block_material"), &World::get_transparent_block_material);
 	ClassDB::bind_method(D_METHOD("set_transparent_block_material", "new_material"), &World::set_transparent_block_material);
 
@@ -114,6 +117,17 @@ void World::_bind_methods() {
     ADD_PROPERTY(
         PropertyInfo(
             Variant::OBJECT,
+            "water_surface_material",
+            PROPERTY_HINT_RESOURCE_TYPE,
+            "ShaderMaterial"
+        ),
+        "set_water_surface_material",
+        "get_water_surface_material"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(
+            Variant::OBJECT,
             "transparent_block_material",
             PROPERTY_HINT_RESOURCE_TYPE,
             "ShaderMaterial"
@@ -188,6 +202,7 @@ void World::instantiate_chunks() {
                 new_chunk->transparent_block_material = transparent_block_material;
                 new_chunk->water_mesh->set_material_override(water_material);
                 new_chunk->water_mesh_ghost->set_material_override(water_ghost_material);
+                new_chunk->water_mesh_surface->set_material_override(water_surface_material);
 
                 add_child(new_chunk);
 
@@ -303,6 +318,7 @@ void World::update_loaded_region() {
                 if (chunk->modified) {
                     chunk_data[coordinate] = chunk->blocks;
                     chunk_water_data[coordinate] = chunk->water;
+                    chunk_water_awake_data[coordinate] = chunk->water_chunk_awake;
                 }
             }
         }
@@ -362,16 +378,19 @@ void World::initialize_chunk(uint64_t index) {
     if (chunk_data.has(coordinate)) {
         chunk->blocks = chunk_data[coordinate];
         chunk->water = chunk_water_data[coordinate];
+        chunk->water_chunk_awake = chunk_water_awake_data[coordinate];
     } else {
         generator->generate_terrain_blocks(this, chunk, decoration_map[coordinate], coordinate);
         generator->generate_decoration_blocks(this, chunk, decoration_map[coordinate], coordinate);
         generator->generate_water(this, chunk, decoration_map[coordinate], coordinate);
+        chunk->water_chunk_awake.fill(0);
     }
 
     chunk->calculate_block_statistics();
     chunk->never_initialized = false;
     chunk->generate_mesh(false, coordinate);
     chunk->generate_water_mesh(true, coordinate);
+    chunk->generate_water_surface_mesh(true, coordinate); // This CLEARS the surface mesh
 
     is_chunk_loaded[coordinate] = true;
 }
@@ -393,41 +412,68 @@ void World::simulate_water() {
     int64_t chunk_radius_y = water_simulate_radius / Chunk::CHUNK_SIZE_Y;
     int64_t chunk_radius_z = water_simulate_radius / Chunk::CHUNK_SIZE_Z;
 
-    for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
-        for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
-            for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
-                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
-                if ((int64_t)UtilityFunctions::abs(x + y + z)% 3 != water_frame) {
-                    continue;
-                }
-                if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
-                    continue;
-                }
+    // First, advance the water simulation of all chunks in range
+    simulated_water_subchunks = 0;
+    for (int64_t chunk_y = 0; chunk_y <= 2 * water_simulate_radius / Chunk::CHUNK_SIZE_Y; chunk_y++) {
+        int64_t actual_chunk_y = (chunk_y % 2 == 0) ? -chunk_y / 2 : (chunk_y + 1) / 2;
+    for (int64_t chunk_x = 0; chunk_x <= 2 * water_simulate_radius / Chunk::CHUNK_SIZE_X; chunk_x++) {
+        int64_t actual_chunk_x = (chunk_x % 2 == 0) ? -chunk_x / 2 : (chunk_x + 1) / 2;
+    for (int64_t chunk_z = 0; chunk_z <= 2 * water_simulate_radius / Chunk::CHUNK_SIZE_Z; chunk_z++) {
+        int64_t actual_chunk_z = (chunk_z % 2 == 0) ? -chunk_z / 2 : (chunk_z + 1) / 2;
 
-                Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
-                chunk->simulate_water();
-            }
+        Vector3i coordinate = Vector3i(
+            Chunk::CHUNK_SIZE_X * actual_chunk_x,
+            Chunk::CHUNK_SIZE_Y * actual_chunk_y,
+            Chunk::CHUNK_SIZE_Z * actual_chunk_z) + center_chunk;
+
+        // Simulate chunks in a staggered way
+        if ((int64_t) UtilityFunctions::abs(coordinate.x + coordinate.y + coordinate.z) % 3 != water_frame) {
+            continue;
+        }
+
+        if (!is_chunk_loaded.has(coordinate) || !is_chunk_loaded[coordinate] || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
+            continue;
+        }
+
+        Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
+        chunk->simulate_water();
+    }
+    }
+    }
+
+    // Then, render any updated chunks +
+    // Render water surfaces of chunks that were recently loaded
+    rendered_water_chunks = 0;
+    for (int64_t chunk_y = 0; chunk_y <= 2 * water_simulate_radius / Chunk::CHUNK_SIZE_Y; chunk_y++) {
+        int64_t actual_chunk_y = (chunk_y % 2 == 0) ? -chunk_y / 2 : (chunk_y + 1) / 2;
+
+    for (int64_t chunk_x = 0; chunk_x <= 2 * water_simulate_radius / Chunk::CHUNK_SIZE_X; chunk_x++) {
+        int64_t actual_chunk_x = (chunk_x % 2 == 0) ? -chunk_x / 2 : (chunk_x + 1) / 2;
+
+    for (int64_t chunk_z = 0; chunk_z <= 2 * water_simulate_radius / Chunk::CHUNK_SIZE_Z; chunk_z++) {
+        int64_t actual_chunk_z = (chunk_z % 2 == 0) ? -chunk_z / 2 : (chunk_z + 1) / 2;
+
+        Vector3i coordinate = Vector3i(
+            Chunk::CHUNK_SIZE_X * actual_chunk_x,
+            Chunk::CHUNK_SIZE_Y * actual_chunk_y,
+            Chunk::CHUNK_SIZE_Z * actual_chunk_z) + center_chunk;
+
+        if (!is_chunk_loaded.has(coordinate) || !is_chunk_loaded[coordinate] || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
+            continue;
+        }
+
+        Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
+
+        if (chunk->water_updated > 0 && rendered_water_chunks < MAX_WATER_RERENDERED_CHUNKS_PER_FRAME) {
+            chunk->generate_water_mesh(false, coordinate);
+            chunk->generate_water_surface_mesh(false, coordinate);
+            chunk->water_updated--;
+            rendered_water_chunks++;
+        } else if (!chunk->water_surface_meshed) {
+            chunk->generate_water_surface_mesh(false, coordinate);
         }
     }
-    for (int64_t y = -chunk_radius_y; y <= chunk_radius_y; y++) {
-        for (int64_t z = -chunk_radius_z; z <= chunk_radius_z; z++) {
-            for (int64_t x = -chunk_radius_x; x <= chunk_radius_x; x++) {
-                if ((int64_t)UtilityFunctions::abs(x + y + z) % 3 != water_frame) {
-                    continue;
-                }
-
-                Vector3i coordinate = Vector3i(Chunk::CHUNK_SIZE_X * x, Chunk::CHUNK_SIZE_Y * y, Chunk::CHUNK_SIZE_Z * z) + center_chunk;
-                if (!is_chunk_loaded.has(coordinate) || !is_chunk_in_radius(coordinate, water_simulate_radius)) {
-                    continue;
-                }
-
-                Chunk* chunk = Object::cast_to<Chunk>(chunk_map[coordinate]);
-                if (chunk->water_updated > 0) {
-                    chunk->generate_water_mesh(false, chunk->get_global_position());
-                    chunk->water_updated--;
-                }
-            }
-        }
+    }
     }
 
     water_frame = (water_frame + 1) % 3;
@@ -605,6 +651,13 @@ void World::set_water_ghost_material(Ref<ShaderMaterial> new_material) {
     water_ghost_material = new_material;
 }
 
+Ref<ShaderMaterial> World::get_water_surface_material() const {
+    return water_surface_material;
+}
+
+void World::set_water_surface_material(Ref<ShaderMaterial> new_material) {
+    water_surface_material = new_material;
+}
 
 Ref<ShaderMaterial> World::get_transparent_block_material() const {
     return transparent_block_material;

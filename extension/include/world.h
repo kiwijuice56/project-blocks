@@ -31,7 +31,8 @@ protected:
 
 public:
 	static const int64_t MAX_DECORATIONS = 16;
-	static const int64_t MAX_WATER_CHUNKS = 6;
+	static const int64_t MAX_WATER_SUBCHUNKS_PER_FRAME = 128;
+	static const int64_t MAX_WATER_RERENDERED_CHUNKS_PER_FRAME = 4;
 
 	// (In blocks)
 	int64_t instance_radius = 128;
@@ -44,6 +45,7 @@ public:
 	Ref<ShaderMaterial> transparent_block_material;
 	Ref<ShaderMaterial> water_material;
 	Ref<ShaderMaterial> water_ghost_material;
+	Ref<ShaderMaterial> water_surface_material;
 	Ref<PackedScene> dropped_item_scene; // These (and below) are set in code for convenience
 	Ref<PackedScene> break_effect_scene;
 	Ref<PackedScene> place_effect_scene;
@@ -67,9 +69,10 @@ public:
 	// Stores (Vector3i : bool) for which chunks have decorations generated
 	Dictionary decoration_generated;
 
-	// Stores block data of modified chunks (Vector3i : PackedInt32Array)
+	// Stores data of modified chunks (Vector3i : PackedInt32Array)
 	Dictionary chunk_data;
 	Dictionary chunk_water_data; // PackedByteArray
+	Dictionary chunk_water_awake_data; // PackedByteArray
 
 	// Used to access chunks that need to be initialized
 	std::vector<Chunk*> init_queue;
@@ -82,6 +85,8 @@ public:
 
 	// Water state
 	uint8_t water_frame = 0;
+	uint16_t simulated_water_subchunks = 0;
+	uint16_t rendered_water_chunks = 0;
 
 	// Stores (Vector3i : Array[Decoration])
 	Dictionary decoration_map;
@@ -145,6 +150,9 @@ public:
 
 	Ref<ShaderMaterial> get_water_ghost_material() const;
     void set_water_ghost_material(Ref<ShaderMaterial> new_material);
+
+	Ref<ShaderMaterial> get_water_surface_material() const;
+    void set_water_surface_material(Ref<ShaderMaterial> new_material);
 
 	Ref<Generator> get_generator() const;
     void set_generator(Ref<Generator> new_generator);

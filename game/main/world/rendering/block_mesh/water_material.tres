@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://dsbaicfaldxva"]
 
-[ext_resource type="Shader" uid="uid://bvjnprxr4rehl" path="res://main/world/rendering/block_mesh/water.gdshader" id="1_ystrm"]
+[ext_resource type="Shader" uid="uid://ccjqi2my7x4s" path="res://main/world/rendering/block_mesh/water_mesh_renderer.gdshader" id="1_ystrm"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ystrm"]
 noise_type = 3
@@ -17,5 +17,4 @@ shader_parameter/albedo = Color(0.1677, 0.35131, 0.43, 1)
 shader_parameter/albedo_far = Color(0.0280973, 0.123455, 0.265156, 1)
 shader_parameter/fade = 0.5
 shader_parameter/max_dist = 4.0
-shader_parameter/under_water = false
 shader_parameter/noise = SubResource("NoiseTexture2D_tc6p8")

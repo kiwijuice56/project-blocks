@@ -88,6 +88,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 [node name="Camera3D" type="Camera3D" parent="." index="4"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 1.411, 0)
+cull_mask = 1048571
 fov = 80.0
 script = ExtResource("7_8pj5f")
 

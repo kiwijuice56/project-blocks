@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=25 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" uid="uid://briopjymqw2k4" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="DefaultGenerator" uid="uid://diqcbn3451p2b" path="res://main/world/generators/main_generator.tres" id="2_73k8k"]
@@ -9,6 +9,7 @@
 [ext_resource type="Material" uid="uid://dj5tpcmae5jjt" path="res://main/world/rendering/block_mesh/water_material_ghost.tres" id="5_5xyti"]
 [ext_resource type="Material" uid="uid://mo5hyyhqxh67" path="res://main/world/rendering/block_mesh/block_mesh_material.tres" id="5_ah4j3"]
 [ext_resource type="Script" uid="uid://baqrddgjyyfwb" path="res://main/world/main_world.gd" id="5_ds8vp"]
+[ext_resource type="Material" uid="uid://df6lwrk0s5a6o" path="res://main/world/rendering/block_mesh/water_material_surface.tres" id="6_s758e"]
 [ext_resource type="Script" uid="uid://dad2gdix2t0dm" path="res://main/world/main_enviroment.gd" id="9_fwcvl"]
 [ext_resource type="Script" uid="uid://ii0jtpmwoho6" path="res://main/world/sun.gd" id="9_n3o0a"]
 [ext_resource type="AudioStream" uid="uid://b8n6mef6etkj4" path="res://main/music/naraka.ogg" id="10_0i4oc"]
@@ -52,6 +53,17 @@ tracks/1/keys = {
 "points": PackedFloat32Array(0.5, -0.25, 0, 0.25, 0),
 "times": PackedFloat32Array(0)
 }
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MainWorld:water_surface_material:shader_parameter/fade")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0.2, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
 
 [sub_resource type="Animation" id="Animation_fwcvl"]
 resource_name = "shimmer"
@@ -78,6 +90,17 @@ tracks/1/keys = {
 "points": PackedFloat32Array(0.6, -0.25, 0, 0.25, 0, 0.45, -0.25, 0, 0.25, 0, 0.6, -0.25, 0, 0.25, 0),
 "times": PackedFloat32Array(-0.0333333, 0.5, 1)
 }
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MainWorld:water_surface_material:shader_parameter/fade")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0),
+"points": PackedFloat32Array(0.2, -0.25, 0, 0.25, 0, 0.4, -0.25, 0, 0.25, 0, 0.2, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1)
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_na0o7"]
 _data = {
@@ -97,6 +120,7 @@ generator = ExtResource("2_73k8k")
 block_material = ExtResource("5_ah4j3")
 water_material = ExtResource("4_fwcvl")
 water_ghost_material = ExtResource("5_5xyti")
+water_surface_material = ExtResource("6_s758e")
 transparent_block_material = ExtResource("10_ppf03")
 instance_radius = 96
 script = ExtResource("5_ds8vp")
@@ -126,6 +150,7 @@ environment = ExtResource("4_6ud5x")
 script = ExtResource("9_fwcvl")
 water_fog_density = 0.7
 water_fog_light_color = Color(0.0362191, 0.145835, 0.287276, 1)
+water_fog_light_emission = Color(0.1219, 0.36676, 0.53, 1)
 water_antriscopy = 0.6
 water_material = ExtResource("4_fwcvl")
 water_material_ghost = ExtResource("5_5xyti")
