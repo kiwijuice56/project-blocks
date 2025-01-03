@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://dtav4pssg0xe2"]
+[gd_scene load_steps=20 format=3 uid="uid://dtav4pssg0xe2"]
 
 [ext_resource type="Script" uid="uid://briopjymqw2k4" path="res://main/main.gd" id="1_wx0yy"]
 [ext_resource type="DefaultGenerator" uid="uid://diqcbn3451p2b" path="res://main/world/generators/main_generator.tres" id="2_s758e"]
@@ -14,14 +14,7 @@
 [ext_resource type="Script" uid="uid://ii0jtpmwoho6" path="res://main/world/sun.gd" id="9_n3o0a"]
 [ext_resource type="AudioStream" uid="uid://b8n6mef6etkj4" path="res://main/music/naraka.ogg" id="10_0i4oc"]
 [ext_resource type="PackedScene" uid="uid://ccsm4tlbop58m" path="res://main/entity/player/player.tscn" id="10_4clf3"]
-[ext_resource type="Shader" uid="uid://c3bafvwkfg7ut" path="res://main/ui/filter/water_cover.gdshader" id="10_73k8k"]
 [ext_resource type="Material" uid="uid://dhxh3up0kwnsn" path="res://main/world/rendering/block_mesh/transparent_block_mesh_material.tres" id="10_ppf03"]
-[ext_resource type="Script" uid="uid://d2cgwtbvlykcj" path="res://main/ui/filter/water_cover.gd" id="12_na0o7"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_5xyti"]
-shader = ExtResource("10_73k8k")
-shader_parameter/color = Color(0.084, 0.2576, 0.42, 0.6)
-shader_parameter/fade = 0.5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6f7p0"]
 shader = ExtResource("4_25hyt")
@@ -45,21 +38,10 @@ tracks/0/keys = {
 tracks/1/type = "bezier"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("UI/WaterCover:material:shader_parameter/fade")
+tracks/1/path = NodePath("MainWorld:water_surface_material:shader_parameter/fade")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"handle_modes": PackedInt32Array(0),
-"points": PackedFloat32Array(0.5, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0)
-}
-tracks/2/type = "bezier"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("MainWorld:water_surface_material:shader_parameter/fade")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
 "handle_modes": PackedInt32Array(0),
 "points": PackedFloat32Array(0.2, -0.25, 0, 0.25, 0),
 "times": PackedFloat32Array(0)
@@ -82,21 +64,10 @@ tracks/0/keys = {
 tracks/1/type = "bezier"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("UI/WaterCover:material:shader_parameter/fade")
+tracks/1/path = NodePath("MainWorld:water_surface_material:shader_parameter/fade")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"handle_modes": PackedInt32Array(0, 0, 0),
-"points": PackedFloat32Array(0.6, -0.25, 0, 0.25, 0, 0.45, -0.25, 0, 0.25, 0, 0.6, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(-0.0333333, 0.5, 1)
-}
-tracks/2/type = "bezier"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("MainWorld:water_surface_material:shader_parameter/fade")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
 "handle_modes": PackedInt32Array(0, 0, 0),
 "points": PackedFloat32Array(0.2, -0.25, 0, 0.25, 0, 0.4, -0.25, 0, 0.25, 0, 0.2, -0.25, 0, 0.25, 0),
 "times": PackedFloat32Array(0, 0.5, 1)
@@ -107,10 +78,6 @@ _data = {
 &"RESET": SubResource("Animation_na0o7"),
 &"shimmer": SubResource("Animation_fwcvl")
 }
-
-[sub_resource type="TorusMesh" id="TorusMesh_n3o0a"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_n3o0a"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_wx0yy")
@@ -157,16 +124,6 @@ water_material_ghost = ExtResource("5_5xyti")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="WaterCover" type="ColorRect" parent="UI"]
-visible = false
-material = SubResource("ShaderMaterial_5xyti")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("12_na0o7")
-
 [node name="DitheringFilter" type="ColorRect" parent="UI"]
 material = SubResource("ShaderMaterial_6f7p0")
 anchors_preset = 15
@@ -188,12 +145,3 @@ libraries = {
 }
 autoplay = "shimmer"
 speed_scale = 0.25
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-material_override = ExtResource("4_fwcvl")
-mesh = SubResource("TorusMesh_n3o0a")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.778659, -1.59469e-08, -0.627447, -0.106582, 0.985467, -0.132267, 0.618328, 0.169866, 0.767343, 0, 0, -1.9393)
-material_override = ExtResource("4_fwcvl")
-mesh = SubResource("BoxMesh_n3o0a")

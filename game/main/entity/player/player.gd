@@ -4,10 +4,6 @@ class_name Player extends Entity
 @export var flying: bool = false
 @export var sprint_toggle: bool = false
 
-@export_group("Acceleration")
-
-@export var gravity: float = 32
-
 @export_group("Movement")
 @export var sprint_speed_multiplier: float = 1.3
 @export var jump_speed_multiplier: float = 1.1
@@ -65,7 +61,6 @@ func _process(delta: float) -> void:
 		for v in [Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1)]:
 			if Input.is_action_just_pressed("place_water") and Ref.world.is_position_loaded(place_position + v) and Ref.world.get_block_type_at(place_position + v).id == 0:
 				Ref.world.place_water_at(place_position + v, 255)
-			
 	elif %FloorRayCast3D.is_colliding() and held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_pressed("secondary_interact"):
 		var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())
 		var look_direction: Vector3 = -%Camera3D.get_global_transform().basis.z
@@ -121,26 +116,29 @@ func _physics_process(delta: float) -> void:
 	if velocity.length() < minimum_sprint_speed or look_direction.normalized().dot(movement_dir.normalized()) < sprint_difference_threshold:
 		is_sprinting = false
 	
-	var target_speed: float = speed
-	var accel: float = ground_accel
+	var target_speed: float = speed * speed_modifier
+	var accel: float = ground_accel * accel_modifier
 	
 	if is_sprinting:
-		target_speed = speed * sprint_speed_multiplier
+		target_speed = speed * sprint_speed_multiplier * speed_modifier
 	if flying:
-		target_speed =  speed * fly_speed_multiplier
-	
+		target_speed = speed * fly_speed_multiplier * speed_modifier
+	 
 	if not is_on_floor():
-		accel = air_accel
+		accel = air_accel * accel_modifier
 		target_speed *= jump_speed_multiplier
 	
 	var temp: float = velocity.y
 	velocity = lerp(velocity, movement_dir * target_speed, accel * delta)
 	
 	# Exclude vertical direction from xz lerping
-	velocity.y = temp - gravity * delta
+	velocity.y = temp
 	
 	if movement_enabled and (flying or is_on_floor()) and Input.is_action_pressed("jump"):
-		velocity.y = fly_impulse if flying else jump_impulse 
+		velocity.y = jump_modifier * (fly_impulse if flying else jump_impulse) 
+	
+	if velocity.y < ascend_speed and buoyancy > 0.8 and under_water and movement_enabled and Input.is_action_pressed("jump"):
+		velocity.y += ascend_impulse
 	
 	if not Ref.world.is_position_loaded(velocity * delta + global_position):
 		velocity = Vector3()
