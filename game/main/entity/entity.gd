@@ -19,8 +19,9 @@ class_name Entity extends CharacterBody3D
 
 signal water_entered(vertical_velocity: float)
 signal water_exited(vertical_velocity: float)
+signal hit_ground
 
-var held_item: ItemState
+var held_item_index: int # (in inventory)
 var health: int
 
 var movement_enabled: bool = true
@@ -32,15 +33,12 @@ var under_water: bool = false:
 		if under_water and not val:
 			water_exited.emit(velocity.y)
 		under_water = val
-var feet_under_water: bool = false
 var buoyancy: float = 0.0
 
 var speed_modifier: float = 1.0
 var accel_modifier: float = 1.0
 var jump_modifier: float = 1.0
 var gravity_modifier: float = 1.0
-
-signal hit_ground
 
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
@@ -51,7 +49,6 @@ func _physics_process(delta: float) -> void:
 	velocity.y -= delta * gravity * gravity_modifier
 	
 	under_water = Ref.world.is_position_loaded(%WaterPoint.global_position) and Ref.world.is_under_water(%WaterPoint.global_position)
-	feet_under_water = Ref.world.is_position_loaded(global_position) and Ref.world.is_under_water(global_position)
 	
 	if under_water:
 		buoyancy = lerp(buoyancy, 1.0, delta * 16.0)
@@ -62,6 +59,33 @@ func _physics_process(delta: float) -> void:
 	jump_modifier = lerp(1.0, water_drag_jump, buoyancy)
 	speed_modifier = lerp(1.0, water_drag_speed, buoyancy)
 	gravity_modifier = lerp(1.0, water_drag_gravity, buoyancy)
+
+func hold_item(inventory: Inventory, index: int) -> void:
+	held_item_index = index
+	
+	unhold_item()
+	
+	if inventory.items[index] == null:
+		return
+	
+	var item_state: ItemState = inventory.items[index]
+	var item: Item = ItemMap.map(item_state.id)
+	
+	var held_item_scene: PackedScene = item.held_item_scene
+	if held_item_scene == null:
+		return
+	var held_item: HeldItem = held_item_scene.instantiate()
+	
+	%Hand.add_child(held_item)
+	held_item.initialize(item, self)
+	held_item.on_hold()
+
+func unhold_item() -> void:
+	if %Hand.get_child_count() > 0:
+		for child in %Hand.get_children():
+			if child is HeldItem:
+				child.on_unhold()
+			child.queue_free()
 
 func attack() -> void:
 	pass

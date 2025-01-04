@@ -40,14 +40,20 @@ folder_colors={
 "res://main/entity/": "pink",
 "res://main/entity/behaviors/": "purple",
 "res://main/items/": "yellow",
-"res://main/items/blocks/": "orange",
-"res://main/items/blocks/icons/": "teal",
-"res://main/items/blocks/sounds/": "blue",
-"res://main/items/blocks/textures/": "green",
-"res://main/music/": "teal",
+"res://main/items/data/blocks/": "orange",
+"res://main/items/data/blocks/icons/": "green",
+"res://main/items/data/blocks/sounds/": "green",
+"res://main/items/data/blocks/textures/": "green",
+"res://main/items/data/food/": "orange",
+"res://main/items/data/tools/": "orange",
+"res://main/items/dropped_item/": "gray",
+"res://main/items/held_item/": "gray",
+"res://main/music/": "yellow",
 "res://main/ui/": "red",
+"res://main/world/": "gray",
 "res://main/world/decorations/": "yellow",
-"res://main/world/generators/": "green"
+"res://main/world/generators/": "yellow",
+"res://main/world/rendering/": "gray"
 }
 
 [importer_defaults]

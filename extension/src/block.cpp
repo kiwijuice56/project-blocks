@@ -75,10 +75,12 @@ void Block::_bind_methods() {
         "set_can_drop",
         "get_can_drop"
     );
+
+
 }
 
 Block::Block() {
-
+    held_item_scene = ResourceLoader::get_singleton()->load("res://main/items/held_item/held_block/held_block.tscn");
 }
 
 Block::~Block() {

@@ -118,7 +118,7 @@ script = ExtResource("9_fwcvl")
 water_fog_density = 0.7
 water_fog_light_color = Color(0.0362191, 0.145835, 0.287276, 1)
 water_fog_light_emission = Color(0.1219, 0.36676, 0.53, 1)
-water_antriscopy = 0.6
+water_antriscopy = 0.1
 water_material = ExtResource("4_fwcvl")
 water_material_ghost = ExtResource("5_5xyti")
 

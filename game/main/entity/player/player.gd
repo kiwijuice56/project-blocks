@@ -34,14 +34,18 @@ signal hotbar_index_changed(old_val: int)
 
 func _ready() -> void:
 	hotbar_index = 0
+	hold_item(%Hotbar, 0)
 
 func _process(delta: float) -> void:
 	%Camera3D.fov = lerp(%Camera3D.fov, fov * (sprint_fov_scale if is_sprinting else 1.0), sprint_fov_animation_speed * delta)
 	
+	# A bit janky, but just works best for the Entity structure
+	%Hand.global_transform = %HandOverride.global_transform
+	
 	if not movement_enabled:
 		return
 	
-	held_item = %Hotbar.items[hotbar_index]
+	var item: ItemState = %Hotbar.items[held_item_index]
 	
 	# Block picking logic
 	if %InteractRayCast3D.is_colliding():
@@ -55,13 +59,13 @@ func _process(delta: float) -> void:
 		if Input.is_action_just_pressed("main_interact") and Ref.world.is_position_loaded(block_position):
 			Ref.world.break_block_at(block_position, true, true)
 			
-		if held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_just_pressed("secondary_interact") and Ref.world.is_position_loaded(place_position) and Ref.world.get_block_type_at(place_position).id == 0 and not %PlacementCheckShapeCast3D.is_colliding():
+		if item != null and ItemMap.map(item.id) is Block and Input.is_action_just_pressed("secondary_interact") and Ref.world.is_position_loaded(place_position) and Ref.world.get_block_type_at(place_position).id == 0 and not %PlacementCheckShapeCast3D.is_colliding():
 			Ref.player_hotbar.change_amount(hotbar_index, -1)
-			Ref.world.place_block_at(place_position, ItemMap.map(held_item.id), true)
+			Ref.world.place_block_at(place_position, ItemMap.map(item.id), true)
 		for v in [Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1)]:
 			if Input.is_action_just_pressed("place_water") and Ref.world.is_position_loaded(place_position + v) and Ref.world.get_block_type_at(place_position + v).id == 0:
 				Ref.world.place_water_at(place_position + v, 255)
-	elif %FloorRayCast3D.is_colliding() and held_item != null and ItemMap.map(held_item.id) is Block and Input.is_action_pressed("secondary_interact"):
+	elif %FloorRayCast3D.is_colliding() and item != null and ItemMap.map(item.id) is Block and Input.is_action_pressed("secondary_interact"):
 		var floor_position: Vector3i = Vector3i((global_position - Vector3(0, 0.25, 0)).floor())
 		var look_direction: Vector3 = -%Camera3D.get_global_transform().basis.z
 		
@@ -81,7 +85,7 @@ func _process(delta: float) -> void:
 		
 		if Ref.world.is_position_loaded(floor_block_position) and Ref.world.get_block_type_at(floor_block_position).id == 0:
 			Ref.player_hotbar.change_amount(hotbar_index, -1)
-			Ref.world.place_block_at(floor_block_position, ItemMap.map(held_item.id), true)
+			Ref.world.place_block_at(floor_block_position, ItemMap.map(item.id), true)
 	
 	# Update pointer visual
 	%InteractRayCast3D.force_raycast_update()
@@ -160,8 +164,8 @@ func _input(event: InputEvent) -> void:
 		new_index = new_index % 9
 		
 		if hotbar_index != new_index:
-			# Do something here later with this information
 			hotbar_index = new_index
+			hold_item(%Hotbar, hotbar_index)
 	
 	if movement_enabled and event.is_action_pressed("drop_item", false):
 		%DropItems.drop_and_remove_from_inventory(%Hotbar, hotbar_index)

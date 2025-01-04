@@ -7,6 +7,7 @@
 #include <godot_cpp/classes/texture2d.hpp>
 #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/classes/audio_stream.hpp>
+#include <godot_cpp/classes/resource_loader.hpp>
 
 namespace godot {
 

@@ -155,8 +155,8 @@ World::~World() { }
 // We need a separate method because of some loading issues in Godot
 void World::initialize() {
     dropped_item_scene = ResourceLoader::get_singleton()->load("res://main/items/dropped_item/dropped_item.tscn");
-    break_effect_scene = ResourceLoader::get_singleton()->load("res://main/items/blocks/break_effect/break_effect.tscn");
-    place_effect_scene = ResourceLoader::get_singleton()->load("res://main/items/blocks/place_effect/place_effect.tscn");
+    break_effect_scene = ResourceLoader::get_singleton()->load("res://main/world/rendering/break_effect/break_effect.tscn");
+    place_effect_scene = ResourceLoader::get_singleton()->load("res://main/world/rendering/place_effect/place_effect.tscn");
 
     for (int64_t i = 0; i < block_types.size(); i++) {
         Block* block = Object::cast_to<Block>(block_types[i]);

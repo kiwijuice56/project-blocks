@@ -4,6 +4,8 @@
 #include <godot_cpp/classes/resource.hpp>
 #include <godot_cpp/classes/texture2d.hpp>
 #include <godot_cpp/classes/ref_counted.hpp>
+#include <godot_cpp/classes/packed_scene.hpp>
+
 
 namespace godot {
 
@@ -18,6 +20,7 @@ public:
     String internal_name;
     String display_name;
     Ref<Texture2D> icon;
+    Ref<PackedScene> held_item_scene;
     uint32_t stack_size = 64;
 
 	Item();
@@ -37,6 +40,9 @@ public:
 
     Ref<Texture2D> get_icon() const;
     void set_icon(Ref<Texture2D> new_texture);
+
+    Ref<PackedScene> get_held_item_scene() const;
+    void set_held_item_scene(Ref<PackedScene> new_scene);
 };
 
 }

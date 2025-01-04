@@ -16,6 +16,8 @@ void Item::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_internal_name", "new_internal_name"), &Item::set_internal_name);
     ClassDB::bind_method(D_METHOD("get_icon"), &Item::get_icon);
 	ClassDB::bind_method(D_METHOD("set_icon", "new_icon"), &Item::set_icon);
+    ClassDB::bind_method(D_METHOD("get_held_item_scene"), &Item::get_held_item_scene);
+	ClassDB::bind_method(D_METHOD("set_held_item_scene", "new_scene"), &Item::set_held_item_scene);
 
     ADD_PROPERTY(
         PropertyInfo(Variant::INT, "id"),
@@ -50,6 +52,17 @@ void Item::_bind_methods() {
         ),
         "set_icon",
         "get_icon"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(
+            Variant::OBJECT,
+            "held_item_scene",
+            PROPERTY_HINT_RESOURCE_TYPE,
+            "PackedScene"
+        ),
+        "set_held_item_scene",
+        "get_held_item_scene"
     );
 }
 
@@ -99,4 +112,12 @@ Ref<Texture2D> Item::get_icon() const {
 
 void Item::set_icon(Ref<Texture2D> new_icon) {
     icon = new_icon;
+}
+
+Ref<PackedScene> Item::get_held_item_scene() const {
+    return held_item_scene;
+}
+
+void Item::set_held_item_scene(Ref<PackedScene> new_scene) {
+    held_item_scene = new_scene;
 }

@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3 uid="uid://dovynq5mw1jkk"]
+
+[ext_resource type="PackedScene" uid="uid://dbjnr0lqkh2gr" path="res://main/items/held_item/held_item.tscn" id="1_wqdnm"]
+[ext_resource type="Script" uid="uid://dugle6cgar3k6" path="res://main/items/held_item/held_block/held_block.gd" id="2_12uom"]
+[ext_resource type="ArrayMesh" uid="uid://bcem1om1xn87j" path="res://main/items/dropped_item/block.obj" id="3_s7bah"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_21wx6"]
+transparency = 4
+texture_filter = 0
+
+[node name="HeldBlock" instance=ExtResource("1_wqdnm")]
+script = ExtResource("2_12uom")
+
+[node name="Cube" type="MeshInstance3D" parent="." index="0"]
+unique_name_in_owner = true
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+cast_shadow = 0
+mesh = ExtResource("3_s7bah")
+surface_material_override/0 = SubResource("StandardMaterial3D_21wx6")

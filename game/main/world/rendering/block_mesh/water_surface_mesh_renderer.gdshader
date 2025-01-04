@@ -23,4 +23,5 @@ void fragment() {
 
 void light() {
 	DIFFUSE_LIGHT = vec3(0.);
+	SPECULAR_LIGHT = vec3(0.);
 }

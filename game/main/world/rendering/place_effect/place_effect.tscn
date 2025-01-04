@@ -1,0 +1,51 @@
+[gd_scene load_steps=8 format=3 uid="uid://b7dpq1jchls0w"]
+
+[ext_resource type="Texture2D" uid="uid://dbn6d1ljyjdax" path="res://main/items/data/blocks/textures/dirt.png" id="1_874xa"]
+[ext_resource type="Script" uid="uid://b1jgrmhcc8p1i" path="res://main/world/rendering/place_effect/place_effect.gd" id="2_8sg3s"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_50gqo"]
+transparency = 1
+shading_mode = 2
+albedo_texture = ExtResource("1_874xa")
+uv1_scale = Vector3(0.01, 0.063, 0.063)
+texture_filter = 0
+
+[sub_resource type="Curve" id="Curve_ml0fv"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_h7auq"]
+curve = SubResource("Curve_ml0fv")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_r566c"]
+emission_shape = 1
+emission_sphere_radius = 0.5
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 1.0
+initial_velocity_max = 4.0
+scale_curve = SubResource("CurveTexture_h7auq")
+
+[sub_resource type="BoxMesh" id="BoxMesh_f3sk5"]
+size = Vector3(0.063, 0.063, 0.063)
+
+[node name="PlaceEffect" type="GPUParticles3D"]
+material_override = SubResource("StandardMaterial3D_50gqo")
+emitting = false
+amount = 18
+lifetime = 0.8
+one_shot = true
+speed_scale = 1.5
+explosiveness = 0.94
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_r566c")
+draw_pass_1 = SubResource("BoxMesh_f3sk5")
+script = ExtResource("2_8sg3s")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+unique_name_in_owner = true
+volume_db = -12.0
+unit_size = 5.0
+max_db = -4.0
+bus = &"SFX"
+attenuation_filter_cutoff_hz = 20500.0

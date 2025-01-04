@@ -2,8 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://co5xqagmethrd" path="res://main/entity/entity.tscn" id="1_chebf"]
 [ext_resource type="Script" uid="uid://xwioa0gyxopg" path="res://main/entity/player/player.gd" id="2_4yh36"]
-[ext_resource type="Shape3D" uid="uid://bjwdaet7is1fx" path="res://main/entity/player/player_collision_shape.tres" id="2_v2xor"]
-[ext_resource type="PackedScene" uid="uid://cvlj2x7ggstow" path="res://main/entity/player/block_outline/block_outline.tscn" id="3_gneh7"]
+[ext_resource type="PackedScene" uid="uid://cvlj2x7ggstow" path="res://main/world/rendering/block_outline/block_outline.tscn" id="3_gneh7"]
 [ext_resource type="Script" uid="uid://wmqswonvxa7" path="res://main/items/inventory/inventory.gd" id="3_lpwwm"]
 [ext_resource type="PackedScene" uid="uid://ckxlpl71nqlua" path="res://main/entity/behaviors/pick_up_items/pick_up_items.tscn" id="5_gf10l"]
 [ext_resource type="PackedScene" uid="uid://dbwjmayjd4meg" path="res://main/entity/behaviors/drop_items/drop_items.tscn" id="5_yo8f8"]
@@ -12,11 +11,13 @@
 [ext_resource type="Script" uid="uid://c7fjk0oeobaw6" path="res://main/entity/behaviors/splash/splash.gd" id="7_lx03t"]
 [ext_resource type="AudioStream" uid="uid://d4mmgqqqwtlbq" path="res://main/entity/player/bubbles.wav" id="9_comit"]
 
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_lx03t"]
+height = 1.6
+radius = 0.25
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1ux1p"]
 radius = 0.3
 height = 1.8
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_o7rwr"]
 
 [sub_resource type="Animation" id="Animation_k3wsc"]
 resource_name = "walk"
@@ -42,6 +43,8 @@ _data = {
 &"walk": SubResource("Animation_k3wsc")
 }
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_o7rwr"]
+
 [node name="Player" instance=ExtResource("1_chebf")]
 collision_layer = 6
 script = ExtResource("2_4yh36")
@@ -63,7 +66,7 @@ floor_place_down_angle = -0.6
 
 [node name="CollisionShape3D" parent="." index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-shape = ExtResource("2_v2xor")
+shape = SubResource("CylinderShape3D_lx03t")
 
 [node name="PickUpItems" parent="Behaviors" index="0" node_paths=PackedStringArray("inventory_priority", "inventory_secondary", "entity") instance=ExtResource("5_gf10l")]
 unique_name_in_owner = true
@@ -90,6 +93,9 @@ script = ExtResource("7_lx03t")
 exit_splash = false
 entity = NodePath("../..")
 
+[node name="Hand" parent="." index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.39714, 1.15354, -0.117177)
+
 [node name="FloorRayCast3D" type="RayCast3D" parent="." index="3"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
@@ -110,9 +116,13 @@ target_position = Vector3(0, 0, -4.5)
 
 [node name="DropSpawn" type="Marker3D" parent="Camera3D" index="1"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.409502, -0.201143, -0.215995)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.294947, -0.26653, -0.431971)
 
-[node name="BubblesPlayer" type="AudioStreamPlayer" parent="Camera3D" index="2"]
+[node name="HandOverride" type="Marker3D" parent="Camera3D" index="2"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.294947, -0.26653, -0.431971)
+
+[node name="BubblesPlayer" type="AudioStreamPlayer" parent="Camera3D" index="3"]
 unique_name_in_owner = true
 stream = ExtResource("9_comit")
 volume_db = -60.0
@@ -121,10 +131,11 @@ autoplay = true
 [node name="WaterPoint" parent="." index="5"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.211308, 0)
 
-[node name="Hotbar" type="Node" parent="." index="6"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="6"]
 unique_name_in_owner = true
-script = ExtResource("3_lpwwm")
-capacity = 9
+libraries = {
+&"": SubResource("AnimationLibrary_25mdb")
+}
 
 [node name="PositionIsolation" type="Node" parent="." index="7"]
 
@@ -138,11 +149,10 @@ exclude_parent = false
 target_position = Vector3(0, 0, 0)
 collision_mask = 2
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="8"]
-unique_name_in_owner = true
-libraries = {
-&"": SubResource("AnimationLibrary_25mdb")
-}
-
-[node name="Inventory" parent="." index="9"]
+[node name="Inventory" parent="." index="8"]
 capacity = 36
+
+[node name="Hotbar" type="Node" parent="." index="9"]
+unique_name_in_owner = true
+script = ExtResource("3_lpwwm")
+capacity = 9

@@ -9,10 +9,10 @@ script = ExtResource("1_hqdfg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 
-[node name="Hand" type="Node3D" parent="."]
+[node name="Behaviors" type="Node3D" parent="."]
 unique_name_in_owner = true
 
-[node name="Behaviors" type="Node3D" parent="."]
+[node name="Hand" type="Marker3D" parent="."]
 unique_name_in_owner = true
 
 [node name="WaterPoint" type="Marker3D" parent="."]
